@@ -35,7 +35,7 @@ jobs:
         env:
           MF_VERSION_CODE: ${{ github.run_number }}
           MF_VERSION_NAME: 1.0.${{ github.run_number }}
-        run: chmod +x gradlew && ./gradlew bundleRelease --no-daemon
+        run: chmod +x gradlew && ./gradlew bundleRelease assembleRelease --no-daemon
       - name: Remove signing files
         if: always()
         run: rm -f android/app/upload.jks android/keystore.properties
@@ -43,4 +43,11 @@ jobs:
         with:
           name: mini-fighter-v1.0.${{ github.run_number }}-aab
           path: android/app/build/outputs/bundle/release/app-release.aab
+          retention-days: 90
+      - name: Name the APK
+        run: cp android/app/build/outputs/apk/release/app-release.apk mini-fighter-v1.0.${{ github.run_number }}.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mini-fighter-v1.0.${{ github.run_number }}-apk
+          path: mini-fighter-v1.0.${{ github.run_number }}.apk
           retention-days: 90
