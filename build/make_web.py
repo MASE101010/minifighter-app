@@ -38,6 +38,11 @@ bridge='''<script>
  App.addListener('pause',()=>{try{if(G&&G.net)return;if(G&&G.mode!=='demo'&&!G.paused&&!G.over&&!menuOpen())togglePause();}catch(e){}});
  App.addListener('resume',()=>{try{if(typeof NET!=='undefined'&&NET.want&&!(NET.ws&&NET.ws.readyState<=1)){NET.tries=0;netOpen();}}catch(e){}});})();
 </script></body></html>'''
+# Capacitor's JS core (registerPlugin): without it the native plugins (AdMob, App, Share) are unreachable from the page
+core=open(os.path.join(ROOT,'node_modules','@capacitor','core','dist','capacitor.js'),encoding='utf8').read()
+core=core.split('//# sourceMappingURL')[0]
+assert '<head>' in s
+s=s.replace('<head>','<head><script>'+core+'</script>',1)
 assert s.rstrip().endswith('</body></html>')
 s=s.rstrip()[:-len('</body></html>')]+bridge
 os.makedirs(os.path.join(ROOT,'www'),exist_ok=True)

@@ -38,15 +38,6 @@ jobs:
         run: chmod +x gradlew && ./gradlew bundleRelease assembleRelease --no-daemon
       - name: Name the APK
         run: cp android/app/build/outputs/apk/release/app-release.apk mini-fighter-v1.0.${{ github.run_number }}.apk
-      - name: Second APK with Google test ads (safe to tap while testing)
-        working-directory: android
-        env:
-          MF_VERSION_CODE: ${{ github.run_number }}
-          MF_VERSION_NAME: 1.0.${{ github.run_number }}-test
-        run: |
-          cd .. && python3 build/make_web.py --test-ads && npx cap sync android && cd android
-          ./gradlew assembleRelease --no-daemon
-          cp app/build/outputs/apk/release/app-release.apk ../mini-fighter-v1.0.${{ github.run_number }}-testads.apk
       - name: Remove signing files
         if: always()
         run: rm -f android/app/upload.jks android/keystore.properties
@@ -60,8 +51,3 @@ jobs:
           name: mini-fighter-v1.0.${{ github.run_number }}-apk
           path: mini-fighter-v1.0.${{ github.run_number }}.apk
           retention-days: 90
-      - uses: actions/upload-artifact@v4
-        with:
-          name: mini-fighter-v1.0.${{ github.run_number }}-testads-apk
-          path: mini-fighter-v1.0.${{ github.run_number }}-testads.apk
-          retention-days: 30
