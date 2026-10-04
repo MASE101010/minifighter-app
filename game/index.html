@@ -175,6 +175,7 @@ table.kt button.wait{background:var(--gold);color:#0b1440}
 .hmv{display:flex;align-items:center;gap:8px;direction:ltr}.hmv .mv{direction:rtl;flex:1}.hmv .ar{position:static;flex:none;width:38px;height:38px}
 .mv.mv3{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media (max-width:640px){.mv.mv3{grid-template-columns:1fr}}
+.adsdbg{margin-top:12px;padding:10px;border-radius:10px;background:#0b1030;border:1px dashed #ffd84a;font:600 13px Rubik;color:#e6e9ff;direction:rtl;text-align:start;line-height:1.7}.adsdbg button{margin-top:6px}
 .hlegal{text-align:center;font-size:13px;color:#b9c3f0;margin:10px 0 0}.hlegal a{color:#ffd84a}
 .pmv{display:flex;align-items:center;gap:8px;direction:ltr}.pmv .mv{direction:rtl}.pmv .ar{position:static;flex:none;width:36px;height:36px}.pwho{color:var(--gold);font-size:13px;font-weight:700}
 .pdots{display:flex;justify-content:center;gap:6px;margin-top:6px}.pdots i{width:8px;height:8px;border-radius:50%;background:#3a52b0}.pdots i.on{background:var(--gold)}
@@ -185,7 +186,7 @@ table.kt button.wait{background:var(--gold);color:#0b1440}
 #touch .see{opacity:.22!important}
 #touch .ab.see{background:transparent!important;box-shadow:none;border-color:rgba(255,255,255,.85)}
 #touch .ab.pr.see{opacity:.6!important}
-#pad{position:absolute;left:calc(14px + env(safe-area-inset-left,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));width:min(34vh,150px);height:min(34vh,150px);border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.08),rgba(255,255,255,.18));border:3px solid rgba(255,255,255,.4);pointer-events:auto;touch-action:none}
+#pad{position:absolute;left:calc(max(44px,5.5vw) + env(safe-area-inset-left,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));width:min(34vh,150px);height:min(34vh,150px);border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.08),rgba(255,255,255,.18));border:3px solid rgba(255,255,255,.4);pointer-events:auto;touch-action:none}
 #pad::before{content:'';position:absolute;inset:-42px;border-radius:50%}
 #knob{position:absolute;left:50%;top:50%;width:42%;height:42%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff,#cfd8ff);border:3px solid #0b1440;opacity:.9}
 #acts{position:absolute;right:calc(12px + env(safe-area-inset-right,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));width:min(42vh,180px);height:min(31vh,134px);pointer-events:none}
@@ -1820,7 +1821,10 @@ function settingsScreen(from){if(from){SET_FROM=from;SET_SNAP=JSON.stringify(CFG
  on('layout',()=>{CFG.layout=CFG.layout==='side'?'overlay':'side';fit();settingsScreen();menu.querySelector('[data-act="layout"]').focus({preventScroll:true});});
  on('keys',keysScreen);on('save',()=>{saveCfg();syncMute();setLeave();});on('back',setBack);
  on('def',()=>{CFG=JSON.parse(JSON.stringify(DEFCFG));applyVol();syncMute();settingsScreen();});
- LR=(pn,d)=>{const a=document.activeElement;if(a&&a.dataset&&a.dataset.v){a.value=clamp(+a.value+d*5,0,100);a.oninput();}};}
+ LR=(pn,d)=>{const a=document.activeElement;if(a&&a.dataset&&a.dataset.v){a.value=clamp(+a.value+d*5,0,100);a.oninput();}};
+ {const h=menu.querySelector('.setp h2');let n=0;if(h&&typeof Ads!=='undefined'&&Ads.native)h.onclick=()=>{if(++n<5)return;n=0;const D=window.ADSDBG||{};let p=menu.querySelector('.adsdbg');if(!p){p=document.createElement('div');p.className='adsdbg';menu.querySelector('.setp').appendChild(p);}
+  const draw=()=>{p.innerHTML='<b>מצב פרסומות</b><br>מזהים: '+D.ids+'<br>אתחול: '+D.init+'<br>הסכמה: '+D.consent+'<br>באנר: '+D.banner+'<br>מסך מלא: '+D.inter+'<br>מתגמלת: '+D.reward+'<br><button type="button" data-adtest>הצג פרסומת מסך מלא לבדיקה</button>';p.querySelector('[data-adtest]').onclick=()=>Ads.test();};draw();clearInterval(window.__adsDbgT);window.__adsDbgT=setInterval(()=>{if(!document.body.contains(p))return clearInterval(window.__adsDbgT);draw();},1500);};}
+}
 function setBack(){if(SET_SNAP){CFG=JSON.parse(SET_SNAP);applyVol();syncMute();fit();if(G&&G.mode!=='demo')setupSkills();}setLeave();}
 function setLeave(){SET_SNAP=null;if(SET_FROM==='netpause'&&G&&G.net){if(G.over)netResult();else netPauseMenu();}else if(SET_FROM==='pause'&&G&&G.paused)pauseMenu();else title();}
 
@@ -2183,11 +2187,20 @@ const Ads=(()=>{const C=window.Capacitor,native=!!(C&&C.isNativePlatform&&C.isNa
  const st=()=>{try{return JSON.parse(localStorage.getItem('qk2_ads')||'{}');}catch(e){return {};}};
  const sv=o=>{try{localStorage.setItem('qk2_ads',JSON.stringify(o));}catch(e){}};
  const quiet=on=>{try{if(typeof AC!=='undefined'&&AC){on?AC.suspend():AC.resume();}}catch(e){}};
- function prepInter(){if(!P)return;interReady=false;P.prepareInterstitial({adId:ADS.inter,isTesting:ADS.test}).then(()=>interReady=true).catch(()=>{});}
- function prepReward(){if(!P)return;rewReady=false;(useRV()?P.prepareRewardVideoAd({adId:ADS.rewarded,isTesting:ADS.test}):P.prepareRewardInterstitialAd({adId:ADS.rewardedInter,isTesting:ADS.test})).then(()=>rewReady=true).catch(()=>{});}
- async function init(){if(!P||ready)return;try{await P.initialize({initializeForTesting:ADS.test});
-   try{const ci=await P.requestConsentInfo();if(ci&&ci.isConsentFormAvailable&&ci.status==='REQUIRED')await P.showConsentForm();}catch(e){}
-   ready=true;prepInter();prepReward();if(bannerOn){bannerOn=false;api.banner(true);}}catch(e){}}
+ function prepInter(){if(!P)return;interReady=false;P.prepareInterstitial({adId:ADS.inter,isTesting:ADS.test}).then(()=>{interReady=true;window.ADSDBG.inter='מוכן';}).catch(e=>{window.ADSDBG.inter='נכשל: '+((e&&e.message)||e);setTimeout(prepInter,60000);});}
+ function prepReward(){if(!P)return;rewReady=false;(useRV()?P.prepareRewardVideoAd({adId:ADS.rewarded,isTesting:ADS.test}):P.prepareRewardInterstitialAd({adId:ADS.rewardedInter,isTesting:ADS.test})).then(()=>{rewReady=true;window.ADSDBG.reward='מוכן';}).catch(e=>{window.ADSDBG.reward='נכשל: '+((e&&e.message)||e);setTimeout(prepReward,60000);});}
+ const D=window.ADSDBG={init:'ממתין',consent:'-',banner:'-',inter:'-',reward:'-',ids:(ADS.test?'בדיקה':'אמיתי')};
+ const em=e=>{try{return (e&&(e.message||e.errorMessage||e.code))||JSON.stringify(e);}catch(_){return String(e);}};
+ const tmo=(p,ms)=>Promise.race([p,new Promise((_,rj)=>setTimeout(()=>rj(new Error('timeout')),ms))]);
+ async function init(){if(!P||ready)return;
+   try{await tmo(P.initialize({initializeForTesting:ADS.test}),8000);D.init='OK';}catch(e){D.init='שגיאה: '+em(e);}
+   try{const ci=await tmo(P.requestConsentInfo(),5000);D.consent=(ci&&ci.status)||'OK';if(ci&&ci.isConsentFormAvailable&&ci.status==='REQUIRED')await tmo(P.showConsentForm(),60000);}catch(e){D.consent='דילוג: '+em(e);}
+   try{const on=(ev,k,v)=>P.addListener(ev,x=>{D[k]=typeof v==='function'?v(x):v;});
+    on('bannerAdLoaded','banner','נטען');on('bannerAdFailedToLoad','banner',x=>'נכשל: '+em(x));
+    on('interstitialAdLoaded','inter','מוכן');on('interstitialAdFailedToLoad','inter',x=>'נכשל: '+em(x));
+    on('onRewardedVideoAdLoaded','reward','מוכן');on('onRewardedVideoAdFailedToLoad','reward',x=>'נכשל: '+em(x));
+    on('onRewardedInterstitialAdLoaded','reward','מוכן');on('onRewardedInterstitialAdFailedToLoad','reward',x=>'נכשל: '+em(x));}catch(e){}
+   ready=true;prepInter();prepReward();if(bannerOn){bannerOn=false;api.banner(true);}}
  // website banner (AdSense): phones show it on the main menu only; computers keep a strip under the arena, never over it
  let wbBox=null,wbOn=false;
  function webBanner(on){if(!h5)return;if(!isTouch)on=true;if(on===wbOn&&wbBox)return;
@@ -2201,8 +2214,9 @@ const Ads=(()=>{const C=window.Capacitor,native=!!(C&&C.isNativePlatform&&C.isNa
    setTimeout(()=>fin('none'),90000);});
  const api={native,h5,
   init,
+  test(){if(P&&ready&&interReady){lastFull=0;return api.interstitial();}},
   banner(on){if(h5){webBanner(!!on);return;}document.body.classList.toggle('ad-banner',!!(on&&native));if(!P)return;if(on===bannerOn)return;bannerOn=on;if(!ready)return;
-   if(on)P.showBanner({adId:ADS.banner,adSize:'BANNER',position:'BOTTOM_CENTER',margin:0,isTesting:ADS.test}).catch(()=>{});else P.hideBanner().catch(()=>{});},
+   if(on)P.showBanner({adId:ADS.banner,adSize:'BANNER',position:'BOTTOM_CENTER',margin:0,isTesting:ADS.test}).catch(e=>{window.ADSDBG.banner='נכשל: '+((e&&e.message)||e);});else P.hideBanner().catch(()=>{});},
   // full-screen ad; only ever called from a menu button
   async interstitial(){if(h5){if(busy||Date.now()-lastFull<ADS.interGapMs)return;const r=await h5Break(()=>({type:'next',name:'menu_break'}));if(r!=='none')lastFull=Date.now();return;}
    if(!P||!ready||busy||!interReady||Date.now()-lastFull<ADS.interGapMs)return;busy=true;const wasBanner=bannerOn;if(wasBanner)api.banner(false);quiet(true);
