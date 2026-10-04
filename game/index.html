@@ -1577,10 +1577,12 @@ function render(){
  if(G.disco>0){c.save();c.globalCompositeOperation='overlay';c.fillStyle=['#ff2bd6','#3fe0e8','#ffe066','#7bff6b'][(G.frame>>2)%4];c.globalAlpha=G.disco/40;c.fillRect(0,HUD,W,H-HUD);c.restore();}
  if(G.fade>0){c.fillStyle=`rgba(0,0,0,${Math.min(1,(1-abs(G.fade-.5)*2)*1.2)})`;c.fillRect(0,0,W,H);}
 }
-let last=0,acc=0;
+let last=0,acc=0,lastDraw=0,RENDERS=0;
 function loop(ts){requestAnimationFrame(loop);const dt=Math.min(100,ts-last);last=ts;
  if(G&&!G.paused){acc+=dt;let n=0;const cl=G.net&&!G.net.host;while(acc>=1000/60&&n<5){if(cl)clientStep();else step();acc-=1000/60;n++;}if(n>=5)acc=0;if(G&&G.net&&G.net.host&&n){NET.hs=(NET.hs||0)+n;NET.k+=n;if(NET.k>=2||NET.need){NET.k=0;netSnap();}}}
- {const pm=G&&G.net&&!G.net.host&&G.me;if(pm){pm.x+=NET.ox;pm.z+=NET.oz;pm.y+=NET.oy;}render();if(pm){pm.x-=NET.ox;pm.z-=NET.oz;pm.y-=NET.oy;}}musicTick();pollMenuPad();if(isTouch&&G&&G.mode!=='demo'&&(G.frame&1)===0)seeThrough();}
+ // frame pacing: the game advances 60 steps a second, so drawing more often (120Hz screens) only heats the phone; idle menus draw 30 times a second
+ {const idle=menuOpen()&&(!G||G.mode==='demo'||G.paused||G.over);if(ts-lastDraw>=(idle?31:14.5)){lastDraw=ts;RENDERS++;
+  const pm=G&&G.net&&!G.net.host&&G.me;if(pm){pm.x+=NET.ox;pm.z+=NET.oz;pm.y+=NET.oy;}render();if(pm){pm.x-=NET.ox;pm.z-=NET.oz;pm.y-=NET.oy;}}}musicTick();pollMenuPad();if(isTouch&&G&&G.mode!=='demo'&&(G.frame&1)===0)seeThrough();}
 
 /* ================= INPUT ================= */
 const down=new Set(),TS={L:0,R:0,U:0,Dn:0,A:0,J:0,D:0};
@@ -2182,7 +2184,7 @@ const ADS={app:'ca-app-pub-4952145100186285~1500691957',banner:'ca-app-pub-49521
  test:false,interGapMs:45000};
 const Ads=(()=>{const C=window.Capacitor,native=!!(C&&C.isNativePlatform&&C.isNativePlatform()),P=native&&C.registerPlugin?C.registerPlugin('AdMob'):null,
  h5=!native&&typeof window.adBreak==='function';
- let ready=false,bannerOn=false,lastFull=0,busy=false,interReady=false,rewReady=false;
+ let bannerMade=false,ready=false,bannerOn=false,lastFull=0,busy=false,interReady=false,rewReady=false;
  const useRV=()=>!!ADS.rewarded;
  const st=()=>{try{return JSON.parse(localStorage.getItem('qk2_ads')||'{}');}catch(e){return {};}};
  const sv=o=>{try{localStorage.setItem('qk2_ads',JSON.stringify(o));}catch(e){}};
@@ -2216,7 +2218,8 @@ const Ads=(()=>{const C=window.Capacitor,native=!!(C&&C.isNativePlatform&&C.isNa
   init,
   test(){if(P&&ready&&interReady){lastFull=0;return api.interstitial();}},
   banner(on){if(h5){webBanner(!!on);return;}document.body.classList.toggle('ad-banner',!!(on&&native));if(!P)return;if(on===bannerOn)return;bannerOn=on;if(!ready)return;
-   if(on)P.showBanner({adId:ADS.banner,adSize:'BANNER',position:'BOTTOM_CENTER',margin:0,isTesting:ADS.test}).catch(e=>{window.ADSDBG.banner='נכשל: '+((e&&e.message)||e);});else P.hideBanner().catch(()=>{});},
+   const mk=()=>P.showBanner({adId:ADS.banner,adSize:'BANNER',position:'BOTTOM_CENTER',margin:0,isTesting:ADS.test}).then(()=>{bannerMade=true;}).catch(e=>{window.ADSDBG.banner='נכשל: '+((e&&e.message)||e);});
+   if(on){if(bannerMade)P.resumeBanner().catch(()=>{bannerMade=false;mk();});else mk();}else P.hideBanner().catch(()=>{});},
   // full-screen ad; only ever called from a menu button
   async interstitial(){if(h5){if(busy||Date.now()-lastFull<ADS.interGapMs)return;const r=await h5Break(()=>({type:'next',name:'menu_break'}));if(r!=='none')lastFull=Date.now();return;}
    if(!P||!ready||busy||!interReady||Date.now()-lastFull<ADS.interGapMs)return;busy=true;const wasBanner=bannerOn;if(wasBanner)api.banner(false);quiet(true);
