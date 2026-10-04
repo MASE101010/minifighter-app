@@ -1,0 +1,46 @@
+name: Build Android app (AAB for Google Play)
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Install
+        run: npm ci
+      - name: Web build + sync to Android (live ads)
+        run: npm run build
+      - name: Signing key (from encrypted secrets)
+        env:
+          KS: ${{ secrets.KEYSTORE_BASE64 }}
+          KSP: ${{ secrets.KEYSTORE_PASSWORD }}
+          KA: ${{ secrets.KEY_ALIAS }}
+          KP: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          echo "$KS" | base64 -d > android/app/upload.jks
+          printf 'storeFile=upload.jks\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' "$KSP" "$KA" "$KP" > android/keystore.properties
+      - name: Build signed AAB
+        working-directory: android
+        env:
+          MF_VERSION_CODE: ${{ github.run_number }}
+          MF_VERSION_NAME: 1.0.${{ github.run_number }}
+        run: chmod +x gradlew && ./gradlew bundleRelease --no-daemon
+      - name: Remove signing files
+        if: always()
+        run: rm -f android/app/upload.jks android/keystore.properties
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mini-fighter-v1.0.${{ github.run_number }}-aab
+          path: android/app/build/outputs/bundle/release/app-release.aab
+          retention-days: 90
