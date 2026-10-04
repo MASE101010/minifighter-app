@@ -1,0 +1,12 @@
+{
+  "appId": "com.sapirproductions.minifighter",
+  "appName": "מיני פייטר",
+  "webDir": "www",
+  "backgroundColor": "#0b1650",
+  "android": {
+    "backgroundColor": "#0b1650",
+    "allowMixedContent": false,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false
+  }
+}

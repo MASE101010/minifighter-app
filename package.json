@@ -1,0 +1,24 @@
+{
+  "name": "mini-fighter",
+  "version": "1.0.0",
+  "description": "Mini Fighter (מיני פייטר) Android app",
+  "scripts": {
+    "build": "python3 build/make_web.py && npx cap sync android",
+    "open": "npx cap open android",
+    "build:test": "python3 build/make_web.py --test-ads && npx cap sync android"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@capacitor-community/admob": "^8.1.0",
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/cli": "^8.5.2",
+    "@capacitor/core": "^8.5.2",
+    "@capacitor/share": "^8.0.3",
+    "@fontsource/rubik": "^5.3.0",
+    "@fontsource/secular-one": "^5.3.0"
+  },
+  "private": true
+}
