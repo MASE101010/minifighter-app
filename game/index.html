@@ -277,7 +277,7 @@ function shade(hex,amt){const n=parseInt(hex.slice(1),16);let r=n>>16,g=n>>8&255
 /* ---------- settings ---------- */
 const DEFKEYS=[{U:['KeyW'],Dn:['KeyS'],L:['KeyA'],R:['KeyD'],A:['KeyJ','KeyZ'],J:['KeyK','KeyX'],D:['KeyL','KeyC']},
  {U:['ArrowUp'],Dn:['ArrowDown'],L:['ArrowLeft'],R:['ArrowRight'],A:['Comma','Numpad1'],J:['Period','Numpad2'],D:['Slash','Numpad3']}];
-const DEFCFG={keys:JSON.parse(JSON.stringify(DEFKEYS)),easy:true,skills:true,tmoves:'swipe',full:true,layout:'overlay',sfx:true,music:true,mute:false,musVol:.7,sfxVol:.8,shake:true,gfx:'auto'};
+const DEFCFG={keys:JSON.parse(JSON.stringify(DEFKEYS)),easy:true,skills:true,tmoves:'swipe',full:true,layout:'overlay',sfx:true,music:true,mute:false,musVol:.7,sfxVol:.8,shake:true,gfx:'high'};
 let CFG=JSON.parse(JSON.stringify(DEFCFG));
 try{const s=JSON.parse(localStorage.getItem('qk2_cfg')||'null');if(s&&s.keys)CFG=Object.assign(CFG,s);}catch(e){}
 if(!CFG.tmoves)CFG.tmoves=CFG.skills===false?'off':'swipe';if(!CFG.v3){if(CFG.tmoves==='buttons')CFG.tmoves='swipe';CFG.v3=1;}if(CFG.full===undefined)CFG.full=true;if(!CFG.layout)CFG.layout='overlay';
@@ -1608,13 +1608,14 @@ let last=0,acc=0,lastDraw=0,RENDERS=0;
 // quality: 2 = sharp (2x) with glow effects, 1 = 1.5x with half glow, 0 = 1.2x without glow. "auto" steps down when a phone can't keep 60.
 let QUAL=2;const QK=[1.2,1.5,2];
 function setQual(q){q=clamp(q,0,2);if(q===QUAL)return;QUAL=q;RENDER_K=QK[q];try{fit();}catch(e){}}
-function qualFromCfg(){const g=CFG.gfx||'auto';if(g==='high')return 2;if(g==='low')return 0;let a=2;try{a=+(localStorage.getItem('qk2_q')??2);}catch(e){}return isNaN(a)?2:a;}
+function qualFromCfg(){if(CFG.gfx!=='low')CFG.gfx='high';return CFG.gfx==='low'?0:2;}
+try{localStorage.removeItem('qk2_q');}catch(e){}
 {const d=Object.getOwnPropertyDescriptor(CanvasRenderingContext2D.prototype,'shadowBlur');if(d&&d.set)Object.defineProperty(ctx,'shadowBlur',{configurable:true,get(){return d.get.call(this);},set(v){d.set.call(this,QUAL===2?v:QUAL===1?v*.5:0);}});}
 const PERF={n:0,sum:0,slow:0,t0:0};setTimeout(()=>setQual(qualFromCfg()),0);
-function perfWatch(dt){if((CFG.gfx||'auto')!=='auto'||!G||G.mode==='demo'||G.paused||menuOpen()||document.hidden)return;if(dt>100)return;
+function perfWatch(dt){return;if(!G||G.mode==='demo'||G.paused||menuOpen()||document.hidden)return;if(dt>100)return;
  PERF.n++;PERF.sum+=dt;if(PERF.n>=150){const avg=PERF.sum/PERF.n;PERF.n=0;PERF.sum=0;
   if(avg>19.5){PERF.slow++;if(PERF.slow>=2&&QUAL>0){setQual(QUAL-1);PERF.slow=0;try{localStorage.setItem('qk2_q',String(QUAL));}catch(e){}}}else PERF.slow=0;}}
-function loop(ts){if(last)perfWatch(ts-last);requestAnimationFrame(loop);const dt=Math.min(100,ts-last);last=ts;
+function loop(ts){requestAnimationFrame(loop);const dt=Math.min(100,ts-last);last=ts;
  if(G&&!G.paused){acc+=dt;let n=0;const cl=G.net&&!G.net.host;while(acc>=1000/60&&n<5){if(cl)clientStep();else step();acc-=1000/60;n++;}if(n>=5)acc=0;if(G&&G.net&&G.net.host&&n){NET.hs=(NET.hs||0)+n;NET.k+=n;if(NET.k>=2||NET.need){NET.k=0;netSnap();}}}
  // frame pacing: the game advances 60 steps a second, so drawing more often (120Hz screens) only heats the phone; idle menus draw 30 times a second
  {const idle=menuOpen()&&(!G||G.mode==='demo'||G.paused||G.over);if(ts-lastDraw>=(idle?31:14.5)){lastDraw=ts;RENDERS++;
@@ -1872,7 +1873,7 @@ function settingsScreen(from){if(from){SET_FROM=from;SET_SNAP=JSON.stringify(CFG
  const sl=(k,label)=>`<label class="sld"><span>${label}</span><input type="range" min="0" max="100" step="5" value="${Math.round(CFG[k]*100)}" data-v="${k}"><b data-vo="${k}">${Math.round(CFG[k]*100)}</b></label>`;
  show(`<div class="panel setp"><h2>הגדרות</h2><div class="scols">
   <div class="sgrp"><h3>צליל</h3>${sl('musVol','מוזיקה')}${sl('sfxVol','אפקטים')}${tg('mute','השתקת כל הצלילים',CFG.mute)}</div>
-  <div class="sgrp"><h3>משחק</h3>${tg('easy','מהלכים קלים (אפשר להחזיק כיוון)',CFG.easy)}${tg('shake','רעידת מסך במכות חזקות',CFG.shake)}<button class="stg" data-act="tmoves"><span>מהלכים קלים במגע</span><em class="chip">${TMOVES[CFG.tmoves]}</em></button>${tg('full','מסך מלא בטלפון',CFG.full)}<button class="stg" data-act="gfx"><span>איכות גרפיקה</span><em class="chip">${{auto:'אוטומטית',high:'גבוהה',low:'חסכונית'}[CFG.gfx||'auto']}</em></button><button class="stg" data-act="layout"><span>פריסת שליטה בטלפון</span><em class="chip">${CFG.layout==='side'?'בצדדים':'על המסך'}</em></button>
+  <div class="sgrp"><h3>משחק</h3>${tg('easy','מהלכים קלים (אפשר להחזיק כיוון)',CFG.easy)}${tg('shake','רעידת מסך במכות חזקות',CFG.shake)}<button class="stg" data-act="tmoves"><span>מהלכים קלים במגע</span><em class="chip">${TMOVES[CFG.tmoves]}</em></button>${tg('full','מסך מלא בטלפון',CFG.full)}<button class="stg" data-act="gfx"><span>איכות גרפיקה</span><em class="chip">${CFG.gfx==='low'?'נמוכה':'גבוהה'}</em></button><button class="stg" data-act="layout"><span>פריסת שליטה בטלפון</span><em class="chip">${CFG.layout==='side'?'בצדדים':'על המסך'}</em></button>
   <button class="stg go2" data-act="keys"><span>הגדרות מקשים ובקר</span><em>&#9664;</em></button>${typeof Store!=='undefined'&&Store.available?`<button class="stg go2" data-act="premium"><span>${isPremium()?'⭐ גרסה מלאה פעילה':'⭐ גרסה מלאה ושחזור רכישה'}</span><em>&#9664;</em></button>`:''}</div></div>
   <div class="btns"><button class="alt" data-act="def">ברירת מחדל</button><button class="alt" data-act="back">חזרה</button><button data-first data-act="save">שמירה</button></div></div>`,setBack);
  menu.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{CFG[b.dataset.t]=!CFG[b.dataset.t];if(b.dataset.t==='skills'&&G&&G.mode!=='demo')setupSkills();syncMute();settingsScreen();menu.querySelector(`[data-t="${b.dataset.t}"]`).focus({preventScroll:true});});
@@ -1880,7 +1881,7 @@ function settingsScreen(from){if(from){SET_FROM=from;SET_SNAP=JSON.stringify(CFG
  const on=(a,f)=>menu.querySelector(`[data-act="${a}"]`).onclick=f;
  on('tmoves',()=>{const o=Object.keys(TMOVES);CFG.tmoves=o[(o.indexOf(CFG.tmoves)+1)%o.length];CFG.skills=CFG.tmoves!=='off';if(G&&G.mode!=='demo')setupSkills();settingsScreen();menu.querySelector('[data-act="tmoves"]').focus({preventScroll:true});});
  on('layout',()=>{CFG.layout=CFG.layout==='side'?'overlay':'side';fit();settingsScreen();menu.querySelector('[data-act="layout"]').focus({preventScroll:true});});
- on('gfx',()=>{const o=['auto','high','low'];CFG.gfx=o[(o.indexOf(CFG.gfx||'auto')+1)%3];if(CFG.gfx==='auto')try{localStorage.removeItem('qk2_q');}catch(e){}setQual(qualFromCfg());settingsScreen();menu.querySelector('[data-act="gfx"]').focus({preventScroll:true});});on('keys',keysScreen);if(menu.querySelector('[data-act="premium"]'))on('premium',()=>premiumScreen(()=>settingsScreen()));on('save',()=>{saveCfg();syncMute();setLeave();});on('back',setBack);
+ on('gfx',()=>{CFG.gfx=CFG.gfx==='low'?'high':'low';setQual(qualFromCfg());settingsScreen();menu.querySelector('[data-act="gfx"]').focus({preventScroll:true});});on('keys',keysScreen);if(menu.querySelector('[data-act="premium"]'))on('premium',()=>premiumScreen(()=>settingsScreen()));on('save',()=>{saveCfg();syncMute();setLeave();});on('back',setBack);
  on('def',()=>{CFG=JSON.parse(JSON.stringify(DEFCFG));applyVol();syncMute();settingsScreen();});
  LR=(pn,d)=>{const a=document.activeElement;if(a&&a.dataset&&a.dataset.v){a.value=clamp(+a.value+d*5,0,100);a.oninput();}};
  {const h=menu.querySelector('.setp h2');let n=0;if(h&&typeof Ads!=='undefined'&&Ads.native)h.onclick=()=>{if(++n<5)return;n=0;const D=window.ADSDBG||{};let p=menu.querySelector('.adsdbg');if(!p){p=document.createElement('div');p.className='adsdbg';menu.querySelector('.setp').appendChild(p);}
