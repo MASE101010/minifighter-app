@@ -1928,7 +1928,7 @@ function pauseMenu(){const ids=pauseFighters();PMI=clamp(PMI,0,Math.max(0,ids.le
  LR=(pn,d)=>{if(ids.length>1){PMI=(PMI+d+ids.length)%ids.length;pauseMenu();}};on('res',togglePause);on('settings',()=>settingsScreen('pause'));on('sel',()=>{G.paused=false;selectScreen(G.cfg.mode);});on('quit',()=>{G.paused=false;title();});}
 function showResult(){if(G&&G.net){netResult();return;}showTouch(false);const win=G.win,m=G.cfg.mode;
  const lost=!win&&m!=='demo'&&!(m==='duel'&&G.humans.length>1);const lossDue=lost&&Ads.loss();const adDue=((m==='vs'||m==='duel')?Ads.matchEnded():false)||lossDue;
- const canRevive=m==='stage'&&!win&&G.revivedStage!==PHASES[G.phase].stage&&(Ads.native||Ads.h5||!G.freeReviveUsed);
+ const canRevive=m==='stage'&&!win&&G.revivedStage!==PHASES[G.phase].stage&&(Ads.native||Ads.h5||isPremium()||!G.freeReviveUsed);
  const sub=m==='stage'?(win?('עברתם את כל '+(STAGE_LISTS.length+1)+' השלבים, כולל הוירוס!'+(G.unlockedNow?' <br><b style="color:#ffd84a">דמות חדשה נפתחה: '+CHARS[G.unlockedNow].name+'</b>':'')):'הגעתם לשלב '+PHASES[G.phase].label+'. ההתקדמות נשמרה, אפשר להמשיך מכאן.'):'';
  const head=m==='duel'?(G.resultText||''):(win?'ניצחון!':(m==='vs'&&G.resultText?G.resultText:'הפסדת'));
  show(`<div class="panel result"><div class="rhead">${head}</div>${sub?`<p class="rsub">${sub}</p>`:''}
@@ -1939,8 +1939,9 @@ function showResult(){if(G&&G.net){netResult();return;}showTouch(false);const wi
  {const ab=menu.querySelector('[data-act="againboost"]');if(ab)ab.onclick=async()=>{ab.disabled=true;const r=await Ads.reward();if(r===true){due=false;BOOST_NEXT=true;goFull();hideMenu();startGame(cfg);showTouch(true);return;}ab.disabled=false;const mm=document.getElementById('rvmsg');if(mm&&r==='none')mm.textContent='אין כרגע פרסומת זמינה. אפשר להמשיך כרגיל.';};}
  menu.querySelector('[data-act="sel"]').onclick=gate(()=>selectScreen(cfg.mode));menu.querySelector('[data-act="menu"]').onclick=gate(title);BACK=gate(title);
  const rv=menu.querySelector('[data-act="revive"]');if(rv)rv.onclick=async()=>{rv.disabled=true;const r=await Ads.reward();
-  if(r==='none'){if(G.freeReviveUsed){const mm=document.getElementById('rvmsg');if(mm)mm.textContent='אין כרגע פרסומת זמינה. אפשר לנסות שוב בעוד רגע, או להמשיך מתחילת השלב.';rv.disabled=false;return;}G.freeReviveUsed=true;}
-  else if(!r){rv.disabled=false;return;}due=false;reviveAfterLoss();};}
+  const mm=document.getElementById('rvmsg');
+  if(r==='none'){if(Ads.native||Ads.h5||G.freeReviveUsed){if(mm)mm.textContent='אין כרגע פרסומת זמינה. אפשר לנסות שוב בעוד רגע, או להמשיך מתחילת השלב.';rv.disabled=false;return;}G.freeReviveUsed=true;}
+  else if(!r){if(mm)mm.textContent='כדי לחזור לקרב צריך לצפות בפרסומת עד הסוף.';rv.disabled=false;return;}due=false;reviveAfterLoss();};}
 function reviveAfterLoss(){G.revivedStage=PHASES[G.phase].stage;G.over=false;G.overT=0;G.win=false;G.banner={text:'חזרה לקרב!',t:0};reviveTeam();
  for(const f of G.fighters)if(f.team===1&&f.alive){f.inv=Math.max(f.inv,600);}hideMenu();showTouch(true);G.paused=false;}
 
