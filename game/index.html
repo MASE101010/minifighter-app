@@ -2219,7 +2219,7 @@ setTimeout(()=>{try{const r=new URLSearchParams(location.search).get('room');if(
    every 5 losses); rewarded = "back to the fight" once per stage. Nothing ever pops up during play. */
 const ADS={app:'ca-app-pub-4952145100186285~1500691957',banner:'ca-app-pub-4952145100186285/7482637210',
  inter:'ca-app-pub-4952145100186285/3271929466',rewarded:'ca-app-pub-4952145100186285/9552985520',rewardedInter:'ca-app-pub-4952145100186285/6572131797',webClient:'ca-pub-4952145100186285',webBannerSlot:'4297537848',
- appOpen:'',               // App Open ad unit (AdMob); empty = off
+ appOpen:'ca-app-pub-4952145100186285/4923690971',
  test:false,interGapMs:150000,newPlayerGraceMs:120000,appOpenGapMs:4*3600*1000};
 const isPremium=()=>{try{return localStorage.getItem('qk2_premium')==='1';}catch(e){return false;}};
 const Ads=(()=>{const C=window.Capacitor,native=!!(C&&C.isNativePlatform&&C.isNativePlatform()),P=native&&C.registerPlugin?C.registerPlugin('AdMob'):null,
