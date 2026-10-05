@@ -178,7 +178,20 @@ table.kt button.wait{background:var(--gold);color:#0b1440}
 .boostbtn{background:linear-gradient(90deg,#ffb020,#ff7a1a)!important;color:#1a1240!important;font-weight:800}.boostbtn small{font-weight:600;opacity:.8}
 .picker button.locked canvas{filter:grayscale(.85) brightness(.55)}.picker button.locked span{color:#ffd84a}
 .pips{display:flex;gap:4px;justify-content:center;margin-top:3px}.pips b{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.22);display:block}.pips b.on{background:#ffd84a;box-shadow:0 0 6px #ffd84a}
-.pips.big b{width:16px;height:16px}.lockbox{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:rgba(6,5,22,.97)!important}.lockbox .lkpor{width:120px;height:120px;border-radius:14px;filter:grayscale(.6) brightness(.8)}
+.pips.big b{width:16px;height:16px}.lockbox{display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(6,5,22,.97)!important}
+.lkin{display:flex;flex-direction:column;align-items:center;gap:4px;max-width:560px}
+.lockbox h3,.lockbox .btns{zoom:1!important}.lockbox h3{margin:0;font-size:24px}.lockbox .lkpor{width:108px!important;height:108px!important}.lktxt{font-size:17px;line-height:1.5}.lockbox .pips.big b{width:15px;height:15px}.lockbox .rmsg{margin:0;min-height:0}
+.lockbox .lkb{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:4px}.lockbox .lkb button{font-size:17px;padding:9px 16px;min-height:44px}
+body.ad-banner .picker{bottom:calc(var(--adh,50px) + 6px + env(safe-area-inset-bottom,0px))}
+.pt .ptname{position:absolute;left:0;right:0;bottom:0;padding:14px 4px 4px;background:linear-gradient(transparent,rgba(4,8,30,.9));color:#fff;font:800 clamp(14px,2.1vw,18px) Rubik;text-align:center;pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pt .ar{z-index:2}.rowpair{display:flex;flex-direction:column;gap:3px}
+@media (pointer:coarse){#menu>.panel.selp{max-width:none!important;zoom:min(1,calc(var(--mz,1) * 1.25));width:calc(97% / min(1,calc(var(--mz,1) * 1.25)))}
+ .selp .rowpair{flex-direction:row}.selp .rowpair .lb{display:none}.selp .slots.duel{max-width:680px}.selp .rowpair .row{flex:1;min-width:0}.selp .pt .ar{bottom:auto;top:calc(50% - 20px)}
+ .selp .selwrap{grid-template-columns:1fr 205px;gap:14px}.selp .slots{gap:8px 12px}
+ .selp .pt{aspect-ratio:16/9}.selp .pt canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 38%}
+ .selp .row{font-size:16px;min-height:30px;padding:3px 2px}.selp .row.nm{font-size:18px}
+ .selp .side{gap:4px}.selp .side button{font-size:21px;padding:7px 10px}.selp .side .go{font-size:24px;padding:10px}
+ .selp .pt .ar{width:40px;height:40px;font-size:15px}.selp .pt .pick{font-size:13px}}.lockbox .lkpor{width:120px;height:120px;border-radius:14px;filter:grayscale(.6) brightness(.8)}
 .lktxt{text-align:center;margin:4px 0;line-height:1.6}.picker button.trial{outline:2px dashed #ffd84a}
 #gtoast{position:fixed;top:14px;left:50%;transform:translate(-50%,-30px);opacity:0;z-index:60;background:#1a1450;border:1px solid #ffd84a;color:#fff;font:700 15px Rubik;padding:8px 16px;border-radius:12px;transition:.3s;pointer-events:none;direction:rtl}
 #gtoast.on{opacity:1;transform:translate(-50%,0)}
@@ -1782,13 +1795,12 @@ const WHO={none:'הצטרפות?',p1:'שחקן 1',p2:'שחקן 2',cpu:'מחשב'
 function cycleWho(i){const s=SEL.slots[i],o=whoOpts(i);let k=o.indexOf(s.who);for(let n=0;n<o.length;n++){k=(k+1)%o.length;const w=o[k];if((w==='p1'||w==='p2')&&SEL.slots.some((x,j)=>j!==i&&x.who===w))continue;s.who=w;break;}renderSel();}
 function cycleCh(i,d){const s=SEL.slots[i];const O=chOpts();s.ch=O[(O.indexOf(s.ch)+d+O.length)%O.length];renderSel(i);}
 function renderSel(keepFocus){const S=SEL,m=S.mode,active=document.activeElement&&document.activeElement.dataset?Object.assign({},document.activeElement.dataset):null;
- const slot=(s,i)=>`<div class="slot"><div class="pt"><canvas data-pt="${i}" width="200" height="200"></canvas>${s.who==='none'?'<div class="join">לחצו על<br>"הצטרפות?"</div>':`<button class="ar l" dir="ltr" data-ch="${i}" data-d="-1" aria-label="לוחם קודם">&#9664;</button><button class="ar r" dir="ltr" data-ch="${i}" data-d="1" aria-label="לוחם הבא">&#9654;</button>`}</div>
-  <button class="row ${s.who}" data-who="${i}" ${whoOpts(i).length<2?'disabled':''}><span class="lb">שחקן:</span>${WHO[s.who]}</button>
-  <div class="row nm">${s.who==='none'?'&nbsp;':chName(s.ch)}</div>
-  ${m==='vs'?`<button class="row" data-tm="${i}" ${s.who==='none'?'disabled':''}><span class="lb">קבוצה:</span>${s.who==='none'?'':(s.team?'קבוצה '+s.team:'עצמאי')}</button>`:''}</div>`;
+ const slot=(s,i)=>`<div class="slot"><div class="pt"><canvas data-pt="${i}" width="200" height="200"></canvas>${s.who==='none'?'<div class="join">לחצו על<br>"הצטרפות?"</div>':`<button class="ar l" dir="ltr" data-ch="${i}" data-d="-1" aria-label="לוחם קודם">&#9664;</button><button class="ar r" dir="ltr" data-ch="${i}" data-d="1" aria-label="לוחם הבא">&#9654;</button>`}${s.who==='none'?'':`<div class="ptname">${chName(s.ch)}</div>`}</div>
+  <div class="rowpair"><button class="row ${s.who}" data-who="${i}" ${whoOpts(i).length<2?'disabled':''}><span class="lb">שחקן:</span>${WHO[s.who]}</button>
+  ${m==='vs'?`<button class="row" data-tm="${i}" ${s.who==='none'?'disabled':''}><span class="lb">קבוצה:</span>${s.who==='none'?'':(s.team?'קבוצה '+s.team:'עצמאי')}</button>`:''}</div></div>`;
  const slots=m==='duel'?slot(S.slots[0],0)+'<div class="vs">נגד</div>'+slot(S.slots[1],1):S.slots.map(slot).join('');
  const title={vs:'קרב חופשי: בחירת לוחמים',stage:'הדרך לפסגה: בחירת לוחמים',duel:'דו קרב: בחירת לוחמים'}[m];
- show(`<div class="panel" style="max-width:1000px"><h2>${title}</h2><div class="selwrap"><div><div class="slots ${m==='duel'?'duel':''}">${slots}</div><div class="msg">${S.msg||''}</div></div>
+ show(`<div class="panel selp" style="max-width:1000px"><h2>${title}</h2><div class="selwrap"><div><div class="slots ${m==='duel'?'duel':''}">${slots}</div><div class="msg">${S.msg||''}</div></div>
   <div class="side"><button data-first data-act="go" class="go">צאו לקרב!</button>${m==='stage'&&Ads.rewardAvailable?'<button data-act="goboost" class="boostbtn">⚡ עם חיזוק <small>(פרסומת: דקה בלי פגיעות)</small></button>':''}
   ${m!=='stage'?`<button data-act="bg">איזור<b>${S.bg==='random'?'אקראי':S.bg==='auto'?'לפי היריב':BGNAMES[S.bg]}</b></button><button data-act="items">שדרוגים<b>${ITEMNAMES[S.items]}</b></button>`:''}
   ${m==='stage'&&getProg()>1?`<button data-act="start" aria-label="מאיפה להתחיל">התחלה<b>${stageName(S.start||1)}</b></button>`:''}<button data-act="diff">קושי<b>${DIFFS[S.diff][0]}</b></button>
@@ -1814,8 +1826,10 @@ const lockPips=id=>{const n=adUnlockN(id);return [...Array(UNLOCK_ADS)].map((_,k
 function lockOffer(id,onPick,onBack){const n=adUnlockN(id),left=UNLOCK_ADS-n,box=document.createElement('div');box.className='picker lockbox';
  box.innerHTML=`<h3>🔒 ${chName(id)}</h3><canvas width="200" height="200" class="lkpor"></canvas><div class="pips big" aria-hidden="true">${lockPips(id)}</div>
   <p class="lktxt">צפיות: <b>${n}</b> מתוך <b>${UNLOCK_ADS}</b>. ${left<=1?'עוד צפייה אחת והלוחם נפתח לתמיד!':'עוד '+left+' והלוחם נפתח לתמיד.'}<br><small>כל צפייה מאפשרת גם לשחק איתו בקרב הבא.</small><br><small>או: מסיימים את הדרך לפסגה.</small></p>
-  <p class="rmsg" role="status"></p><div class="btns"><button data-first data-act="watch">צפייה בפרסומת</button>${typeof Store!=='undefined'&&Store.available?'<button data-act="prem">⭐ כל הלוחמים בגרסה המלאה</button>':''}<button class="alt" data-act="no">לא עכשיו</button></div>`;
+  <p class="rmsg" role="status"></p><div class="btns lkb"><button data-first data-act="watch">צפייה בפרסומת</button>${typeof Store!=='undefined'&&Store.available?'<button data-act="prem">⭐ כל הלוחמים בגרסה המלאה</button>':''}<button class="alt" data-act="no">לא עכשיו</button></div>`;
  menu.appendChild(box);paintBust(box.querySelector('canvas'),id);const msg=box.querySelector('.rmsg');
+ {const kids=[...box.children],wrap=document.createElement('div');wrap.className='lkin';kids.forEach(k=>wrap.appendChild(k));box.appendChild(wrap);
+  requestAnimationFrame(()=>{const have=box.clientHeight-12,need=wrap.scrollHeight;if(need>have)wrap.style.zoom=Math.max(.6,have/need);});}
  box.querySelector('[data-act="no"]').onclick=()=>{box.remove();onBack&&onBack();};
  {const pb=box.querySelector('[data-act="prem"]');if(pb)pb.onclick=()=>{box.remove();premiumScreen(()=>{onBack&&onBack();});};}BACK=()=>{box.remove();onBack&&onBack();};
  const w=box.querySelector('[data-act="watch"]');w.focus();w.onclick=async()=>{w.disabled=true;const r=await Ads.reward();
