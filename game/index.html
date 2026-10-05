@@ -75,7 +75,7 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--txt);overflow:hi
 .lcard b{font-size:12px}.lcard em,.lcard small{font-size:11px}.panel.lobby{max-width:980px}.tchips{gap:3px}.tchips button{width:18px;height:18px}
 #webBanner{position:fixed;left:0;right:0;bottom:0;z-index:35;display:none;justify-content:center;align-items:center;background:#05040f;padding-bottom:env(safe-area-inset-bottom,0px)}
 #webBanner.on{display:flex}body.wb-desk #webBanner{height:100px}body.wb-desk #app{height:calc(100% - 100px)}
-body.ad-banner #menu{padding-bottom:calc(var(--adh,58px) + 8px + env(safe-area-inset-bottom,0px))}
+body.ad-banner #menu{padding-bottom:calc(var(--adh,50px) + 6px + env(safe-area-inset-bottom,0px))}
 #menu>.panel,#menu>.title{zoom:var(--mz,1);width:calc(100% / var(--mz,1));max-height:100%}
 #menu>.title{height:calc(100% / var(--mz,1))}
 .picker h3,.picker .btns{zoom:var(--mz,1)}
@@ -182,7 +182,7 @@ table.kt button.wait{background:var(--gold);color:#0b1440}
 .lktxt{text-align:center;margin:4px 0;line-height:1.6}.picker button.trial{outline:2px dashed #ffd84a}
 #gtoast{position:fixed;top:14px;left:50%;transform:translate(-50%,-30px);opacity:0;z-index:60;background:#1a1450;border:1px solid #ffd84a;color:#fff;font:700 15px Rubik;padding:8px 16px;border-radius:12px;transition:.3s;pointer-events:none;direction:rtl}
 #gtoast.on{opacity:1;transform:translate(-50%,0)}
-.prembtn{color:#ffd84a!important}.prem .rhead{font-size:34px}.plist{text-align:start;margin:6px auto 4px;padding:0 18px;max-width:440px;line-height:1.9;font-size:16px;list-style:none}
+.prembtn{color:#ffd84a!important}.title .tchip{position:absolute;top:calc(10px + env(safe-area-inset-top,0px));left:calc(12px + env(safe-area-inset-left,0px));z-index:3;background:rgba(20,14,60,.7);border:1px solid #ffd84a;color:#ffd84a;border-radius:999px;padding:5px 12px;font:700 13px Rubik;cursor:pointer}.prem .rhead{font-size:34px}.plist{text-align:start;margin:6px auto 4px;padding:0 18px;max-width:440px;line-height:1.9;font-size:16px;list-style:none}
 .adsdbg{margin-top:12px;padding:10px;border-radius:10px;background:#0b1030;border:1px dashed #ffd84a;font:600 13px Rubik;color:#e6e9ff;direction:rtl;text-align:start;line-height:1.7}.adsdbg button{margin-top:6px}
 .hlegal{text-align:center;font-size:13px;color:#b9c3f0;margin:10px 0 0}.hlegal a{color:#ffd84a}
 .pmv{display:flex;align-items:center;gap:8px;direction:ltr}.pmv .mv{direction:rtl}.pmv .ar{position:static;flex:none;width:36px;height:36px}.pwho{color:var(--gold);font-size:13px;font-weight:700}
@@ -270,7 +270,7 @@ function shade(hex,amt){const n=parseInt(hex.slice(1),16);let r=n>>16,g=n>>8&255
 /* ---------- settings ---------- */
 const DEFKEYS=[{U:['KeyW'],Dn:['KeyS'],L:['KeyA'],R:['KeyD'],A:['KeyJ','KeyZ'],J:['KeyK','KeyX'],D:['KeyL','KeyC']},
  {U:['ArrowUp'],Dn:['ArrowDown'],L:['ArrowLeft'],R:['ArrowRight'],A:['Comma','Numpad1'],J:['Period','Numpad2'],D:['Slash','Numpad3']}];
-const DEFCFG={keys:JSON.parse(JSON.stringify(DEFKEYS)),easy:true,skills:true,tmoves:'swipe',full:true,layout:'overlay',sfx:true,music:true,mute:false,musVol:.7,sfxVol:.8,shake:true};
+const DEFCFG={keys:JSON.parse(JSON.stringify(DEFKEYS)),easy:true,skills:true,tmoves:'swipe',full:true,layout:'overlay',sfx:true,music:true,mute:false,musVol:.7,sfxVol:.8,shake:true,gfx:'auto'};
 let CFG=JSON.parse(JSON.stringify(DEFCFG));
 try{const s=JSON.parse(localStorage.getItem('qk2_cfg')||'null');if(s&&s.keys)CFG=Object.assign(CFG,s);}catch(e){}
 if(!CFG.tmoves)CFG.tmoves=CFG.skills===false?'off':'swipe';if(!CFG.v3){if(CFG.tmoves==='buttons')CFG.tmoves='swipe';CFG.v3=1;}if(CFG.full===undefined)CFG.full=true;if(!CFG.layout)CFG.layout='overlay';
@@ -581,6 +581,7 @@ class Fighter{
   return hit;}
  takeHit(h){
   if(!this.alive||this.inv>0)return false;
+  if(this.human&&G.boostUntil>G.frame){if(G.frame-(this._shT||0)>20){this._shT=G.frame;fxAdd('block',this.x,this.z,this.y);}return false;}
   if(G.mode==='stage'&&this.human&&h.from&&h.from.team===9)h=Object.assign({},h,{dmg:h.dmg*.6});
   const st=this.state;if(st==='lying'||st==='rise'||st==='dead'||st==='fall'||(st==='roll'&&this.t<12))return false;
   const dir=h.dir||1;
@@ -1356,6 +1357,7 @@ function drawBG(name,cam){const L=getBG(name);ctx.drawImage(L.far,-cam*.15-L.pf,
 
 /* ---------- HUD (blue panel style) ---------- */
 const TEAMCOL={1:'#3d7bff',2:'#ff4d4d',3:'#38c96a',4:'#a35cff'};
+function drawShield(){const c=ctx; if(G.boostUntil>G.frame){const left=Math.ceil((G.boostUntil-G.frame)/60);c.save();c.font='800 15px Rubik, Arial';c.textAlign='center';c.textBaseline='middle';const tx='🛡️ מוגן · '+left;const w=c.measureText(tx).width+24,y=(isTouch&&(G.mode==='duel'||(G.mode==='vs'&&G.fighters.length<=4))?34:68)+36;c.fillStyle='rgba(20,14,60,.78)';c.fillRect(W/2-w/2,y-13,w,26);c.strokeStyle=left<=5?'#ff6b6b':'#ffd84a';c.lineWidth=1.5;c.strokeRect(W/2-w/2,y-13,w,26);c.fillStyle=left<=5?'#ffb4b4':'#ffd84a';c.direction='rtl';c.fillText(tx,W/2,y+1);c.restore();}}
 function drawHUD(){const c=ctx;
  const RH=34,NR=(isTouch&&(G.mode==='duel'||(G.mode==='vs'&&G.fighters.length<=4)))?1:2;c.fillStyle='#3354a8';c.fillRect(0,0,W,RH*NR);
  const list=G.fighters.filter(f=>G.mode!=='stage'||f.alive||f.human||f.team===1).slice(0,8);
@@ -1468,10 +1470,10 @@ function stageBreak(){const n=G.breakDue;G.breakDue=0;G.paused=true;showTouch(fa
  menu.querySelector('[data-act="go"]').onclick=go;BACK=go;}
 // "strong start": a rewarded ad the player may choose; full energy and full health, plus a health potion next to them
 let BOOST_NEXT=false;
-function boostBtn(){return Ads.rewardAvailable?'<button data-act="boost" class="boostbtn">⚡ המשך עם חיזוק <small>(צפייה בפרסומת: אנרגיה מלאה ושיקוי)</small></button>':'';}
+function boostBtn(){return Ads.rewardAvailable?'<button data-act="boost" class="boostbtn">⚡ המשך עם חיזוק <small>(צפייה בפרסומת: דקה בלי פגיעות, אנרגיה מלאה ושיקוי)</small></button>':'';}
 function wireBoost(after){const b=menu.querySelector('[data-act="boost"]');if(!b)return;b.onclick=async()=>{b.disabled=true;const r=await Ads.reward();
  if(r===true){after();return;}b.disabled=false;const mm=document.getElementById('bmsg');if(mm&&r==='none')mm.textContent='אין כרגע פרסומת זמינה. אפשר להמשיך כרגיל.';};}
-function applyBoost(){if(!G)return;for(const f of G.fighters)if(f.human&&f.alive){f.hp=f.dark=f.hpMax;f.mp=500;fxAdd('label',f.x,f.z,150,'⚡ חיזוק!');}
+function applyBoost(){if(!G)return;G.boostUntil=G.frame+3600;for(const f of G.fighters)if(f.human&&f.alive){f.hp=f.dark=f.hpMax;f.mp=500;fxAdd('label',f.x,f.z,150,'⚡ חיזוק!');}
  const h=G.fighters.find(f=>f.human&&f.alive);if(h)G.items.push(new Item('jugR',clamp(h.x+(h.face||1)*90,40,STAGE_W-40),h.z));}
 function nextPhase(){if(G.phase<PHASES.length-1)reviveTeam();const prevSt=PHASES[G.phase].stage;G.phase++;if(G.phase<PHASES.length&&PHASES[G.phase].stage>prevSt&&G.mode==='stage'){saveProg(PHASES[G.phase].stage);G.savedT=150;if(Ads.stageCleared()&&(Ads.native||Ads.h5))G.breakDue=PHASES[G.phase].stage;}if(G.phase>=PHASES.length){G.unlockedNow=addUnlock(UNLOCK_ID)?UNLOCK_ID:null;G.phase=PHASES.length-1;end(true);return;}const ph=PHASES[G.phase];
  for(const h of G.fighters)if(h.team===1&&h.alive){h.dark=Math.min(h.hpMax,h.dark+h.hpMax*.35);h.hp=Math.min(h.dark,h.hp+h.hpMax*.35);h.mp=Math.min(500,h.mp+100);}
@@ -1550,7 +1552,7 @@ function render(){
  if(!G)return;const c=ctx;c.setTransform(K,0,0,K,0,0);c.save();
  if(G.shake&&CFG.shake)c.translate((rnd()-.5)*G.shake,(rnd()-.5)*G.shake);
  const cam=Math.round(G.cam*2)/2;drawBG(G.bg,cam);if(G.mode!=='demo')drawFence(c,cam);
- for(const f of G.fighters){if(f.state==='dead'&&f.deadT>120)continue;if(f.dropIn){const k=1-Math.min(1,f.y/430);c.strokeStyle=f.team===1?`rgba(255,216,74,${.35+k*.5})`:`rgba(255,80,80,${.35+k*.5})`;c.lineWidth=2;c.beginPath();c.ellipse(f.x-cam,f.z,26-k*8,7-k*2,0,0,7);c.stroke();}const sh=Math.max(.4,1-f.y/170);c.fillStyle='rgba(0,0,0,.3)';c.beginPath();c.ellipse(f.x-cam,f.z,19*sh*(f.def.scale||1),5.5*sh,0,0,7);c.fill();}
+ for(const f of G.fighters){if(f.state==='dead'&&f.deadT>120)continue;if(f.dropIn){const k=1-Math.min(1,f.y/430);c.strokeStyle=f.team===1?`rgba(255,216,74,${.35+k*.5})`:`rgba(255,80,80,${.35+k*.5})`;c.lineWidth=2;c.beginPath();c.ellipse(f.x-cam,f.z,26-k*8,7-k*2,0,0,7);c.stroke();}if(G.boostUntil>G.frame&&f.human&&f.alive){const pu=.55+.45*Math.sin(G.frame*.15);c.strokeStyle=`rgba(255,216,74,${pu})`;c.lineWidth=3;c.beginPath();c.ellipse(f.x-cam,f.z,30*(f.def.scale||1),9,0,0,7);c.stroke();}const sh=Math.max(.4,1-f.y/170);c.fillStyle='rgba(0,0,0,.3)';c.beginPath();c.ellipse(f.x-cam,f.z,19*sh*(f.def.scale||1),5.5*sh,0,0,7);c.fill();}
  for(const it of G.items){if(it.state==='held')continue;c.fillStyle='rgba(0,0,0,.25)';c.beginPath();c.ellipse(it.x-cam,it.z,12,4,0,0,7);c.fill();if(it.k==='jug'){const pu=.5+.5*Math.sin(G.frame*.12+it.x);const gg=c.createRadialGradient(it.x-cam,it.z-it.y-12,2,it.x-cam,it.z-it.y-12,26);gg.addColorStop(0,it.type==='jugR'?`rgba(255,70,90,${.35+pu*.25})`:`rgba(70,180,255,${.35+pu*.25})`);gg.addColorStop(1,'rgba(0,0,0,0)');c.fillStyle=gg;c.beginPath();c.arc(it.x-cam,it.z-it.y-12,26,0,7);c.fill();}}
  const ents=[];for(const f of G.fighters)ents.push({z:f.z,k:0,o:f});for(const it of G.items)if(it.state!=='held')ents.push({z:it.z,k:1,o:it});for(const p of G.projs)ents.push({z:p.z+.1,k:2,o:p});
  ents.sort((a,b)=>a.z-b.z);
@@ -1577,7 +1579,7 @@ function render(){
   else drawProj(o,cam);}
  G.fx=G.fx.filter(e=>!drawFx(e,cam));
  c.restore();
- netDrawEmotes(c,cam);if(G.mode!=='demo'){drawHUD();
+ netDrawEmotes(c,cam);if(G.mode!=='demo'){drawHUD();drawShield();
   if(G.banner&&G.banner.t>=0){const t=G.banner.t,s=Math.min(1,t/7)*(t>80?Math.max(0,1-(t-80)/15):1);if(s>0){c.save();c.translate(W/2,300);c.scale(s,s);c.font='900 64px Rubik, Arial';c.textAlign='center';c.direction='rtl';c.lineJoin='round';
    c.lineWidth=12;c.strokeStyle='#0b1650';c.strokeText(G.banner.text,0,0);c.fillStyle='#fff';c.fillText(G.banner.text,0,0);c.restore();}}
   if(G.banner&&G.banner.t<0)G.banner.t++;
@@ -1595,7 +1597,16 @@ function render(){
  if(G.fade>0){c.fillStyle=`rgba(0,0,0,${Math.min(1,(1-abs(G.fade-.5)*2)*1.2)})`;c.fillRect(0,0,W,H);}
 }
 let last=0,acc=0,lastDraw=0,RENDERS=0;
-function loop(ts){requestAnimationFrame(loop);const dt=Math.min(100,ts-last);last=ts;
+// quality: 2 = sharp (2x) with glow effects, 1 = 1.5x with half glow, 0 = 1.2x without glow. "auto" steps down when a phone can't keep 60.
+let QUAL=2;const QK=[1.2,1.5,2];
+function setQual(q){q=clamp(q,0,2);if(q===QUAL)return;QUAL=q;RENDER_K=QK[q];try{fit();}catch(e){}}
+function qualFromCfg(){const g=CFG.gfx||'auto';if(g==='high')return 2;if(g==='low')return 0;let a=2;try{a=+(localStorage.getItem('qk2_q')??2);}catch(e){}return isNaN(a)?2:a;}
+{const d=Object.getOwnPropertyDescriptor(CanvasRenderingContext2D.prototype,'shadowBlur');if(d&&d.set)Object.defineProperty(ctx,'shadowBlur',{configurable:true,get(){return d.get.call(this);},set(v){d.set.call(this,QUAL===2?v:QUAL===1?v*.5:0);}});}
+const PERF={n:0,sum:0,slow:0,t0:0};setTimeout(()=>setQual(qualFromCfg()),0);
+function perfWatch(dt){if((CFG.gfx||'auto')!=='auto'||!G||G.mode==='demo'||G.paused||menuOpen()||document.hidden)return;if(dt>100)return;
+ PERF.n++;PERF.sum+=dt;if(PERF.n>=150){const avg=PERF.sum/PERF.n;PERF.n=0;PERF.sum=0;
+  if(avg>19.5){PERF.slow++;if(PERF.slow>=2&&QUAL>0){setQual(QUAL-1);PERF.slow=0;try{localStorage.setItem('qk2_q',String(QUAL));}catch(e){}}}else PERF.slow=0;}}
+function loop(ts){if(last)perfWatch(ts-last);requestAnimationFrame(loop);const dt=Math.min(100,ts-last);last=ts;
  if(G&&!G.paused){acc+=dt;let n=0;const cl=G.net&&!G.net.host;while(acc>=1000/60&&n<5){if(cl)clientStep();else step();acc-=1000/60;n++;}if(n>=5)acc=0;if(G&&G.net&&G.net.host&&n){NET.hs=(NET.hs||0)+n;NET.k+=n;if(NET.k>=2||NET.need){NET.k=0;netSnap();}}}
  // frame pacing: the game advances 60 steps a second, so drawing more often (120Hz screens) only heats the phone; idle menus draw 30 times a second
  {const idle=menuOpen()&&(!G||G.mode==='demo'||G.paused||G.over);if(ts-lastDraw>=(idle?31:14.5)){lastDraw=ts;RENDERS++;
@@ -1681,7 +1692,7 @@ document.getElementById('pauseBtn').addEventListener('click',()=>{if(G&&G.mode!=
 const app=document.getElementById('app');
 // Fixed 16:9 game resolution: the world is always 960x540, rendered into a fixed 1920x1080 backing store.
 // Window size only changes the CSS scale (letterboxed), never the game itself.
-const RENDER_K=2;
+let RENDER_K=2;   // canvas pixels per game pixel (lowered automatically on weaker devices)
 let CVL=0,CVT=0,CS=1,EDGE={L:0,R:0},PBX=0;
 const sideMode=()=>isTouch&&CFG.layout==='side'&&touchEl.classList.contains('on');
 function fit(){const sm=sideMode(),side=sm?Math.round(Math.min(220,Math.max(132,app.clientWidth*.19))):0;app.classList.toggle('lay-side',sm);document.documentElement.style.setProperty('--side',side+'px');
@@ -1703,7 +1714,8 @@ const menu=document.getElementById('menu');
 let KEYWAIT=null,SCREEN='title',SEL=null,BACK=null,LR=null;
 const menuOpen=()=>!menu.classList.contains('hidden');
 function setMuteVis(on){const b=document.getElementById('muteBtn');if(b)b.classList.remove('on');}
-function fitPanel(){const p=menu.firstElementChild;if(!p||!p.classList.contains('panel'))return;p.style.zoom='';p.style.width='';
+function fitPanel(){const p=menu.firstElementChild;if(p&&p.classList.contains('title')){const tb=p.querySelector('.tbox');if(!tb)return;tb.style.zoom='';const have=p.clientHeight-8,need=tb.scrollHeight;if(need>have&&need>0)tb.style.zoom=Math.max(.55,have/need);return;}
+ if(!p||!p.classList.contains('panel'))return;p.style.zoom='';p.style.width='';
  const need=p.scrollHeight,have=p.clientHeight;if(need<=have+2)return;const r=have/need;if(r<.72)return;
  const z=parseFloat(getComputedStyle(p).zoom)||1,nz=Math.max(.45,z*r*.98);p.style.zoom=nz;p.style.width=`calc(100% / ${nz})`;}
 addEventListener('resize',()=>requestAnimationFrame(fitPanel));
@@ -1745,7 +1757,7 @@ function paintBust(cv2,id,big){const c=cv2.getContext('2d'),w=cv2.width,h=cv2.he
  drawFighter(c,{def:d,face:1,state:'idle',t:0,y:0,held:null,id:0},w*.44,h*(big?.42:.56)+66*s*(d.scale||1),s,rig);}
 function title(){SCREEN='title';startDemo();
  show(`<div class="title"><div class="tbox"><div class="logo mini">מיני<span>פייטר</span></div>
- <div class="mlist"><button data-first data-a="stage">הדרך לפסגה</button><button data-a="vs">קרב חופשי</button><button data-a="duel">דו קרב</button><button data-a="mp" class="mpbtn">מולטיפלייר</button><button data-a="settings">הגדרות</button><button data-a="help">איך משחקים</button>${typeof Store!=='undefined'&&Store.available&&!isPremium()?'<button data-a="premium" class="prembtn">⭐ גרסה מלאה, בלי פרסומות</button>':''}</div></div></div>`);
+ <div class="mlist"><button data-first data-a="stage">הדרך לפסגה</button><button data-a="vs">קרב חופשי</button><button data-a="duel">דו קרב</button><button data-a="mp" class="mpbtn">מולטיפלייר</button><button data-a="settings">הגדרות</button><button data-a="help">איך משחקים</button></div></div>${typeof Store!=='undefined'&&Store.available&&!isPremium()?'<button data-a="premium" class="tchip">⭐ בלי פרסומות</button>':''}</div>`);
  _titleBind();if(typeof Ads!=='undefined')Ads.banner(true);}
 function paintTitleArt(){{const ta=document.getElementById('tart');if(ta){const c=ta.getContext('2d');paintBust(ta,'michael',true);c.globalCompositeOperation='source-atop';c.fillStyle='rgba(40,70,190,.75)';c.fillRect(0,0,420,600);c.globalCompositeOperation='source-over';}}}
 function _titleBind(){
@@ -1777,7 +1789,7 @@ function renderSel(keepFocus){const S=SEL,m=S.mode,active=document.activeElement
  const slots=m==='duel'?slot(S.slots[0],0)+'<div class="vs">נגד</div>'+slot(S.slots[1],1):S.slots.map(slot).join('');
  const title={vs:'קרב חופשי: בחירת לוחמים',stage:'הדרך לפסגה: בחירת לוחמים',duel:'דו קרב: בחירת לוחמים'}[m];
  show(`<div class="panel" style="max-width:1000px"><h2>${title}</h2><div class="selwrap"><div><div class="slots ${m==='duel'?'duel':''}">${slots}</div><div class="msg">${S.msg||''}</div></div>
-  <div class="side"><button data-first data-act="go" class="go">צאו לקרב!</button>${m==='stage'&&Ads.rewardAvailable?'<button data-act="goboost" class="boostbtn">⚡ עם חיזוק <small>(פרסומת)</small></button>':''}
+  <div class="side"><button data-first data-act="go" class="go">צאו לקרב!</button>${m==='stage'&&Ads.rewardAvailable?'<button data-act="goboost" class="boostbtn">⚡ עם חיזוק <small>(פרסומת: דקה בלי פגיעות)</small></button>':''}
   ${m!=='stage'?`<button data-act="bg">איזור<b>${S.bg==='random'?'אקראי':S.bg==='auto'?'לפי היריב':BGNAMES[S.bg]}</b></button><button data-act="items">שדרוגים<b>${ITEMNAMES[S.items]}</b></button>`:''}
   ${m==='stage'&&getProg()>1?`<button data-act="start" aria-label="מאיפה להתחיל">התחלה<b>${stageName(S.start||1)}</b></button>`:''}<button data-act="diff">קושי<b>${DIFFS[S.diff][0]}</b></button>
   ${m==='duel'?`<button data-act="rounds">סיבובים<b>${S.rounds}</b></button>`:''}
@@ -1850,7 +1862,7 @@ function settingsScreen(from){if(from){SET_FROM=from;SET_SNAP=JSON.stringify(CFG
  const sl=(k,label)=>`<label class="sld"><span>${label}</span><input type="range" min="0" max="100" step="5" value="${Math.round(CFG[k]*100)}" data-v="${k}"><b data-vo="${k}">${Math.round(CFG[k]*100)}</b></label>`;
  show(`<div class="panel setp"><h2>הגדרות</h2><div class="scols">
   <div class="sgrp"><h3>צליל</h3>${sl('musVol','מוזיקה')}${sl('sfxVol','אפקטים')}${tg('mute','השתקת כל הצלילים',CFG.mute)}</div>
-  <div class="sgrp"><h3>משחק</h3>${tg('easy','מהלכים קלים (אפשר להחזיק כיוון)',CFG.easy)}${tg('shake','רעידת מסך במכות חזקות',CFG.shake)}<button class="stg" data-act="tmoves"><span>מהלכים קלים במגע</span><em class="chip">${TMOVES[CFG.tmoves]}</em></button>${tg('full','מסך מלא בטלפון',CFG.full)}<button class="stg" data-act="layout"><span>פריסת שליטה בטלפון</span><em class="chip">${CFG.layout==='side'?'בצדדים':'על המסך'}</em></button>
+  <div class="sgrp"><h3>משחק</h3>${tg('easy','מהלכים קלים (אפשר להחזיק כיוון)',CFG.easy)}${tg('shake','רעידת מסך במכות חזקות',CFG.shake)}<button class="stg" data-act="tmoves"><span>מהלכים קלים במגע</span><em class="chip">${TMOVES[CFG.tmoves]}</em></button>${tg('full','מסך מלא בטלפון',CFG.full)}<button class="stg" data-act="gfx"><span>איכות גרפיקה</span><em class="chip">${{auto:'אוטומטית',high:'גבוהה',low:'חסכונית'}[CFG.gfx||'auto']}</em></button><button class="stg" data-act="layout"><span>פריסת שליטה בטלפון</span><em class="chip">${CFG.layout==='side'?'בצדדים':'על המסך'}</em></button>
   <button class="stg go2" data-act="keys"><span>הגדרות מקשים ובקר</span><em>&#9664;</em></button>${typeof Store!=='undefined'&&Store.available?`<button class="stg go2" data-act="premium"><span>${isPremium()?'⭐ גרסה מלאה פעילה':'⭐ גרסה מלאה ושחזור רכישה'}</span><em>&#9664;</em></button>`:''}</div></div>
   <div class="btns"><button class="alt" data-act="def">ברירת מחדל</button><button class="alt" data-act="back">חזרה</button><button data-first data-act="save">שמירה</button></div></div>`,setBack);
  menu.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{CFG[b.dataset.t]=!CFG[b.dataset.t];if(b.dataset.t==='skills'&&G&&G.mode!=='demo')setupSkills();syncMute();settingsScreen();menu.querySelector(`[data-t="${b.dataset.t}"]`).focus({preventScroll:true});});
@@ -1858,7 +1870,7 @@ function settingsScreen(from){if(from){SET_FROM=from;SET_SNAP=JSON.stringify(CFG
  const on=(a,f)=>menu.querySelector(`[data-act="${a}"]`).onclick=f;
  on('tmoves',()=>{const o=Object.keys(TMOVES);CFG.tmoves=o[(o.indexOf(CFG.tmoves)+1)%o.length];CFG.skills=CFG.tmoves!=='off';if(G&&G.mode!=='demo')setupSkills();settingsScreen();menu.querySelector('[data-act="tmoves"]').focus({preventScroll:true});});
  on('layout',()=>{CFG.layout=CFG.layout==='side'?'overlay':'side';fit();settingsScreen();menu.querySelector('[data-act="layout"]').focus({preventScroll:true});});
- on('keys',keysScreen);if(menu.querySelector('[data-act="premium"]'))on('premium',()=>premiumScreen(()=>settingsScreen()));on('save',()=>{saveCfg();syncMute();setLeave();});on('back',setBack);
+ on('gfx',()=>{const o=['auto','high','low'];CFG.gfx=o[(o.indexOf(CFG.gfx||'auto')+1)%3];if(CFG.gfx==='auto')try{localStorage.removeItem('qk2_q');}catch(e){}setQual(qualFromCfg());settingsScreen();menu.querySelector('[data-act="gfx"]').focus({preventScroll:true});});on('keys',keysScreen);if(menu.querySelector('[data-act="premium"]'))on('premium',()=>premiumScreen(()=>settingsScreen()));on('save',()=>{saveCfg();syncMute();setLeave();});on('back',setBack);
  on('def',()=>{CFG=JSON.parse(JSON.stringify(DEFCFG));applyVol();syncMute();settingsScreen();});
  LR=(pn,d)=>{const a=document.activeElement;if(a&&a.dataset&&a.dataset.v){a.value=clamp(+a.value+d*5,0,100);a.oninput();}};
  {const h=menu.querySelector('.setp h2');let n=0;if(h&&typeof Ads!=='undefined'&&Ads.native)h.onclick=()=>{if(++n<5)return;n=0;const D=window.ADSDBG||{};let p=menu.querySelector('.adsdbg');if(!p){p=document.createElement('div');p.className='adsdbg';menu.querySelector('.setp').appendChild(p);}
@@ -1909,7 +1921,7 @@ function showResult(){if(G&&G.net){netResult();return;}showTouch(false);const wi
  const sub=m==='stage'?(win?('עברתם את כל '+(STAGE_LISTS.length+1)+' השלבים, כולל הוירוס!'+(G.unlockedNow?' <br><b style="color:#ffd84a">דמות חדשה נפתחה: '+CHARS[G.unlockedNow].name+'</b>':'')):'הגעתם לשלב '+PHASES[G.phase].label+'. ההתקדמות נשמרה, אפשר להמשיך מכאן.'):'';
  const head=m==='duel'?(G.resultText||''):(win?'ניצחון!':(m==='vs'&&G.resultText?G.resultText:'הפסדת'));
  show(`<div class="panel result"><div class="rhead">${head}</div>${sub?`<p class="rsub">${sub}</p>`:''}
- <div class="mlist">${canRevive?`<button data-first data-act="revive" class="revive">חזרה לקרב <small>${Ads.native||Ads.h5?'(צפייה בפרסומת)':'(פעם אחת במשחק)'}</small></button>`:''}<p class="rmsg" id="rvmsg" role="status"></p>${m==='stage'&&!win&&Ads.rewardAvailable?'<button data-act="againboost" class="boostbtn">⚡ המשך עם חיזוק <small>(צפייה בפרסומת)</small></button>':''}<button ${canRevive?'':'data-first'} data-act="again">${m==='stage'&&!win?'המשך מ'+stageName(PHASES[G.phase].stage).replace('משחק חדש','שלב 1'):'סיבוב נוסף'}</button><button data-act="sel">בחירת לוחמים</button><button data-act="menu">לתפריט</button></div></div>`,title);
+ <div class="mlist">${canRevive?`<button data-first data-act="revive" class="revive">חזרה לקרב <small>${Ads.native||Ads.h5?'(צפייה בפרסומת)':'(פעם אחת במשחק)'}</small></button>`:''}<p class="rmsg" id="rvmsg" role="status"></p>${m==='stage'&&!win&&Ads.rewardAvailable?'<button data-act="againboost" class="boostbtn">⚡ המשך עם חיזוק <small>(פרסומת: דקה בלי פגיעות)</small></button>':''}<button ${canRevive?'':'data-first'} data-act="again">${m==='stage'&&!win?'המשך מ'+stageName(PHASES[G.phase].stage).replace('משחק חדש','שלב 1'):'סיבוב נוסף'}</button><button data-act="sel">בחירת לוחמים</button><button data-act="menu">לתפריט</button></div></div>`,title);
  const cfg=G.cfg;if(m==='stage')cfg.startStage=win?1:PHASES[G.phase].stage;
  let due=adDue;const gate=fn=>async()=>{if(due){due=false;await Ads.interstitial();}fn();};
  menu.querySelector('[data-act="again"]').onclick=gate(()=>{goFull();hideMenu();startGame(cfg);showTouch(true);});
@@ -2268,8 +2280,8 @@ const Ads=(()=>{const C=window.Capacitor,native=!!(C&&C.isNativePlatform&&C.isNa
  const api={native,h5,
   init,
   test(){if(P&&ready&&interReady){lastFull=0;return api.interstitial();}},
-  banner(on){if(isPremium())on=false;if(h5){webBanner(!!on);return;}document.body.classList.toggle('ad-banner',!!(on&&native));if(!P)return;if(on===bannerOn)return;bannerOn=on;if(!ready)return;
-   const mk=()=>P.showBanner({adId:ADS.banner,adSize:'ADAPTIVE_BANNER',position:'BOTTOM_CENTER',margin:0,isTesting:ADS.test}).then(()=>{bannerMade=true;}).catch(e=>{window.ADSDBG.banner='נכשל: '+((e&&e.message)||e);});
+  banner(on){if(isPremium())on=false;setTimeout(()=>{try{fitPanel();}catch(e){}},60);if(h5){webBanner(!!on);return;}document.body.classList.toggle('ad-banner',!!(on&&native));if(!P)return;if(on===bannerOn)return;bannerOn=on;if(!ready)return;
+   const mk=()=>P.showBanner({adId:ADS.banner,adSize:'BANNER',position:'BOTTOM_CENTER',margin:0,isTesting:ADS.test}).then(()=>{bannerMade=true;}).catch(e=>{window.ADSDBG.banner='נכשל: '+((e&&e.message)||e);});
    if(on){if(bannerMade)P.resumeBanner().catch(()=>{bannerMade=false;mk();});else mk();}else P.hideBanner().catch(()=>{});},
   // full-screen ad; only ever called from a menu button
   async interstitial(){if(isPremium()||!graceOver())return;if(h5){if(busy||Date.now()-lastFull<ADS.interGapMs)return;const r=await h5Break(()=>({type:'next',name:'menu_break'}));if(r!=='none')lastFull=Date.now();return;}
@@ -2311,7 +2323,7 @@ const Store=(()=>{const C=window.Capacitor,native=!!(C&&C.isNativePlatform&&C.is
 // the offer screen: what you get, the price, buy / restore
 function premiumScreen(back){const B=back||title;if(isPremium()){show(`<div class="panel result"><div class="rhead">⭐ גרסה מלאה</div><p class="rsub">הגרסה המלאה פעילה במכשיר הזה. תודה שתמכת במשחק!</p><div class="mlist"><button data-first data-act="back">חזרה</button></div></div>`,B);menu.querySelector('[data-act="back"]').onclick=B;return;}
  show(`<div class="panel result prem"><div class="rhead">⭐ הגרסה המלאה</div>
-  <ul class="plist"><li>🚫 בלי פרסומות כפויות ובלי באנרים</li><li>🔓 כל הלוחמים, כולל הצל והוירוס</li><li>⚡ חזרה לקרב וחיזוק בלי לצפות בפרסומת</li><li>💛 רכישה אחת, לתמיד. עוברת לכל מכשיר עם אותו חשבון גוגל</li></ul>
+  <ul class="plist"><li>🚫 בלי פרסומות כפויות ובלי באנרים</li><li>🔓 כל הלוחמים, כולל הצל והוירוס</li><li>⚡ חזרה לקרב וחיזוק (דקה בלי פגיעות) בלי לצפות בפרסומת</li><li>💛 רכישה אחת, לתמיד. עוברת לכל מכשיר עם אותו חשבון גוגל</li></ul>
   <p class="rmsg" id="pmsg" role="status"></p>
   <div class="mlist"><button data-first data-act="buy" class="boostbtn">קנייה · ${Store.price}</button><button data-act="restore">שחזור רכישה</button><button class="alt" data-act="back">לא עכשיו</button></div></div>`,B);
  const msg=menu.querySelector('#pmsg'),q=a=>menu.querySelector(`[data-act="${a}"]`);q('back').onclick=B;
