@@ -75,7 +75,7 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--txt);overflow:hi
 .lcard b{font-size:12px}.lcard em,.lcard small{font-size:11px}.panel.lobby{max-width:980px}.tchips{gap:3px}.tchips button{width:18px;height:18px}
 #webBanner{position:fixed;left:0;right:0;bottom:0;z-index:35;display:none;justify-content:center;align-items:center;background:#05040f;padding-bottom:env(safe-area-inset-bottom,0px)}
 #webBanner.on{display:flex}body.wb-desk #webBanner{height:100px}body.wb-desk #app{height:calc(100% - 100px)}
-body.ad-banner #menu{padding-bottom:calc(58px + env(safe-area-inset-bottom,0px))}
+body.ad-banner #menu{padding-bottom:calc(var(--adh,58px) + 8px + env(safe-area-inset-bottom,0px))}
 #menu>.panel,#menu>.title{zoom:var(--mz,1);width:calc(100% / var(--mz,1));max-height:100%}
 #menu>.title{height:calc(100% / var(--mz,1))}
 .picker h3,.picker .btns{zoom:var(--mz,1)}
@@ -175,6 +175,13 @@ table.kt button.wait{background:var(--gold);color:#0b1440}
 .hmv{display:flex;align-items:center;gap:8px;direction:ltr}.hmv .mv{direction:rtl;flex:1}.hmv .ar{position:static;flex:none;width:38px;height:38px}
 .mv.mv3{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media (max-width:640px){.mv.mv3{grid-template-columns:1fr}}
+.boostbtn{background:linear-gradient(90deg,#ffb020,#ff7a1a)!important;color:#1a1240!important;font-weight:800}.boostbtn small{font-weight:600;opacity:.8}
+.picker button.locked canvas{filter:grayscale(.85) brightness(.55)}.picker button.locked span{color:#ffd84a}
+.pips{display:flex;gap:4px;justify-content:center;margin-top:3px}.pips b{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.22);display:block}.pips b.on{background:#ffd84a;box-shadow:0 0 6px #ffd84a}
+.pips.big b{width:16px;height:16px}.lockbox{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:rgba(6,5,22,.97)!important}.lockbox .lkpor{width:120px;height:120px;border-radius:14px;filter:grayscale(.6) brightness(.8)}
+.lktxt{text-align:center;margin:4px 0;line-height:1.6}.picker button.trial{outline:2px dashed #ffd84a}
+#gtoast{position:fixed;top:14px;left:50%;transform:translate(-50%,-30px);opacity:0;z-index:60;background:#1a1450;border:1px solid #ffd84a;color:#fff;font:700 15px Rubik;padding:8px 16px;border-radius:12px;transition:.3s;pointer-events:none;direction:rtl}
+#gtoast.on{opacity:1;transform:translate(-50%,0)}
 .adsdbg{margin-top:12px;padding:10px;border-radius:10px;background:#0b1030;border:1px dashed #ffd84a;font:600 13px Rubik;color:#e6e9ff;direction:rtl;text-align:start;line-height:1.7}.adsdbg button{margin-top:6px}
 .hlegal{text-align:center;font-size:13px;color:#b9c3f0;margin:10px 0 0}.hlegal a{color:#ffd84a}
 .pmv{display:flex;align-items:center;gap:8px;direction:ltr}.pmv .mv{direction:rtl}.pmv .ar{position:static;flex:none;width:36px;height:36px}.pwho{color:var(--gold);font-size:13px;font-weight:700}
@@ -1413,7 +1420,8 @@ function addUnlock(id){const u=getUnlocked();if(!u.includes(id)){u.push(id);try{
 function addFighter(id,team,x,z,who,opt){if(SPR_DEFER)sprLoad(id);opt=opt||{};const net=who==='net',human=who==='p1'||who==='p2'||net,pn=who==='p2'?1:0;
  const f=new Fighter(CHARS[id],team,x,z,net?new Ctl():human?pads[pn]:new Ctl(),!human,Object.assign({human,pn},opt));if(net)f.remote=true;f.face=x<G.cam+W/2?1:-1;G.fighters.push(f);if(human)G.humans.push(f);return f;}
 function sprGate(){if(!SPR_DEFER||!G||G.mode==='demo')return;const need=sprNeed(G.fighters.map(f=>f.def.id));if(!need.length)return;G.loading=true;const g=G;Promise.all(need.map(sprLoad)).then(()=>{g.loading=false;});}
-function startGame(cfg){
+function startGame(cfg){if(cfg&&cfg.slots&&cfg.mode!=='demo'){for(const sl of cfg.slots){if(isLocked(sl.ch)){if(TRIAL.has(sl.ch)&&(sl.who==='p1'||sl.who==='p2'))TRIAL.delete(sl.ch);else if(sl.who==='p1'||sl.who==='p2'){sl.ch=pick(HEROES);}}}}
+
  UID=0;
  G={fence:[null,null],mode:cfg.mode,cfg,fighters:[],humans:[],items:[],projs:[],fx:[],frame:0,cam:STAGE_W/2-W/2,shake:0,hitstop:0,bg:cfg.bg||'forest',diff:cfg.diff||.75,banner:null,over:false,overT:0,dropT:360,paused:false,fade:0,myTeam:1,round:1,wins:[0,0]};
  pads.forEach(p=>{p.clear();p.buf=[];});const mid=STAGE_W/2;
@@ -1432,7 +1440,7 @@ function startGame(cfg){
  else if(IT==='few'){G.items.push(new Item('jugR',mid,ZMIN+70));G.dropT=900;}
  if(cfg.mode!=='demo'){G.cd=CD_FRAMES;G.fightT=0;G.startBanner=G.banner;G.banner=null;}
  G.cam=clamp(mid-W/2,0,STAGE_W-W);for(const f of G.fighters)f.rig=null;
- setupSkills();sprGate();}
+ setupSkills();sprGate();if(BOOST_NEXT&&cfg.mode!=='demo'){BOOST_NEXT=false;setTimeout(applyBoost,50);}}
 function startPhase(){const ph=PHASES[G.phase];G.queue=ph.list.slice();G.spawnT=30;G.cleared=0;G.banner={text:'שלב '+ph.label,t:0};
  if(ph.final)G.banner={text:'שלב '+ph.label+': הבוס הסופי!',t:0};}
 function stageBg(ph){if(ph.final)return AREA.virusBoss;G.stageBoss=G.stageBoss||{};if(!G.stageBoss[ph.stage])G.stageBoss[ph.stage]=pickStageBoss(ph.stage);return AREA[G.stageBoss[ph.stage]]||'forest';}
@@ -1453,9 +1461,17 @@ function reviveTeam(){const live=G.fighters.filter(f=>f.team===1&&f.alive);
   Object.assign(f,{alive:true,deadT:0,burn:false,held:null,fall:0,dmeter:0,confuseT:0,morph:null});f.hp=f.dark=Math.round(f.hpMax*.5);f.mp=Math.max(f.mp,200);f.rig=null;f.trail=[];
   f.x=clamp((a?a.x:G.cam+W/2)+(rnd()<.5?-70:70),70,STAGE_W-70);f.z=clamp((a?a.z:470)+(rnd()-.5)*40,ZMIN,ZMAX);dropIn(f,false);f.revive=1;fxAdd('label',f.x,f.z,130,f.def.name+' חזר לקרב!');}}
 function stageBreak(){const n=G.breakDue;G.breakDue=0;G.paused=true;showTouch(false);
- show(`<div class="panel result"><div class="rhead">שלב ${n-1} הושלם!</div><p class="rsub">ההתקדמות נשמרה</p><div class="mlist"><button data-first data-act="go">המשך לשלב ${n}</button></div></div>`,null);
+ show(`<div class="panel result"><div class="rhead">שלב ${n-1} הושלם!</div><p class="rsub">ההתקדמות נשמרה</p><div class="mlist">${boostBtn()}<p class="rmsg" id="bmsg" role="status"></p><button data-first data-act="go">המשך לשלב ${n}</button></div></div>`,null);
+ wireBoost(()=>{applyBoost();hideMenu();showTouch(true);G.paused=false;});
  const go=async()=>{const b=menu.querySelector('[data-act="go"]');if(b)b.disabled=true;await Ads.interstitial();hideMenu();showTouch(true);G.paused=false;};
  menu.querySelector('[data-act="go"]').onclick=go;BACK=go;}
+// "strong start": a rewarded ad the player may choose; full energy and full health, plus a health potion next to them
+let BOOST_NEXT=false;
+function boostBtn(){return Ads.rewardAvailable?'<button data-act="boost" class="boostbtn">⚡ המשך עם חיזוק <small>(צפייה בפרסומת: אנרגיה מלאה ושיקוי)</small></button>':'';}
+function wireBoost(after){const b=menu.querySelector('[data-act="boost"]');if(!b)return;b.onclick=async()=>{b.disabled=true;const r=await Ads.reward();
+ if(r===true){after();return;}b.disabled=false;const mm=document.getElementById('bmsg');if(mm&&r==='none')mm.textContent='אין כרגע פרסומת זמינה. אפשר להמשיך כרגיל.';};}
+function applyBoost(){if(!G)return;for(const f of G.fighters)if(f.human&&f.alive){f.hp=f.dark=f.hpMax;f.mp=500;fxAdd('label',f.x,f.z,150,'⚡ חיזוק!');}
+ const h=G.fighters.find(f=>f.human&&f.alive);if(h)G.items.push(new Item('jugR',clamp(h.x+(h.face||1)*90,40,STAGE_W-40),h.z));}
 function nextPhase(){if(G.phase<PHASES.length-1)reviveTeam();const prevSt=PHASES[G.phase].stage;G.phase++;if(G.phase<PHASES.length&&PHASES[G.phase].stage>prevSt&&G.mode==='stage'){saveProg(PHASES[G.phase].stage);G.savedT=150;if(Ads.stageCleared()&&(Ads.native||Ads.h5))G.breakDue=PHASES[G.phase].stage;}if(G.phase>=PHASES.length){G.unlockedNow=addUnlock(UNLOCK_ID)?UNLOCK_ID:null;G.phase=PHASES.length-1;end(true);return;}const ph=PHASES[G.phase];
  for(const h of G.fighters)if(h.team===1&&h.alive){h.dark=Math.min(h.hpMax,h.dark+h.hpMax*.35);h.hp=Math.min(h.dark,h.hp+h.hpMax*.35);h.mp=Math.min(500,h.mp+100);}
  const nb=stageBg(ph);if(nb!==G.bg){G.fade=1;G.pendingBg=nb;}else startPhase();}
@@ -1690,7 +1706,7 @@ function fitPanel(){const p=menu.firstElementChild;if(!p||!p.classList.contains(
  const need=p.scrollHeight,have=p.clientHeight;if(need<=have+2)return;const r=have/need;if(r<.72)return;
  const z=parseFloat(getComputedStyle(p).zoom)||1,nz=Math.max(.45,z*r*.98);p.style.zoom=nz;p.style.width=`calc(100% / ${nz})`;}
 addEventListener('resize',()=>requestAnimationFrame(fitPanel));
-function show(html,back){setMuteVis(false);requestAnimationFrame(fitPanel);if(typeof Ads!=='undefined')Ads.banner(false);menu.classList.remove('hidden');menu.innerHTML=html;BACK=back||null;LR=null;const b=menu.querySelector('[data-first]')||menu.querySelector('button');if(b)b.focus({preventScroll:true});}
+function show(html,back){setMuteVis(false);requestAnimationFrame(fitPanel);if(typeof Ads!=='undefined')Ads.banner(true);menu.classList.remove('hidden');menu.innerHTML=html;BACK=back||null;LR=null;const b=menu.querySelector('[data-first]')||menu.querySelector('button');if(b)b.focus({preventScroll:true});}
 function hideMenu(){setMuteVis(false);if(typeof Ads!=='undefined')Ads.banner(false);menu.classList.add('hidden');menu.innerHTML='';}
 function focusMove(d){const bs=[...menu.querySelectorAll('button:not([disabled])')];if(!bs.length)return;let i=bs.indexOf(document.activeElement);i=(i+d+bs.length)%bs.length;bs[i].focus({preventScroll:true});}
 function isKey(code,pn,act){return CFG.keys[pn][act].includes(code);}
@@ -1735,7 +1751,11 @@ function _titleBind(){
  menu.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{initAudio();const a=b.dataset.a;if(a==='settings')settingsScreen('title');else if(a==='mp')mpMenu();else if(a==='help')help();else selectScreen(a);});}
 
 /* ---------- character selection (8-slot grid) ---------- */
-const chOpts=()=>[...HEROES,...getUnlocked().filter(id=>CHARS[id]&&!HEROES.includes(id)),'random'],DIFFS=[['קל',.45],['רגיל',.75],['קשה',1]];
+const LOCKABLE=['boss','virus'],UNLOCK_ADS=5,TRIAL=new Set();
+const adUnlockN=id=>{try{return (JSON.parse(localStorage.getItem('qk2_adunlock')||'{}')[id])||0;}catch(e){return 0;}};
+function adUnlockAdd(id){let o={};try{o=JSON.parse(localStorage.getItem('qk2_adunlock')||'{}');}catch(e){}o[id]=(o[id]||0)+1;try{localStorage.setItem('qk2_adunlock',JSON.stringify(o));}catch(e){}return o[id];}
+const isLocked=id=>LOCKABLE.includes(id)&&CHARS[id]&&!getUnlocked().includes(id);
+const chOpts=()=>[...HEROES,...getUnlocked().filter(id=>CHARS[id]&&!HEROES.includes(id)),...[...TRIAL].filter(id=>!getUnlocked().includes(id)),'random'],DIFFS=[['קל',.45],['רגיל',.75],['קשה',1]];
 const ITEMNAMES={none:'ללא',few:'מעט',full:'כולל'};
 const chName=id=>id==='random'?'אקראי':CHARS[id].name;
 function selectScreen(mode){SCREEN='select';
@@ -1756,7 +1776,7 @@ function renderSel(keepFocus){const S=SEL,m=S.mode,active=document.activeElement
  const slots=m==='duel'?slot(S.slots[0],0)+'<div class="vs">נגד</div>'+slot(S.slots[1],1):S.slots.map(slot).join('');
  const title={vs:'קרב חופשי: בחירת לוחמים',stage:'הדרך לפסגה: בחירת לוחמים',duel:'דו קרב: בחירת לוחמים'}[m];
  show(`<div class="panel" style="max-width:1000px"><h2>${title}</h2><div class="selwrap"><div><div class="slots ${m==='duel'?'duel':''}">${slots}</div><div class="msg">${S.msg||''}</div></div>
-  <div class="side"><button data-first data-act="go" class="go">צאו לקרב!</button>
+  <div class="side"><button data-first data-act="go" class="go">צאו לקרב!</button>${m==='stage'&&Ads.rewardAvailable?'<button data-act="goboost" class="boostbtn">⚡ עם חיזוק <small>(פרסומת)</small></button>':''}
   ${m!=='stage'?`<button data-act="bg">איזור<b>${S.bg==='random'?'אקראי':S.bg==='auto'?'לפי היריב':BGNAMES[S.bg]}</b></button><button data-act="items">שדרוגים<b>${ITEMNAMES[S.items]}</b></button>`:''}
   ${m==='stage'&&getProg()>1?`<button data-act="start" aria-label="מאיפה להתחיל">התחלה<b>${stageName(S.start||1)}</b></button>`:''}<button data-act="diff">קושי<b>${DIFFS[S.diff][0]}</b></button>
   ${m==='duel'?`<button data-act="rounds">סיבובים<b>${S.rounds}</b></button>`:''}
@@ -1768,7 +1788,7 @@ function renderSel(keepFocus){const S=SEL,m=S.mode,active=document.activeElement
  menu.querySelectorAll('[data-who]').forEach(b=>b.onclick=()=>cycleWho(+b.dataset.who));
  menu.querySelectorAll('[data-tm]').forEach(b=>b.onclick=()=>{const s=S.slots[+b.dataset.tm];s.team=(s.team+1)%5;renderSel();});
  menu.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{const a=b.dataset.act;S.msg='';
-  if(a==='go')launch();else if(a==='back')title_();else if(a==='bg'){const o=['auto',...Object.keys(BGNAMES),'random'];S.bg=o[(o.indexOf(S.bg)+1)%o.length];renderSel();}
+  if(a==='go')launch();else if(a==='goboost'){b.disabled=true;Ads.reward().then(r=>{if(r===true){BOOST_NEXT=true;launch();}else{b.disabled=false;if(r==='none'){S.msg='אין כרגע פרסומת זמינה. אפשר לצאת לקרב כרגיל.';renderSel();}}});}else if(a==='back')title_();else if(a==='bg'){const o=['auto',...Object.keys(BGNAMES),'random'];S.bg=o[(o.indexOf(S.bg)+1)%o.length];renderSel();}
   else if(a==='items'){const o=Object.keys(ITEMNAMES);S.items=o[(o.indexOf(S.items)+1)%o.length];renderSel();}else if(a==='start'){const mx=getProg();S.start=(S.start||1)%mx+1;renderSel();}else if(a==='diff'){S.diff=(S.diff+1)%3;renderSel();}else if(a==='rounds'){S.rounds=S.rounds===1?3:S.rounds===3?5:1;renderSel();}
   else if(a==='rand'){S.slots.forEach(s=>{if(s.who==='cpu')s.ch=pick(HEROES);});renderSel();}
   else if(a==='reset'){SEL=null;selectScreen(m);}});
@@ -1776,10 +1796,25 @@ function renderSel(keepFocus){const S=SEL,m=S.mode,active=document.activeElement
  LR=(pn,d)=>{const i=S.slots.findIndex(s=>s.who===(pn?'p2':'p1'));if(i>=0)cycleCh(i,d);};}
 function title_(){title();}
 // full-screen character picker: every fighter with its portrait, one tap to choose
+const lockPips=id=>{const n=adUnlockN(id);return [...Array(UNLOCK_ADS)].map((_,k)=>`<b class="${k<n?'on':''}"></b>`).join('');};
+// explain the offer once, calmly: each ad = one match with the fighter now + one step to unlocking for good
+function lockOffer(id,onPick,onBack){const n=adUnlockN(id),left=UNLOCK_ADS-n,box=document.createElement('div');box.className='picker lockbox';
+ box.innerHTML=`<h3>🔒 ${chName(id)}</h3><canvas width="200" height="200" class="lkpor"></canvas><div class="pips big" aria-hidden="true">${lockPips(id)}</div>
+  <p class="lktxt">צפיות: <b>${n}</b> מתוך <b>${UNLOCK_ADS}</b>. ${left<=1?'עוד צפייה אחת והלוחם נפתח לתמיד!':'עוד '+left+' והלוחם נפתח לתמיד.'}<br><small>כל צפייה מאפשרת גם לשחק איתו בקרב הבא.</small><br><small>או: מסיימים את הדרך לפסגה.</small></p>
+  <p class="rmsg" role="status"></p><div class="btns"><button data-first data-act="watch">צפייה בפרסומת</button><button class="alt" data-act="no">לא עכשיו</button></div>`;
+ menu.appendChild(box);paintBust(box.querySelector('canvas'),id);const msg=box.querySelector('.rmsg');
+ box.querySelector('[data-act="no"]').onclick=()=>{box.remove();onBack&&onBack();};BACK=()=>{box.remove();onBack&&onBack();};
+ const w=box.querySelector('[data-act="watch"]');w.focus();w.onclick=async()=>{w.disabled=true;const r=await Ads.reward();
+  if(r===true){const k=adUnlockAdd(id);if(k>=UNLOCK_ADS){addUnlock(id);box.remove();sfx('win');toast('🎉 '+chName(id)+' נפתח לתמיד!',2600);onPick(id);return;}
+   TRIAL.add(id);box.remove();toast('קרב ניסיון עם '+chName(id)+' · '+k+'/'+UNLOCK_ADS,2200);onPick(id);return;}
+  w.disabled=false;if(r==='none')msg.textContent='אין כרגע פרסומת זמינה. נסו שוב בעוד רגע.';};}
+function toast(t,ms){let el=document.getElementById('gtoast');if(!el){el=document.createElement('div');el.id='gtoast';el.setAttribute('role','status');document.body.appendChild(el);}el.textContent=t;el.classList.add('on');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('on'),ms||2000);}
 function openPicker(i){const S=SEL,s=S.slots[i],O=chOpts();const box=document.createElement('div');box.className='picker';
- box.innerHTML='<h3>בחרו לוחם</h3><div class="pgrid" style="--cols:'+Math.ceil(O.length/2)+'">'+O.map(id=>`<button data-pid="${id}" class="${id===s.ch?'cur':''}"><canvas width="160" height="160"></canvas><span>${chName(id)}</span></button>`).join('')+'</div><div class="btns"><button class="alt" data-pclose>חזרה</button></div>';
+ const LK=LOCKABLE.filter(id=>isLocked(id)&&!O.includes(id)),ALL=[...O.filter(x=>x!=='random'),...LK,'random'];
+ box.innerHTML='<h3>בחרו לוחם</h3><div class="pgrid" style="--cols:'+Math.ceil(ALL.length/2)+'">'+ALL.map(id=>LK.includes(id)?`<button data-lock="${id}" class="locked" aria-label="${chName(id)}, נעול. ${adUnlockN(id)} מתוך ${UNLOCK_ADS} צפיות"><canvas width="160" height="160"></canvas><span>🔒 ${chName(id)}</span><i class="pips">${lockPips(id)}</i></button>`:`<button data-pid="${id}" class="${id===s.ch?'cur':''}${TRIAL.has(id)?' trial':''}"><canvas width="160" height="160"></canvas><span>${chName(id)}${TRIAL.has(id)?' <small>(ניסיון)</small>':''}</span></button>`).join('')+'</div><div class="btns"><button class="alt" data-pclose>חזרה</button></div>';
  menu.appendChild(box);
  box.querySelectorAll('[data-pid]').forEach(b=>{paintBust(b.querySelector('canvas'),b.dataset.pid);b.onclick=()=>{s.ch=b.dataset.pid;renderSel(i);};});
+ box.querySelectorAll('[data-lock]').forEach(b=>{paintBust(b.querySelector('canvas'),b.dataset.lock);b.onclick=()=>lockOffer(b.dataset.lock,id=>{s.ch=id;renderSel(i);},()=>openPicker(i));});
  const close=()=>{box.remove();BACK=title_;};box.querySelector('[data-pclose]').onclick=()=>renderSel();
  BACK=()=>renderSel();LR=null;const cur=box.querySelector('.cur')||box.querySelector('[data-pid]');if(cur)cur.focus({preventScroll:false});}
 function autoArea(mode,sl){const p=sl.find(s=>s.who==='p1'||s.who==='p2')||sl[0],foes=sl.filter(s=>s!==p&&(mode==='vs'?(!p.team||s.team!==p.team):true));const t=mode==='duel'?(sl[1]===p?sl[0]:sl[1]):(foes.length?pick(foes):p);return AREA[t.ch]||'forest';}
@@ -1867,15 +1902,16 @@ function pauseMenu(){const ids=pauseFighters();PMI=clamp(PMI,0,Math.max(0,ids.le
  menu.querySelectorAll('[data-pm]').forEach(b=>b.onclick=()=>{PMI=(PMI+ +b.dataset.pm+ids.length)%ids.length;pauseMenu();menu.querySelector(`[data-pm="${b.dataset.pm}"]`).focus();});
  LR=(pn,d)=>{if(ids.length>1){PMI=(PMI+d+ids.length)%ids.length;pauseMenu();}};on('res',togglePause);on('settings',()=>settingsScreen('pause'));on('sel',()=>{G.paused=false;selectScreen(G.cfg.mode);});on('quit',()=>{G.paused=false;title();});}
 function showResult(){if(G&&G.net){netResult();return;}showTouch(false);const win=G.win,m=G.cfg.mode;
- const lost=!win&&m!=='demo'&&!(m==='duel'&&G.humans.length>1);const adDue=lost&&Ads.loss();
+ const lost=!win&&m!=='demo'&&!(m==='duel'&&G.humans.length>1);const lossDue=lost&&Ads.loss();const adDue=((m==='vs'||m==='duel')?Ads.matchEnded():false)||lossDue;
  const canRevive=m==='stage'&&!win&&G.revivedStage!==PHASES[G.phase].stage&&(Ads.native||Ads.h5||!G.freeReviveUsed);
  const sub=m==='stage'?(win?('עברתם את כל '+(STAGE_LISTS.length+1)+' השלבים, כולל הוירוס!'+(G.unlockedNow?' <br><b style="color:#ffd84a">דמות חדשה נפתחה: '+CHARS[G.unlockedNow].name+'</b>':'')):'הגעתם לשלב '+PHASES[G.phase].label+'. ההתקדמות נשמרה, אפשר להמשיך מכאן.'):'';
  const head=m==='duel'?(G.resultText||''):(win?'ניצחון!':(m==='vs'&&G.resultText?G.resultText:'הפסדת'));
  show(`<div class="panel result"><div class="rhead">${head}</div>${sub?`<p class="rsub">${sub}</p>`:''}
- <div class="mlist">${canRevive?`<button data-first data-act="revive" class="revive">חזרה לקרב <small>${Ads.native||Ads.h5?'(צפייה בפרסומת)':'(פעם אחת במשחק)'}</small></button>`:''}<p class="rmsg" id="rvmsg" role="status"></p><button ${canRevive?'':'data-first'} data-act="again">${m==='stage'&&!win?'המשך מ'+stageName(PHASES[G.phase].stage).replace('משחק חדש','שלב 1'):'סיבוב נוסף'}</button><button data-act="sel">בחירת לוחמים</button><button data-act="menu">לתפריט</button></div></div>`,title);
+ <div class="mlist">${canRevive?`<button data-first data-act="revive" class="revive">חזרה לקרב <small>${Ads.native||Ads.h5?'(צפייה בפרסומת)':'(פעם אחת במשחק)'}</small></button>`:''}<p class="rmsg" id="rvmsg" role="status"></p>${m==='stage'&&!win&&Ads.rewardAvailable?'<button data-act="againboost" class="boostbtn">⚡ המשך עם חיזוק <small>(צפייה בפרסומת)</small></button>':''}<button ${canRevive?'':'data-first'} data-act="again">${m==='stage'&&!win?'המשך מ'+stageName(PHASES[G.phase].stage).replace('משחק חדש','שלב 1'):'סיבוב נוסף'}</button><button data-act="sel">בחירת לוחמים</button><button data-act="menu">לתפריט</button></div></div>`,title);
  const cfg=G.cfg;if(m==='stage')cfg.startStage=win?1:PHASES[G.phase].stage;
  let due=adDue;const gate=fn=>async()=>{if(due){due=false;await Ads.interstitial();}fn();};
  menu.querySelector('[data-act="again"]').onclick=gate(()=>{goFull();hideMenu();startGame(cfg);showTouch(true);});
+ {const ab=menu.querySelector('[data-act="againboost"]');if(ab)ab.onclick=async()=>{ab.disabled=true;const r=await Ads.reward();if(r===true){due=false;BOOST_NEXT=true;goFull();hideMenu();startGame(cfg);showTouch(true);return;}ab.disabled=false;const mm=document.getElementById('rvmsg');if(mm&&r==='none')mm.textContent='אין כרגע פרסומת זמינה. אפשר להמשיך כרגיל.';};}
  menu.querySelector('[data-act="sel"]').onclick=gate(()=>selectScreen(cfg.mode));menu.querySelector('[data-act="menu"]').onclick=gate(title);BACK=gate(title);
  const rv=menu.querySelector('[data-act="revive"]');if(rv)rv.onclick=async()=>{rv.disabled=true;const r=await Ads.reward();
   if(r==='none'){if(G.freeReviveUsed){const mm=document.getElementById('rvmsg');if(mm)mm.textContent='אין כרגע פרסומת זמינה. אפשר לנסות שוב בעוד רגע, או להמשיך מתחילת השלב.';rv.disabled=false;return;}G.freeReviveUsed=true;}
@@ -1923,7 +1959,7 @@ function netOnMsg(m){switch(m.t){
  case 'players':NET.players=m.players;NET.host=m.host;{const me=m.players.find(p=>p.slot===NET.slot);if(me)NET.ready=!!me.ready;}if(m.phase)NET.phase=m.phase;if(SCREEN==='lobby'&&!(G&&G.net))lobbyScreen(true);if(G&&G.net){netHostCheck();if(G.net.host)netPresence();}break;
  case 'cfg':NET.cfg=m.cfg;if(SCREEN==='lobby'&&!(G&&G.net))lobbyScreen(true);break;
  case 'host':NET.host=m.host;netHostCheck();if(SCREEN==='lobby'&&!(G&&G.net))lobbyScreen(true);break;
- case 'start':NET.inLobby=false;NET.phase='game';NET.cfg=m.cfg;NET.players=m.players;NET.resultShown=false;if(amHost())netHostStart();else{if(G&&G.net)endNetGame();netWaiting();}break;
+ case 'start':NET._adRes=false;NET.inLobby=false;NET.phase='game';NET.cfg=m.cfg;NET.players=m.players;NET.resultShown=false;if(amHost())netHostStart();else{if(G&&G.net)endNetGame();netWaiting();}break;
  case 'snap':if(NET.inLobby)break;if(!(G&&G.net&&G.net.host)){if(!(G&&G.net)){if(m.full){netApply(m);NET.rf=m.sf;NET.q=[];NET.lastSf=m.sf;NET.lastArr=performance.now();}else netSend({t:'need'});}else netQueue(m);}break;
  case 'in':if(G&&G.net&&G.net.host)netInput(m);break;
  case 'need':if(G&&G.net&&G.net.host)NET.need=true;break;
@@ -2067,7 +2103,7 @@ function clientStep(){pollInput();const rec=netClientInput();G.frame++;
  else{const tx=al.length?al.reduce((s,f)=>s+f.x,0)/al.length:G.cam+W/2;G.cam+=(clamp(tx-W/2,-EDGE.L,STAGE_W-W+EDGE.R)-G.cam)*.08;}
  if(G.frame%10===0)updateSkills();
  if(G.over&&G.overT>=110&&!NET.resultShown){NET.resultShown=true;netResult();}}
-function netResult(){NET.resultShown=true;showTouch(false);const w=G.fighters.filter(f=>f.alive);
+function netResult(){if(!NET._adRes){NET._adRes=true;if(Ads.matchEnded())setTimeout(()=>{if(G&&G.over)Ads.interstitial();},1800);}NET.resultShown=true;showTouch(false);const w=G.fighters.filter(f=>f.alive);
  const meWon=G.me&&G.me.alive&&(G.winTeam==null||G.me.team===G.winTeam);
  const tw=w.length&&w[0].team>=1&&w[0].team<=4&&(NET.cfg||{}).teams?NTEAMS[w[0].team-1]:null;
  const head=G.mode==='duel'?(G.resultText||''):tw?((meWon?'ניצחתם! ':'')+tw.p+' ניצחו!'):(meWon?'ניצחת!':(w.length?(w.length===1?w[0].def.name+' ניצח!':'קבוצה '+w[0].team+' ניצחה!'):'תיקו!'));
@@ -2181,11 +2217,21 @@ setTimeout(()=>{try{const r=new URLSearchParams(location.search).get('room');if(
    every 5 losses); rewarded = "back to the fight" once per stage. Nothing ever pops up during play. */
 const ADS={app:'ca-app-pub-4952145100186285~1500691957',banner:'ca-app-pub-4952145100186285/7482637210',
  inter:'ca-app-pub-4952145100186285/3271929466',rewarded:'ca-app-pub-4952145100186285/9552985520',rewardedInter:'ca-app-pub-4952145100186285/6572131797',webClient:'ca-pub-4952145100186285',webBannerSlot:'4297537848',
- test:false,interGapMs:45000};
+ appOpen:'',               // App Open ad unit (AdMob); empty = off
+ test:false,interGapMs:150000,newPlayerGraceMs:120000,appOpenGapMs:4*3600*1000};
 const Ads=(()=>{const C=window.Capacitor,native=!!(C&&C.isNativePlatform&&C.isNativePlatform()),P=native&&C.registerPlugin?C.registerPlugin('AdMob'):null,
  h5=!native&&typeof window.adBreak==='function';
  let bannerMade=false,ready=false,bannerOn=false,lastFull=0,busy=false,interReady=false,rewReady=false;
  const useRV=()=>!!ADS.rewarded;
+ const BOOT=Date.now();let firstSession=false;
+ try{const o=JSON.parse(localStorage.getItem('qk2_ads')||'{}');o.sessions=(o.sessions||0)+1;firstSession=o.sessions<=1;localStorage.setItem('qk2_ads',JSON.stringify(o));}catch(e){}
+ const graceOver=()=>!(firstSession&&Date.now()-BOOT<ADS.newPlayerGraceMs);
+ let aoReady=false,aoShowing=false,hiddenAt=0;
+ function prepAppOpen(){if(!P||!ADS.appOpen)return;aoReady=false;P.loadAppOpen({adId:ADS.appOpen}).then(()=>{aoReady=true;}).catch(()=>{setTimeout(prepAppOpen,120000);});}
+ async function showAppOpen(){if(!P||!ADS.appOpen||!aoReady||busy||aoShowing||!graceOver())return;const o=JSON.parse(localStorage.getItem('qk2_ads')||'{}');
+  if(Date.now()-(o.lastAO||0)<ADS.appOpenGapMs||Date.now()-lastFull<60000)return;if(G&&G.mode!=='demo'&&!G.paused&&!G.over&&!menuOpen())return;
+  aoShowing=true;busy=true;quiet(true);try{await P.showAppOpen();o.lastAO=Date.now();localStorage.setItem('qk2_ads',JSON.stringify(o));lastFull=Date.now();}catch(e){}quiet(false);busy=false;aoShowing=false;prepAppOpen();}
+ document.addEventListener('visibilitychange',()=>{if(document.hidden){hiddenAt=Date.now();}else if(hiddenAt&&Date.now()-hiddenAt>30000){setTimeout(showAppOpen,400);}});
  const st=()=>{try{return JSON.parse(localStorage.getItem('qk2_ads')||'{}');}catch(e){return {};}};
  const sv=o=>{try{localStorage.setItem('qk2_ads',JSON.stringify(o));}catch(e){}};
  const quiet=on=>{try{if(typeof AC!=='undefined'&&AC){on?AC.suspend():AC.resume();}}catch(e){}};
@@ -2202,7 +2248,9 @@ const Ads=(()=>{const C=window.Capacitor,native=!!(C&&C.isNativePlatform&&C.isNa
     on('interstitialAdLoaded','inter','מוכן');on('interstitialAdFailedToLoad','inter',x=>'נכשל: '+em(x));
     on('onRewardedVideoAdLoaded','reward','מוכן');on('onRewardedVideoAdFailedToLoad','reward',x=>'נכשל: '+em(x));
     on('onRewardedInterstitialAdLoaded','reward','מוכן');on('onRewardedInterstitialAdFailedToLoad','reward',x=>'נכשל: '+em(x));}catch(e){}
-   ready=true;prepInter();prepReward();if(bannerOn){bannerOn=false;api.banner(true);}}
+   try{P.addListener('bannerAdSizeChanged',x=>{if(x&&x.height)document.documentElement.style.setProperty('--adh',Math.ceil(x.height)+'px');});}catch(e){}
+   ready=true;prepInter();prepReward();prepAppOpen();if(bannerOn){bannerOn=false;api.banner(true);}
+   if(!firstSession&&ADS.appOpen)setTimeout(showAppOpen,4500);}
  // website banner (AdSense): phones show it on the main menu only; computers keep a strip under the arena, never over it
  let wbBox=null,wbOn=false;
  function webBanner(on){if(!h5)return;if(!isTouch)on=true;if(on===wbOn&&wbBox)return;
@@ -2218,14 +2266,14 @@ const Ads=(()=>{const C=window.Capacitor,native=!!(C&&C.isNativePlatform&&C.isNa
   init,
   test(){if(P&&ready&&interReady){lastFull=0;return api.interstitial();}},
   banner(on){if(h5){webBanner(!!on);return;}document.body.classList.toggle('ad-banner',!!(on&&native));if(!P)return;if(on===bannerOn)return;bannerOn=on;if(!ready)return;
-   const mk=()=>P.showBanner({adId:ADS.banner,adSize:'BANNER',position:'BOTTOM_CENTER',margin:0,isTesting:ADS.test}).then(()=>{bannerMade=true;}).catch(e=>{window.ADSDBG.banner='נכשל: '+((e&&e.message)||e);});
+   const mk=()=>P.showBanner({adId:ADS.banner,adSize:'ADAPTIVE_BANNER',position:'BOTTOM_CENTER',margin:0,isTesting:ADS.test}).then(()=>{bannerMade=true;}).catch(e=>{window.ADSDBG.banner='נכשל: '+((e&&e.message)||e);});
    if(on){if(bannerMade)P.resumeBanner().catch(()=>{bannerMade=false;mk();});else mk();}else P.hideBanner().catch(()=>{});},
   // full-screen ad; only ever called from a menu button
-  async interstitial(){if(h5){if(busy||Date.now()-lastFull<ADS.interGapMs)return;const r=await h5Break(()=>({type:'next',name:'menu_break'}));if(r!=='none')lastFull=Date.now();return;}
+  async interstitial(){if(!graceOver())return;if(h5){if(busy||Date.now()-lastFull<ADS.interGapMs)return;const r=await h5Break(()=>({type:'next',name:'menu_break'}));if(r!=='none')lastFull=Date.now();return;}
    if(!P||!ready||busy||!interReady||Date.now()-lastFull<ADS.interGapMs)return;busy=true;const wasBanner=bannerOn;if(wasBanner)api.banner(false);quiet(true);
    try{await P.showInterstitial();lastFull=Date.now();}catch(e){}quiet(false);busy=false;prepInter();if(wasBanner)api.banner(true);},
   // resolves true = reward earned, false = closed early, 'none' = no ad available (then the one free revive per run applies)
-  reward(){if(h5){if(busy)return Promise.resolve(false);let got=false;return h5Break(fin=>({type:'reward',name:'revive',beforeReward:(show)=>show(),adViewed:()=>{got=true;},adDismissed:()=>{}})).then(v=>{if(v!=='none')lastFull=Date.now();return got?true:v;});}
+  reward(){lastFull=Math.max(lastFull,Date.now()-ADS.interGapMs+60000);if(h5){if(busy)return Promise.resolve(false);let got=false;return h5Break(fin=>({type:'reward',name:'revive',beforeReward:(show)=>show(),adViewed:()=>{got=true;},adDismissed:()=>{}})).then(v=>{if(v!=='none')lastFull=Date.now();return got?true:v;});}
    if(!P||!ready||!rewReady)return Promise.resolve('none');if(busy)return Promise.resolve(false);busy=true;quiet(true);
    const ev=useRV()?['onRewardedVideoAdReward','onRewardedVideoAdDismissed','onRewardedVideoAdFailedToShow']:['onRewardedInterstitialAdReward','onRewardedInterstitialAdDismissed','onRewardedInterstitialAdFailedToShow'];
    return new Promise(async res=>{let earned=false,done=false;const hs=[];
@@ -2235,7 +2283,9 @@ const Ads=(()=>{const C=window.Capacitor,native=!!(C&&C.isNativePlatform&&C.isNa
     setTimeout(()=>fin(earned),120000);});},
   // counters: an interstitial becomes due after every 3 cleared stages / every 5 losses
   stageCleared(){const o=st();o.stages=(o.stages||0)+1;sv(o);return o.stages%3===0;},
-  loss(){const o=st();o.losses=(o.losses||0)+1;sv(o);return o.losses%5===0;}};
+  loss(){const o=st();o.losses=(o.losses||0)+1;sv(o);return o.losses%5===0;},
+  matchEnded(){const o=st();o.matches=(o.matches||0)+1;sv(o);return o.matches%2===0;},
+   get rewardAvailable(){return native||h5;}};
  if(native)setTimeout(init,600);
  return api;})();
 
