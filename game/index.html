@@ -182,6 +182,7 @@ table.kt button.wait{background:var(--gold);color:#0b1440}
 .lktxt{text-align:center;margin:4px 0;line-height:1.6}.picker button.trial{outline:2px dashed #ffd84a}
 #gtoast{position:fixed;top:14px;left:50%;transform:translate(-50%,-30px);opacity:0;z-index:60;background:#1a1450;border:1px solid #ffd84a;color:#fff;font:700 15px Rubik;padding:8px 16px;border-radius:12px;transition:.3s;pointer-events:none;direction:rtl}
 #gtoast.on{opacity:1;transform:translate(-50%,0)}
+.prembtn{color:#ffd84a!important}.prem .rhead{font-size:34px}.plist{text-align:start;margin:6px auto 4px;padding:0 18px;max-width:440px;line-height:1.9;font-size:16px;list-style:none}
 .adsdbg{margin-top:12px;padding:10px;border-radius:10px;background:#0b1030;border:1px dashed #ffd84a;font:600 13px Rubik;color:#e6e9ff;direction:rtl;text-align:start;line-height:1.7}.adsdbg button{margin-top:6px}
 .hlegal{text-align:center;font-size:13px;color:#b9c3f0;margin:10px 0 0}.hlegal a{color:#ffd84a}
 .pmv{display:flex;align-items:center;gap:8px;direction:ltr}.pmv .mv{direction:rtl}.pmv .ar{position:static;flex:none;width:36px;height:36px}.pwho{color:var(--gold);font-size:13px;font-weight:700}
@@ -1744,11 +1745,11 @@ function paintBust(cv2,id,big){const c=cv2.getContext('2d'),w=cv2.width,h=cv2.he
  drawFighter(c,{def:d,face:1,state:'idle',t:0,y:0,held:null,id:0},w*.44,h*(big?.42:.56)+66*s*(d.scale||1),s,rig);}
 function title(){SCREEN='title';startDemo();
  show(`<div class="title"><div class="tbox"><div class="logo mini">מיני<span>פייטר</span></div>
- <div class="mlist"><button data-first data-a="stage">הדרך לפסגה</button><button data-a="vs">קרב חופשי</button><button data-a="duel">דו קרב</button><button data-a="mp" class="mpbtn">מולטיפלייר</button><button data-a="settings">הגדרות</button><button data-a="help">איך משחקים</button></div></div></div>`);
+ <div class="mlist"><button data-first data-a="stage">הדרך לפסגה</button><button data-a="vs">קרב חופשי</button><button data-a="duel">דו קרב</button><button data-a="mp" class="mpbtn">מולטיפלייר</button><button data-a="settings">הגדרות</button><button data-a="help">איך משחקים</button>${typeof Store!=='undefined'&&Store.available&&!isPremium()?'<button data-a="premium" class="prembtn">⭐ גרסה מלאה, בלי פרסומות</button>':''}</div></div></div>`);
  _titleBind();if(typeof Ads!=='undefined')Ads.banner(true);}
 function paintTitleArt(){{const ta=document.getElementById('tart');if(ta){const c=ta.getContext('2d');paintBust(ta,'michael',true);c.globalCompositeOperation='source-atop';c.fillStyle='rgba(40,70,190,.75)';c.fillRect(0,0,420,600);c.globalCompositeOperation='source-over';}}}
 function _titleBind(){
- menu.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{initAudio();const a=b.dataset.a;if(a==='settings')settingsScreen('title');else if(a==='mp')mpMenu();else if(a==='help')help();else selectScreen(a);});}
+ menu.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{initAudio();const a=b.dataset.a;if(a==='premium'){premiumScreen(title);return;}if(a==='settings')settingsScreen('title');else if(a==='mp')mpMenu();else if(a==='help')help();else selectScreen(a);});}
 
 /* ---------- character selection (8-slot grid) ---------- */
 const LOCKABLE=['boss','virus'],UNLOCK_ADS=5,TRIAL=new Set();
@@ -1801,9 +1802,10 @@ const lockPips=id=>{const n=adUnlockN(id);return [...Array(UNLOCK_ADS)].map((_,k
 function lockOffer(id,onPick,onBack){const n=adUnlockN(id),left=UNLOCK_ADS-n,box=document.createElement('div');box.className='picker lockbox';
  box.innerHTML=`<h3>🔒 ${chName(id)}</h3><canvas width="200" height="200" class="lkpor"></canvas><div class="pips big" aria-hidden="true">${lockPips(id)}</div>
   <p class="lktxt">צפיות: <b>${n}</b> מתוך <b>${UNLOCK_ADS}</b>. ${left<=1?'עוד צפייה אחת והלוחם נפתח לתמיד!':'עוד '+left+' והלוחם נפתח לתמיד.'}<br><small>כל צפייה מאפשרת גם לשחק איתו בקרב הבא.</small><br><small>או: מסיימים את הדרך לפסגה.</small></p>
-  <p class="rmsg" role="status"></p><div class="btns"><button data-first data-act="watch">צפייה בפרסומת</button><button class="alt" data-act="no">לא עכשיו</button></div>`;
+  <p class="rmsg" role="status"></p><div class="btns"><button data-first data-act="watch">צפייה בפרסומת</button>${typeof Store!=='undefined'&&Store.available?'<button data-act="prem">⭐ כל הלוחמים בגרסה המלאה</button>':''}<button class="alt" data-act="no">לא עכשיו</button></div>`;
  menu.appendChild(box);paintBust(box.querySelector('canvas'),id);const msg=box.querySelector('.rmsg');
- box.querySelector('[data-act="no"]').onclick=()=>{box.remove();onBack&&onBack();};BACK=()=>{box.remove();onBack&&onBack();};
+ box.querySelector('[data-act="no"]').onclick=()=>{box.remove();onBack&&onBack();};
+ {const pb=box.querySelector('[data-act="prem"]');if(pb)pb.onclick=()=>{box.remove();premiumScreen(()=>{onBack&&onBack();});};}BACK=()=>{box.remove();onBack&&onBack();};
  const w=box.querySelector('[data-act="watch"]');w.focus();w.onclick=async()=>{w.disabled=true;const r=await Ads.reward();
   if(r===true){const k=adUnlockAdd(id);if(k>=UNLOCK_ADS){addUnlock(id);box.remove();sfx('win');toast('🎉 '+chName(id)+' נפתח לתמיד!',2600);onPick(id);return;}
    TRIAL.add(id);box.remove();toast('קרב ניסיון עם '+chName(id)+' · '+k+'/'+UNLOCK_ADS,2200);onPick(id);return;}
@@ -1849,14 +1851,14 @@ function settingsScreen(from){if(from){SET_FROM=from;SET_SNAP=JSON.stringify(CFG
  show(`<div class="panel setp"><h2>הגדרות</h2><div class="scols">
   <div class="sgrp"><h3>צליל</h3>${sl('musVol','מוזיקה')}${sl('sfxVol','אפקטים')}${tg('mute','השתקת כל הצלילים',CFG.mute)}</div>
   <div class="sgrp"><h3>משחק</h3>${tg('easy','מהלכים קלים (אפשר להחזיק כיוון)',CFG.easy)}${tg('shake','רעידת מסך במכות חזקות',CFG.shake)}<button class="stg" data-act="tmoves"><span>מהלכים קלים במגע</span><em class="chip">${TMOVES[CFG.tmoves]}</em></button>${tg('full','מסך מלא בטלפון',CFG.full)}<button class="stg" data-act="layout"><span>פריסת שליטה בטלפון</span><em class="chip">${CFG.layout==='side'?'בצדדים':'על המסך'}</em></button>
-  <button class="stg go2" data-act="keys"><span>הגדרות מקשים ובקר</span><em>&#9664;</em></button></div></div>
+  <button class="stg go2" data-act="keys"><span>הגדרות מקשים ובקר</span><em>&#9664;</em></button>${typeof Store!=='undefined'&&Store.available?`<button class="stg go2" data-act="premium"><span>${isPremium()?'⭐ גרסה מלאה פעילה':'⭐ גרסה מלאה ושחזור רכישה'}</span><em>&#9664;</em></button>`:''}</div></div>
   <div class="btns"><button class="alt" data-act="def">ברירת מחדל</button><button class="alt" data-act="back">חזרה</button><button data-first data-act="save">שמירה</button></div></div>`,setBack);
  menu.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{CFG[b.dataset.t]=!CFG[b.dataset.t];if(b.dataset.t==='skills'&&G&&G.mode!=='demo')setupSkills();syncMute();settingsScreen();menu.querySelector(`[data-t="${b.dataset.t}"]`).focus({preventScroll:true});});
  menu.querySelectorAll('[data-v]').forEach(r=>{r.oninput=()=>{initAudio();CFG[r.dataset.v]=r.value/100;menu.querySelector(`[data-vo="${r.dataset.v}"]`).textContent=r.value;applyVol();};r.onchange=()=>{if(r.dataset.v==='sfxVol')sfx('hit',true);};});
  const on=(a,f)=>menu.querySelector(`[data-act="${a}"]`).onclick=f;
  on('tmoves',()=>{const o=Object.keys(TMOVES);CFG.tmoves=o[(o.indexOf(CFG.tmoves)+1)%o.length];CFG.skills=CFG.tmoves!=='off';if(G&&G.mode!=='demo')setupSkills();settingsScreen();menu.querySelector('[data-act="tmoves"]').focus({preventScroll:true});});
  on('layout',()=>{CFG.layout=CFG.layout==='side'?'overlay':'side';fit();settingsScreen();menu.querySelector('[data-act="layout"]').focus({preventScroll:true});});
- on('keys',keysScreen);on('save',()=>{saveCfg();syncMute();setLeave();});on('back',setBack);
+ on('keys',keysScreen);if(menu.querySelector('[data-act="premium"]'))on('premium',()=>premiumScreen(()=>settingsScreen()));on('save',()=>{saveCfg();syncMute();setLeave();});on('back',setBack);
  on('def',()=>{CFG=JSON.parse(JSON.stringify(DEFCFG));applyVol();syncMute();settingsScreen();});
  LR=(pn,d)=>{const a=document.activeElement;if(a&&a.dataset&&a.dataset.v){a.value=clamp(+a.value+d*5,0,100);a.oninput();}};
  {const h=menu.querySelector('.setp h2');let n=0;if(h&&typeof Ads!=='undefined'&&Ads.native)h.onclick=()=>{if(++n<5)return;n=0;const D=window.ADSDBG||{};let p=menu.querySelector('.adsdbg');if(!p){p=document.createElement('div');p.className='adsdbg';menu.querySelector('.setp').appendChild(p);}
@@ -2219,6 +2221,7 @@ const ADS={app:'ca-app-pub-4952145100186285~1500691957',banner:'ca-app-pub-49521
  inter:'ca-app-pub-4952145100186285/3271929466',rewarded:'ca-app-pub-4952145100186285/9552985520',rewardedInter:'ca-app-pub-4952145100186285/6572131797',webClient:'ca-pub-4952145100186285',webBannerSlot:'4297537848',
  appOpen:'',               // App Open ad unit (AdMob); empty = off
  test:false,interGapMs:150000,newPlayerGraceMs:120000,appOpenGapMs:4*3600*1000};
+const isPremium=()=>{try{return localStorage.getItem('qk2_premium')==='1';}catch(e){return false;}};
 const Ads=(()=>{const C=window.Capacitor,native=!!(C&&C.isNativePlatform&&C.isNativePlatform()),P=native&&C.registerPlugin?C.registerPlugin('AdMob'):null,
  h5=!native&&typeof window.adBreak==='function';
  let bannerMade=false,ready=false,bannerOn=false,lastFull=0,busy=false,interReady=false,rewReady=false;
@@ -2228,7 +2231,7 @@ const Ads=(()=>{const C=window.Capacitor,native=!!(C&&C.isNativePlatform&&C.isNa
  const graceOver=()=>!(firstSession&&Date.now()-BOOT<ADS.newPlayerGraceMs);
  let aoReady=false,aoShowing=false,hiddenAt=0;
  function prepAppOpen(){if(!P||!ADS.appOpen)return;aoReady=false;P.loadAppOpen({adId:ADS.appOpen}).then(()=>{aoReady=true;}).catch(()=>{setTimeout(prepAppOpen,120000);});}
- async function showAppOpen(){if(!P||!ADS.appOpen||!aoReady||busy||aoShowing||!graceOver())return;const o=JSON.parse(localStorage.getItem('qk2_ads')||'{}');
+ async function showAppOpen(){if(isPremium()||!P||!ADS.appOpen||!aoReady||busy||aoShowing||!graceOver())return;const o=JSON.parse(localStorage.getItem('qk2_ads')||'{}');
   if(Date.now()-(o.lastAO||0)<ADS.appOpenGapMs||Date.now()-lastFull<60000)return;if(G&&G.mode!=='demo'&&!G.paused&&!G.over&&!menuOpen())return;
   aoShowing=true;busy=true;quiet(true);try{await P.showAppOpen();o.lastAO=Date.now();localStorage.setItem('qk2_ads',JSON.stringify(o));lastFull=Date.now();}catch(e){}quiet(false);busy=false;aoShowing=false;prepAppOpen();}
  document.addEventListener('visibilitychange',()=>{if(document.hidden){hiddenAt=Date.now();}else if(hiddenAt&&Date.now()-hiddenAt>30000){setTimeout(showAppOpen,400);}});
@@ -2265,15 +2268,15 @@ const Ads=(()=>{const C=window.Capacitor,native=!!(C&&C.isNativePlatform&&C.isNa
  const api={native,h5,
   init,
   test(){if(P&&ready&&interReady){lastFull=0;return api.interstitial();}},
-  banner(on){if(h5){webBanner(!!on);return;}document.body.classList.toggle('ad-banner',!!(on&&native));if(!P)return;if(on===bannerOn)return;bannerOn=on;if(!ready)return;
+  banner(on){if(isPremium())on=false;if(h5){webBanner(!!on);return;}document.body.classList.toggle('ad-banner',!!(on&&native));if(!P)return;if(on===bannerOn)return;bannerOn=on;if(!ready)return;
    const mk=()=>P.showBanner({adId:ADS.banner,adSize:'ADAPTIVE_BANNER',position:'BOTTOM_CENTER',margin:0,isTesting:ADS.test}).then(()=>{bannerMade=true;}).catch(e=>{window.ADSDBG.banner='נכשל: '+((e&&e.message)||e);});
    if(on){if(bannerMade)P.resumeBanner().catch(()=>{bannerMade=false;mk();});else mk();}else P.hideBanner().catch(()=>{});},
   // full-screen ad; only ever called from a menu button
-  async interstitial(){if(!graceOver())return;if(h5){if(busy||Date.now()-lastFull<ADS.interGapMs)return;const r=await h5Break(()=>({type:'next',name:'menu_break'}));if(r!=='none')lastFull=Date.now();return;}
+  async interstitial(){if(isPremium()||!graceOver())return;if(h5){if(busy||Date.now()-lastFull<ADS.interGapMs)return;const r=await h5Break(()=>({type:'next',name:'menu_break'}));if(r!=='none')lastFull=Date.now();return;}
    if(!P||!ready||busy||!interReady||Date.now()-lastFull<ADS.interGapMs)return;busy=true;const wasBanner=bannerOn;if(wasBanner)api.banner(false);quiet(true);
    try{await P.showInterstitial();lastFull=Date.now();}catch(e){}quiet(false);busy=false;prepInter();if(wasBanner)api.banner(true);},
   // resolves true = reward earned, false = closed early, 'none' = no ad available (then the one free revive per run applies)
-  reward(){lastFull=Math.max(lastFull,Date.now()-ADS.interGapMs+60000);if(h5){if(busy)return Promise.resolve(false);let got=false;return h5Break(fin=>({type:'reward',name:'revive',beforeReward:(show)=>show(),adViewed:()=>{got=true;},adDismissed:()=>{}})).then(v=>{if(v!=='none')lastFull=Date.now();return got?true:v;});}
+  reward(){if(isPremium())return Promise.resolve(true);lastFull=Math.max(lastFull,Date.now()-ADS.interGapMs+60000);if(h5){if(busy)return Promise.resolve(false);let got=false;return h5Break(fin=>({type:'reward',name:'revive',beforeReward:(show)=>show(),adViewed:()=>{got=true;},adDismissed:()=>{}})).then(v=>{if(v!=='none')lastFull=Date.now();return got?true:v;});}
    if(!P||!ready||!rewReady)return Promise.resolve('none');if(busy)return Promise.resolve(false);busy=true;quiet(true);
    const ev=useRV()?['onRewardedVideoAdReward','onRewardedVideoAdDismissed','onRewardedVideoAdFailedToShow']:['onRewardedInterstitialAdReward','onRewardedInterstitialAdDismissed','onRewardedInterstitialAdFailedToShow'];
    return new Promise(async res=>{let earned=false,done=false;const hs=[];
@@ -2285,10 +2288,37 @@ const Ads=(()=>{const C=window.Capacitor,native=!!(C&&C.isNativePlatform&&C.isNa
   stageCleared(){const o=st();o.stages=(o.stages||0)+1;sv(o);return o.stages%3===0;},
   loss(){const o=st();o.losses=(o.losses||0)+1;sv(o);return o.losses%5===0;},
   matchEnded(){const o=st();o.matches=(o.matches||0)+1;sv(o);return o.matches%2===0;},
-   get rewardAvailable(){return native||h5;}};
+   get rewardAvailable(){return native||h5||isPremium();}};
  if(native)setTimeout(init,600);
  return api;})();
 
+const IAP_ID='premium_all';
+const Store=(()=>{const C=window.Capacitor,native=!!(C&&C.isNativePlatform&&C.isNativePlatform()),P=native&&C.registerPlugin?C.registerPlugin('NativePurchases'):null;
+ let ok=false,price='';
+ const owned=t=>t&&t.productIdentifier===IAP_ID&&(t.purchaseState===undefined||String(t.purchaseState)==='1');
+ function grant(){const was=isPremium();try{localStorage.setItem('qk2_premium','1');}catch(e){}LOCKABLE.forEach(addUnlock);Ads.banner(false);if(!was)toast('⭐ תודה! הגרסה המלאה פעילה',2600);}
+ async function sync(){if(!P||!ok)return false;try{const r=await P.getPurchases({productType:'inapp'});const own=(r.purchases||[]).some(owned);if(own)grant();return own;}catch(e){return false;}}
+ async function init(){if(!P)return;try{const b=await P.isBillingSupported();ok=!!(b&&(b.isBillingSupported||b.value));if(!ok)return;
+   try{const r=await P.getProducts({productIdentifiers:[IAP_ID],productType:'inapp'});const pr=r&&r.products&&r.products[0];if(pr)price=pr.priceString||'';}catch(e){}
+   try{P.addListener('transactionUpdated',t=>{if(owned(t))grant();});}catch(e){}
+   await sync();}catch(e){}}
+ async function buy(){if(!P||!ok)return 'unavailable';try{const t=await P.purchaseProduct({productIdentifier:IAP_ID,productType:'inapp',quantity:1});
+   if(owned(t)){grant();return 'ok';}if(t&&String(t.purchaseState)==='2')return 'pending';return (await sync())?'ok':'fail';}
+  catch(e){const m=String((e&&(e.message||e.code))||e);if(/cancel/i.test(m))return 'cancel';if(/own/i.test(m)){return (await sync())?'ok':'fail';}return 'fail';}}
+ async function restore(){if(!P||!ok)return 'unavailable';try{await P.restorePurchases();}catch(e){}return (await sync())?'ok':'none';}
+ if(native)setTimeout(init,1500);
+ return {get available(){return !!P;},get ready(){return ok;},get price(){return price||'‎₪9.90';},buy,restore};})();
+// the offer screen: what you get, the price, buy / restore
+function premiumScreen(back){const B=back||title;if(isPremium()){show(`<div class="panel result"><div class="rhead">⭐ גרסה מלאה</div><p class="rsub">הגרסה המלאה פעילה במכשיר הזה. תודה שתמכת במשחק!</p><div class="mlist"><button data-first data-act="back">חזרה</button></div></div>`,B);menu.querySelector('[data-act="back"]').onclick=B;return;}
+ show(`<div class="panel result prem"><div class="rhead">⭐ הגרסה המלאה</div>
+  <ul class="plist"><li>🚫 בלי פרסומות כפויות ובלי באנרים</li><li>🔓 כל הלוחמים, כולל הצל והוירוס</li><li>⚡ חזרה לקרב וחיזוק בלי לצפות בפרסומת</li><li>💛 רכישה אחת, לתמיד. עוברת לכל מכשיר עם אותו חשבון גוגל</li></ul>
+  <p class="rmsg" id="pmsg" role="status"></p>
+  <div class="mlist"><button data-first data-act="buy" class="boostbtn">קנייה · ${Store.price}</button><button data-act="restore">שחזור רכישה</button><button class="alt" data-act="back">לא עכשיו</button></div></div>`,B);
+ const msg=menu.querySelector('#pmsg'),q=a=>menu.querySelector(`[data-act="${a}"]`);q('back').onclick=B;
+ q('buy').onclick=async()=>{q('buy').disabled=true;msg.textContent='פותח את חנות גוגל...';const r=await Store.buy();q('buy').disabled=false;
+  if(r==='ok'){premiumScreen(B);return;}msg.textContent=r==='cancel'?'':r==='pending'?'הרכישה ממתינה לאישור התשלום. הגרסה המלאה תופעל לבד כשיאושר.':r==='unavailable'?'הרכישה זמינה באפליקציה שהותקנה מגוגל פליי.':'הרכישה לא הושלמה. אפשר לנסות שוב.';};
+ q('restore').onclick=async()=>{q('restore').disabled=true;msg.textContent='בודק רכישות...';const r=await Store.restore();q('restore').disabled=false;
+  if(r==='ok'){premiumScreen(B);return;}msg.textContent=r==='unavailable'?'שחזור זמין באפליקציה שהותקנה מגוגל פליי.':'לא נמצאה רכישה בחשבון הגוגל הזה.';};}
 const muteBtn=document.getElementById('muteBtn');
 function syncMute(){const on=!CFG.mute;muteBtn.textContent=on?'🔊':'🔇';muteBtn.setAttribute('aria-label',on?'השתקת צלילים':'הפעלת צלילים');}
 muteBtn.addEventListener('click',e=>{e.stopPropagation();initAudio();CFG.mute=!CFG.mute;saveCfg();syncMute();});
