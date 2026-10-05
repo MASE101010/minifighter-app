@@ -178,7 +178,8 @@ table.kt button.wait{background:var(--gold);color:#0b1440}
 .boostbtn{background:linear-gradient(90deg,#ffb020,#ff7a1a)!important;color:#1a1240!important;font-weight:800}.boostbtn small{font-weight:600;opacity:.8}
 .picker button.locked canvas{filter:grayscale(.85) brightness(.55)}.picker button.locked span{color:#ffd84a}
 .pips{display:flex;gap:4px;justify-content:center;margin-top:3px}.pips b{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.22);display:block}.pips b.on{background:#ffd84a;box-shadow:0 0 6px #ffd84a}
-.pips.big b{width:16px;height:16px}.lockbox{display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(6,5,22,.97)!important}
+.pips.big b{width:16px;height:16px}.slot.tm .pt{border-color:var(--tc);box-shadow:0 0 0 2px var(--tc)}.tmc{color:#fff;background:var(--tc);border-radius:6px;padding:0 8px;font-weight:800}
+.lockbox{display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(6,5,22,.97)!important}
 .lkin{display:flex;flex-direction:column;align-items:center;gap:4px;max-width:560px}
 .lockbox h3,.lockbox .btns{zoom:1!important}.lockbox h3{margin:0;font-size:24px}.lockbox .lkpor{width:108px!important;height:108px!important}.lktxt{font-size:17px;line-height:1.5}.lockbox .pips.big b{width:15px;height:15px}.lockbox .rmsg{margin:0;min-height:0}
 .lockbox .lkb{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:4px}.lockbox .lkb button{font-size:17px;padding:9px 16px;min-height:44px}
@@ -1362,7 +1363,8 @@ function drawBG(name,cam){const L=getBG(name);ctx.drawImage(L.far,-cam*.15-L.pf,
  if(name==='sky'&&G){const ph=G.frame%260;if(ph<10){if(ph===0||!G.bolt)G.bolt={x:80+rnd()*(L.fw-160),s:rnd()*1e6|0};const a=ph<3?.5:.5*(1-(ph-3)/7),bx=G.bolt.x-cam*.15;ctx.save();ctx.globalAlpha=a*.35;ctx.fillStyle='#c8d4ff';ctx.fillRect(0,HUD,W,ZMIN-HUD);ctx.globalAlpha=a;ctx.strokeStyle='#eef2ff';ctx.lineWidth=2;ctx.shadowColor='#9fb4ff';ctx.shadowBlur=10;const rr=mulberry(G.bolt.s);ctx.beginPath();let x=bx,y=HUD+10;ctx.moveTo(x,y);while(y<250){x+=(rr()-.5)*26;y+=14+rr()*10;ctx.lineTo(x,y);}ctx.stroke();ctx.restore();}}ctx.drawImage(L.mid,-cam*.5-L.pm,0,L.mw+L.pm*2,H);ctx.drawImage(L.gr,-cam-L.pg,0,STAGE_W+L.pg*2,H);}
 
 /* ---------- HUD (blue panel style) ---------- */
-const TEAMCOL={1:'#3d7bff',2:'#ff4d4d',3:'#38c96a',4:'#a35cff'};
+const TEAMCOL={1:'#3d7bff',2:'#ff4d4d',3:'#38c96a',4:'#a35cff'},TEAMNAME={1:'כחול',2:'אדום',3:'ירוק',4:'סגול'};
+const teamColored=o=>o&&o.team>=1&&o.team<=4&&(G.mode==='vs'||(G.net&&(NET.cfg||{}).teams));
 function drawShield(){const c=ctx; if(G.boostUntil>G.frame){const left=Math.ceil((G.boostUntil-G.frame)/60);c.save();c.font='800 15px Rubik, Arial';c.textAlign='center';c.textBaseline='middle';const tx='🛡️ מוגן · '+left;const w=c.measureText(tx).width+24,y=(isTouch&&(G.mode==='duel'||(G.mode==='vs'&&G.fighters.length<=4))?34:68)+36;c.fillStyle='rgba(20,14,60,.78)';c.fillRect(W/2-w/2,y-13,w,26);c.strokeStyle=left<=5?'#ff6b6b':'#ffd84a';c.lineWidth=1.5;c.strokeRect(W/2-w/2,y-13,w,26);c.fillStyle=left<=5?'#ffb4b4':'#ffd84a';c.direction='rtl';c.fillText(tx,W/2,y+1);c.restore();}}
 function drawHUD(){const c=ctx;
  const RH=34,NR=(isTouch&&(G.mode==='duel'||(G.mode==='vs'&&G.fighters.length<=4)))?1:2;c.fillStyle='#3354a8';c.fillRect(0,0,W,RH*NR);
@@ -1558,7 +1560,7 @@ function render(){
  if(!G)return;const c=ctx;c.setTransform(K,0,0,K,0,0);c.save();
  if(G.shake&&CFG.shake)c.translate((rnd()-.5)*G.shake,(rnd()-.5)*G.shake);
  const cam=Math.round(G.cam*2)/2;drawBG(G.bg,cam);if(G.mode!=='demo')drawFence(c,cam);
- for(const f of G.fighters){if(f.state==='dead'&&f.deadT>120)continue;if(f.dropIn){const k=1-Math.min(1,f.y/430);c.strokeStyle=f.team===1?`rgba(255,216,74,${.35+k*.5})`:`rgba(255,80,80,${.35+k*.5})`;c.lineWidth=2;c.beginPath();c.ellipse(f.x-cam,f.z,26-k*8,7-k*2,0,0,7);c.stroke();}if(G.boostUntil>G.frame&&f.human&&f.alive){const pu=.55+.45*Math.sin(G.frame*.15);c.strokeStyle=`rgba(255,216,74,${pu})`;c.lineWidth=3;c.beginPath();c.ellipse(f.x-cam,f.z,30*(f.def.scale||1),9,0,0,7);c.stroke();}const sh=Math.max(.4,1-f.y/170);c.fillStyle='rgba(0,0,0,.3)';c.beginPath();c.ellipse(f.x-cam,f.z,19*sh*(f.def.scale||1),5.5*sh,0,0,7);c.fill();}
+ for(const f of G.fighters){if(f.state==='dead'&&f.deadT>120)continue;if(f.dropIn){const k=1-Math.min(1,f.y/430);c.strokeStyle=f.team===1?`rgba(255,216,74,${.35+k*.5})`:`rgba(255,80,80,${.35+k*.5})`;c.lineWidth=2;c.beginPath();c.ellipse(f.x-cam,f.z,26-k*8,7-k*2,0,0,7);c.stroke();}if(G.boostUntil>G.frame&&f.human&&f.alive){const pu=.55+.45*Math.sin(G.frame*.15);c.strokeStyle=`rgba(255,216,74,${pu})`;c.lineWidth=3;c.beginPath();c.ellipse(f.x-cam,f.z,30*(f.def.scale||1),9,0,0,7);c.stroke();}if(f.alive&&teamColored(f)){c.strokeStyle=TEAMCOL[f.team];c.globalAlpha=.85;c.lineWidth=2.5;c.beginPath();c.ellipse(f.x-cam,f.z,24*(f.def.scale||1),7,0,0,7);c.stroke();c.globalAlpha=1;}const sh=Math.max(.4,1-f.y/170);c.fillStyle='rgba(0,0,0,.3)';c.beginPath();c.ellipse(f.x-cam,f.z,19*sh*(f.def.scale||1),5.5*sh,0,0,7);c.fill();}
  for(const it of G.items){if(it.state==='held')continue;c.fillStyle='rgba(0,0,0,.25)';c.beginPath();c.ellipse(it.x-cam,it.z,12,4,0,0,7);c.fill();if(it.k==='jug'){const pu=.5+.5*Math.sin(G.frame*.12+it.x);const gg=c.createRadialGradient(it.x-cam,it.z-it.y-12,2,it.x-cam,it.z-it.y-12,26);gg.addColorStop(0,it.type==='jugR'?`rgba(255,70,90,${.35+pu*.25})`:`rgba(70,180,255,${.35+pu*.25})`);gg.addColorStop(1,'rgba(0,0,0,0)');c.fillStyle=gg;c.beginPath();c.arc(it.x-cam,it.z-it.y-12,26,0,7);c.fill();}}
  const ents=[];for(const f of G.fighters)ents.push({z:f.z,k:0,o:f});for(const it of G.items)if(it.state!=='held')ents.push({z:it.z,k:1,o:it});for(const p of G.projs)ents.push({z:p.z+.1,k:2,o:p});
  ents.sort((a,b)=>a.z-b.z);
@@ -1580,7 +1582,7 @@ function render(){
    if(o.state==='dizzy'||o.state==='broken'){c.fillStyle='#ffd84a';for(let i=0;i<3;i++){const a=G.frame*.15+i*2.1;c.beginPath();c.arc(o.x-cam+Math.cos(a)*15,o.z-o.y-96*sc+Math.sin(a)*4,3,0,7);c.fill();}}
    if(o.comboN>=3&&G.frame-o.comboT<50&&o.alive){c.font='900 15px Rubik, Arial';c.textAlign='center';c.direction='ltr';c.lineWidth=3;c.strokeStyle='#0b1440';const s='x'+o.comboN;c.strokeText(s,o.x-cam+20,o.z-o.y-92*sc);c.fillStyle='#fff';c.fillText(s,o.x-cam+20,o.z-o.y-92*sc);}
    if(o.alive&&G.mode!=='demo'){c.font='700 11px Rubik, Arial';c.textAlign='center';c.direction='rtl';const lb=(G.net&&o.human&&o.slot!=null)?(o===G.me?'אני':'P'+(o.slot+1)):o.human?(o.pn?'2P':'1P'):(G.mode==='stage'&&o.team===9?'':'מחשב');
-    if(lb){c.lineWidth=3;c.strokeStyle='rgba(0,0,0,.6)';c.strokeText(lb,o.x-cam,o.z+15);c.fillStyle=(G.net&&G.cfg&&o.team>=1&&o.team<=4&&(NET.cfg||{}).teams)?TEAMCOL[o.team]:o.human?(o.pn?'#8ff0a0':'#ffd84a'):'#6f9bff';c.fillText(lb,o.x-cam,o.z+15);}}
+    if(lb){c.lineWidth=3;c.strokeStyle='rgba(0,0,0,.6)';c.strokeText(lb,o.x-cam,o.z+15);c.fillStyle=teamColored(o)?TEAMCOL[o.team]:o.human?(o.pn?'#8ff0a0':'#ffd84a'):'#6f9bff';c.fillText(lb,o.x-cam,o.z+15);}}
   }else if(e.k===1)drawItemShape(c,o.type,o.x-cam,o.z-o.y,o.spin);
   else drawProj(o,cam);}
  G.fx=G.fx.filter(e=>!drawFx(e,cam));
@@ -1788,10 +1790,10 @@ const WHO={none:'הצטרפות?',p1:'שחקן 1',p2:'שחקן 2',cpu:'מחשב'
 function cycleWho(i){const s=SEL.slots[i],o=whoOpts(i);let k=o.indexOf(s.who);for(let n=0;n<o.length;n++){k=(k+1)%o.length;const w=o[k];if((w==='p1'||w==='p2')&&SEL.slots.some((x,j)=>j!==i&&x.who===w))continue;s.who=w;break;}renderSel();}
 function cycleCh(i,d){const s=SEL.slots[i];const O=chOpts();s.ch=O[(O.indexOf(s.ch)+d+O.length)%O.length];renderSel(i);}
 function renderSel(keepFocus){const S=SEL,m=S.mode,active=document.activeElement&&document.activeElement.dataset?Object.assign({},document.activeElement.dataset):null;
- const slot=(s,i)=>`<div class="slot"><div class="pt"><canvas data-pt="${i}" width="200" height="200"></canvas>${s.who==='none'?'<div class="join">לחצו על<br>"הצטרפות?"</div>':`<button class="ar l" dir="ltr" data-ch="${i}" data-d="-1" aria-label="לוחם קודם">&#9664;</button><button class="ar r" dir="ltr" data-ch="${i}" data-d="1" aria-label="לוחם הבא">&#9654;</button>`}</div>
+ const slot=(s,i)=>`<div class="slot${m==='vs'&&s.team&&s.who!=='none'?' tm':''}" style="--tc:${TEAMCOL[s.team]||'transparent'}"><div class="pt"><canvas data-pt="${i}" width="200" height="200"></canvas>${s.who==='none'?'<div class="join">לחצו על<br>"הצטרפות?"</div>':`<button class="ar l" dir="ltr" data-ch="${i}" data-d="-1" aria-label="לוחם קודם">&#9664;</button><button class="ar r" dir="ltr" data-ch="${i}" data-d="1" aria-label="לוחם הבא">&#9654;</button>`}</div>
   <button class="row ${s.who}" data-who="${i}" ${whoOpts(i).length<2?'disabled':''}><span class="lb">שחקן:</span>${WHO[s.who]}</button>
   <div class="row nm">${s.who==='none'?'&nbsp;':chName(s.ch)}</div>
-  ${m==='vs'?`<button class="row" data-tm="${i}" ${s.who==='none'?'disabled':''}><span class="lb">קבוצה:</span>${s.who==='none'?'':(s.team?'קבוצה '+s.team:'עצמאי')}</button>`:''}</div>`;
+  ${m==='vs'?`<button class="row" data-tm="${i}" ${s.who==='none'?'disabled':''}><span class="lb">קבוצה:</span>${s.who==='none'?'':(s.team?`<b class="tmc" style="--tc:${TEAMCOL[s.team]}">${TEAMNAME[s.team]}</b>`:'עצמאי')}</button>`:''}</div>`;
  const slots=m==='duel'?slot(S.slots[0],0)+'<div class="vs">נגד</div>'+slot(S.slots[1],1):S.slots.map(slot).join('');
  const title={vs:'קרב חופשי: בחירת לוחמים',stage:'הדרך לפסגה: בחירת לוחמים',duel:'דו קרב: בחירת לוחמים'}[m];
  show(`<div class="panel" style="max-width:1000px"><h2>${title}</h2><div class="selwrap"><div><div class="slots ${m==='duel'?'duel':''}">${slots}</div><div class="msg">${S.msg||''}</div></div>
