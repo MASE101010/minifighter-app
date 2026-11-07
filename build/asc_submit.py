@@ -1,0 +1,94 @@
+"""Send an uploaded iPhone build to App Review (App Store Connect API).
+Waits until Apple finishes processing the build, creates or reuses the App Store version,
+sets the What's New text, attaches the build and submits. Release after approval is automatic.
+Env: ASC_KEY_ID, ASC_ISSUER_ID, ASC_KEY_P8, VERSION (e.g. 1.1.0), BUILD (build number)."""
+import os, sys, time, json
+import jwt, requests
+
+BUNDLE = 'com.sapirproductions.minifighter'
+API = 'https://api.appstoreconnect.apple.com/v1'
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+VER, BUILD = os.environ['VERSION'], os.environ['BUILD']
+
+
+def token():
+    now = int(time.time())
+    return jwt.encode({'iss': os.environ['ASC_ISSUER_ID'], 'iat': now, 'exp': now + 1100, 'aud': 'appstoreconnect-v1'},
+                      os.environ['ASC_KEY_P8'], algorithm='ES256', headers={'kid': os.environ['ASC_KEY_ID'], 'typ': 'JWT'})
+
+
+def call(method, path, body=None, ok=(200, 201, 204)):
+    r = requests.request(method, API + path, headers={'Authorization': 'Bearer ' + token(), 'Content-Type': 'application/json'},
+                         data=json.dumps(body) if body else None, timeout=60)
+    if r.status_code not in ok:
+        raise SystemExit(f'{method} {path} -> {r.status_code}\n{r.text[:1500]}')
+    return r.json() if r.text else {}
+
+
+def notes(lang):
+    p = os.path.join(ROOT, 'release_notes', lang + '.txt')
+    return open(p, encoding='utf8').read().strip()[:4000] if os.path.exists(p) else ''
+
+
+app = call('GET', f'/apps?filter[bundleId]={BUNDLE}')['data']
+if not app:
+    raise SystemExit('App not found in App Store Connect. Create it first (guide, step 5).')
+app_id = app[0]['id']
+
+# 1. wait for the build
+build_id = None
+for i in range(90):  # up to ~45 minutes
+    b = call('GET', f'/builds?filter[app]={app_id}&filter[version]={BUILD}&filter[preReleaseVersion.version]={VER}&limit=1')['data']
+    st = b[0]['attributes']['processingState'] if b else 'NOT_YET'
+    print('build', VER, BUILD, st, flush=True)
+    if st == 'VALID':
+        build_id = b[0]['id']; break
+    if st in ('FAILED', 'INVALID'):
+        raise SystemExit('Apple rejected the build while processing: ' + st)
+    time.sleep(30)
+if not build_id:
+    raise SystemExit('Build did not finish processing in time; run the submit job again later.')
+
+# 2. the App Store version (reuse an editable one)
+EDITABLE = {'PREPARE_FOR_SUBMISSION', 'DEVELOPER_REJECTED', 'REJECTED', 'METADATA_REJECTED', 'INVALID_BINARY'}
+vers = call('GET', f'/apps/{app_id}/appStoreVersions?filter[platform]=IOS&limit=10')['data']
+cur = next((v for v in vers if v['attributes']['appStoreState'] in EDITABLE), None)
+if any(v['attributes']['appStoreState'] in ('WAITING_FOR_REVIEW', 'IN_REVIEW') for v in vers):
+    raise SystemExit('Another version is already waiting for / in review. Try again after Apple finishes it.')
+if cur:
+    vid = cur['id']
+    if cur['attributes']['versionString'] != VER:
+        call('PATCH', f'/appStoreVersions/{vid}', {'data': {'type': 'appStoreVersions', 'id': vid, 'attributes': {'versionString': VER}}})
+else:
+    vid = call('POST', '/appStoreVersions', {'data': {'type': 'appStoreVersions',
+          'attributes': {'platform': 'IOS', 'versionString': VER, 'releaseType': 'AFTER_APPROVAL'},
+          'relationships': {'app': {'data': {'type': 'apps', 'id': app_id}}}}})['data']['id']
+print('version', VER, vid)
+
+# 3. What's New (not allowed on the very first version; ignored then)
+for loc in call('GET', f'/appStoreVersions/{vid}/appStoreVersionLocalizations')['data']:
+    lang = 'he' if loc['attributes']['locale'].startswith('he') else 'en'
+    txt = notes(lang)
+    if txt:
+        try:
+            call('PATCH', f"/appStoreVersionLocalizations/{loc['id']}",
+                 {'data': {'type': 'appStoreVersionLocalizations', 'id': loc['id'], 'attributes': {'whatsNew': txt}}})
+        except SystemExit as e:
+            print('whatsNew skipped for', loc['attributes']['locale'])
+
+# 4. attach the build
+call('PATCH', f'/appStoreVersions/{vid}/relationships/build', {'data': {'type': 'builds', 'id': build_id}})
+
+# 5. submit for review
+subs = call('GET', f'/reviewSubmissions?filter[app]={app_id}&filter[platform]=IOS&filter[state]=READY_FOR_REVIEW')['data']
+sid = subs[0]['id'] if subs else call('POST', '/reviewSubmissions', {'data': {'type': 'reviewSubmissions',
+      'attributes': {'platform': 'IOS'}, 'relationships': {'app': {'data': {'type': 'apps', 'id': app_id}}}}})['data']['id']
+try:
+    call('POST', '/reviewSubmissionItems', {'data': {'type': 'reviewSubmissionItems', 'relationships': {
+        'reviewSubmission': {'data': {'type': 'reviewSubmissions', 'id': sid}},
+        'appStoreVersion': {'data': {'type': 'appStoreVersions', 'id': vid}}}}})
+except SystemExit as e:
+    if 'already' not in str(e).lower():
+        raise
+call('PATCH', f'/reviewSubmissions/{sid}', {'data': {'type': 'reviewSubmissions', 'id': sid, 'attributes': {'submitted': True}}})
+print(f'Submitted {VER} ({BUILD}) for App Review. It goes live automatically after approval.')

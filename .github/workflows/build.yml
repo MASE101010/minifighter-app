@@ -1,6 +1,13 @@
 name: Build Android app (AAB for Google Play)
+# Every push builds a signed AAB + APK. A commit message containing [release] (or Run workflow with publish)
+# also uploads the AAB to Google Play production, when the PLAY_SERVICE_ACCOUNT_JSON secret exists.
 on:
   workflow_dispatch:
+    inputs:
+      publish:
+        description: 'Publish to Google Play (production)'
+        type: boolean
+        default: false
   push:
     branches: [main]
 jobs:
@@ -17,6 +24,9 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
+      - name: Version
+        id: v
+        run: echo "name=$(tr -d '[:space:]' < version.txt)" >> $GITHUB_OUTPUT
       - name: Install
         run: npm ci
       - name: Web build + sync to Android (live ads)
@@ -34,20 +44,45 @@ jobs:
         working-directory: android
         env:
           MF_VERSION_CODE: ${{ github.run_number }}
-          MF_VERSION_NAME: 1.0.${{ github.run_number }}
+          MF_VERSION_NAME: ${{ steps.v.outputs.name }}
         run: chmod +x gradlew && ./gradlew bundleRelease assembleRelease --no-daemon
       - name: Name the APK
-        run: cp android/app/build/outputs/apk/release/app-release.apk mini-fighter-v1.0.${{ github.run_number }}.apk
+        run: cp android/app/build/outputs/apk/release/app-release.apk mini-fighter-v${{ steps.v.outputs.name }}-${{ github.run_number }}.apk
       - name: Remove signing files
         if: always()
         run: rm -f android/app/upload.jks android/keystore.properties
       - uses: actions/upload-artifact@v4
         with:
-          name: mini-fighter-v1.0.${{ github.run_number }}-aab
+          name: mini-fighter-v${{ steps.v.outputs.name }}-${{ github.run_number }}-aab
           path: android/app/build/outputs/bundle/release/app-release.aab
           retention-days: 90
       - uses: actions/upload-artifact@v4
         with:
-          name: mini-fighter-v1.0.${{ github.run_number }}-apk
-          path: mini-fighter-v1.0.${{ github.run_number }}.apk
+          name: mini-fighter-v${{ steps.v.outputs.name }}-${{ github.run_number }}-apk
+          path: mini-fighter-v${{ steps.v.outputs.name }}-${{ github.run_number }}.apk
           retention-days: 90
+      - name: Publish?
+        id: pub
+        env:
+          SA: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          MSG: ${{ github.event.head_commit.message }}
+        run: |
+          want=false
+          [ "${{ inputs.publish }}" = "true" ] && want=true
+          case "$MSG" in *"[release]"*) want=true;; esac
+          if $want && [ -z "$SA" ]; then echo "::warning::PLAY_SERVICE_ACCOUNT_JSON secret missing, skipping Google Play upload"; want=false; fi
+          echo "go=$want" >> $GITHUB_OUTPUT
+      - name: Release notes for Google Play
+        if: steps.pub.outputs.go == 'true'
+        run: mkdir -p whatsnew && cut -c1-500 release_notes/he.txt > whatsnew/whatsnew-he-IL
+      - name: Upload to Google Play (production)
+        if: steps.pub.outputs.go == 'true'
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.sapirproductions.minifighter
+          releaseFiles: android/app/build/outputs/bundle/release/app-release.aab
+          releaseName: ${{ steps.v.outputs.name }} (${{ github.run_number }})
+          track: production
+          status: completed
+          whatsNewDirectory: whatsnew
