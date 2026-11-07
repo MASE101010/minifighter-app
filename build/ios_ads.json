@@ -1,0 +1,9 @@
+{
+  "_note": "AdMob iOS app (separate from Android). Fill from AdMob > Apps > מיני פייטר (iOS). While empty, the iOS build uses Google's test ads.",
+  "app": "",
+  "banner": "",
+  "inter": "",
+  "rewarded": "",
+  "rewardedInter": "",
+  "appOpen": ""
+}

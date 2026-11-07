@@ -27,6 +27,34 @@ if TEST_ADS:
 # app: native immersive mode replaces the browser fullscreen request; hide that setting
 s=s.replace("function goFull(){","function goFull(){if(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform())return;",1)
 s=s.replace("${tg('full','מסך מלא בטלפון',CFG.full)}","${window.Capacitor?'':tg('full','מסך מלא בטלפון',CFG.full)}",1)
+# ---- iPhone: same www for both platforms, decided at runtime ----
+import json
+ia=json.load(open(os.path.join(ROOT,'build','ios_ads.json')))
+TEST_IOS={'app':'ca-app-pub-3940256099942544~1458002511','banner':'ca-app-pub-3940256099942544/2934735716',
+ 'inter':'ca-app-pub-3940256099942544/4411468910','rewarded':'ca-app-pub-3940256099942544/1712485313',
+ 'rewardedInter':'ca-app-pub-3940256099942544/6978759866','appOpen':'ca-app-pub-3940256099942544/5575463023'}
+ios_live=all(ia.get(k) for k in TEST_IOS)
+iosads={k:(ia[k] if ios_live else v) for k,v in TEST_IOS.items()}
+if not ios_live or TEST_ADS: iosads['test']=True
+a='appOpenGapMs:4*3600*1000};'
+assert s.count(a)==1
+s=s.replace(a,a+'if(window.MF_IOS)Object.assign(ADS,'+json.dumps(iosads)+');',1)
+# Apple tracking prompt (ATT): after the consent form, before ads load
+a="D.consent='דילוג: '+em(e);}"
+assert s.count(a)==1
+s=s.replace(a,a+"\n    if(window.MF_IOS){try{await tmo(P.requestTrackingAuthorization(),120000);}catch(e){}}",1)
+# iPhone purchases have no purchaseState; a refunded one carries revocationDate
+a="t.productIdentifier===IAP_ID&&"
+assert s.count(a)==1
+s=s.replace(a,a+"!t.revocationDate&&",1)
+# store wording
+for g,i in [("עוברת לכל מכשיר עם אותו חשבון גוגל","עוברת לכל מכשיר עם אותו חשבון ${window.MF_IOS?'Apple':'גוגל'}"),
+            ("'פותח את חנות גוגל...'","(window.MF_IOS?'פותח את App Store...':'פותח את חנות גוגל...')"),
+            ("'הרכישה זמינה באפליקציה שהותקנה מגוגל פליי.'","(window.MF_IOS?'הרכישה זמינה באפליקציה שהותקנה מ-App Store.':'הרכישה זמינה באפליקציה שהותקנה מגוגל פליי.')"),
+            ("'שחזור זמין באפליקציה שהותקנה מגוגל פליי.'","(window.MF_IOS?'שחזור זמין באפליקציה שהותקנה מ-App Store.':'שחזור זמין באפליקציה שהותקנה מגוגל פליי.')"),
+            ("'לא נמצאה רכישה בחשבון הגוגל הזה.'","(window.MF_IOS?'לא נמצאה רכישה בחשבון ה-Apple הזה.':'לא נמצאה רכישה בחשבון הגוגל הזה.')")]:
+    assert s.count(g)==1,g
+    s=s.replace(g,i,1)
 bridge='''<script>
 // Android back button: closes menus step by step, pauses a running fight, leaves the app from the title screen
 (function(){const C=window.Capacitor;if(!C||!C.registerPlugin)return;const App=C.registerPlugin('App');
@@ -42,9 +70,9 @@ bridge='''<script>
 core=open(os.path.join(ROOT,'node_modules','@capacitor','core','dist','capacitor.js'),encoding='utf8').read()
 core=core.split('//# sourceMappingURL')[0]
 assert '<head>' in s
-s=s.replace('<head>','<head><script>'+core+'</script>',1)
+s=s.replace('<head>','<head><script>'+core+'</script><script>window.MF_IOS=!!(window.Capacitor&&Capacitor.getPlatform&&Capacitor.getPlatform()===\'ios\');</script>',1)
 assert s.rstrip().endswith('</body></html>')
 s=s.rstrip()[:-len('</body></html>')]+bridge
 os.makedirs(os.path.join(ROOT,'www'),exist_ok=True)
 open(os.path.join(ROOT,'www','index.html'),'w',encoding='utf8').write(s)
-print('www/index.html',len(s)//1024,'KB, fonts:',len(faces),'| ads:','TEST' if TEST_ADS else 'LIVE')
+print('www/index.html',len(s)//1024,'KB, fonts:',len(faces),'| ads:','TEST' if TEST_ADS else 'LIVE','| iPhone ads:','LIVE' if ios_live and not TEST_ADS else 'TEST')

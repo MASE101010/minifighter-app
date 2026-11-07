@@ -1,0 +1,84 @@
+name: Build iPhone app (upload to TestFlight / App Store Connect)
+# Manual only: Mac build minutes cost 10x on private repos. Run from Actions > this workflow > Run workflow.
+on:
+  workflow_dispatch:
+    inputs:
+      upload:
+        description: 'Upload to App Store Connect (TestFlight)'
+        type: boolean
+        default: true
+jobs:
+  ios:
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Newest Xcode
+        run: |
+          X=$(ls -d /Applications/Xcode_*.app | grep -v beta | sort -V | tail -1)
+          sudo xcode-select -s "$X/Contents/Developer"; xcodebuild -version
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install
+        run: npm ci && pip3 install --break-system-packages pillow >/dev/null
+      - name: Web build + sync to iPhone project
+        run: npm run build:ios
+      - name: Check secrets
+        id: sec
+        env:
+          K: ${{ secrets.ASC_KEY_ID }}
+          I: ${{ secrets.ASC_ISSUER_ID }}
+          P: ${{ secrets.ASC_KEY_P8 }}
+          T: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          ok=true; for v in K I P T; do [ -n "${!v}" ] || ok=false; done
+          echo "ok=$ok" >> $GITHUB_OUTPUT
+          $ok || echo "::warning::Apple secrets not set yet (ASC_KEY_ID / ASC_ISSUER_ID / ASC_KEY_P8 / APPLE_TEAM_ID). Running a compile check only."
+      - name: Compile check (no Apple account needed)
+        if: steps.sec.outputs.ok != 'true'
+        run: |
+          xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Release \
+            -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' build CODE_SIGNING_ALLOWED=NO \
+            | tail -40; test ${PIPESTATUS[0]} -eq 0
+          echo "Compile OK. Add the 4 Apple secrets to build and upload for real."
+      - name: App Store Connect API key
+        if: steps.sec.outputs.ok == 'true'
+        env:
+          P: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          mkdir -p ~/.appstoreconnect/private_keys
+          printf '%s\n' "$P" > ~/.appstoreconnect/private_keys/AuthKey.p8
+      - name: Archive (signed automatically in the cloud)
+        if: steps.sec.outputs.ok == 'true'
+        env:
+          K: ${{ secrets.ASC_KEY_ID }}
+          I: ${{ secrets.ASC_ISSUER_ID }}
+          T: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Release \
+            -destination 'generic/platform=iOS' -archivePath $RUNNER_TEMP/MiniFighter.xcarchive archive \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey.p8 \
+            -authenticationKeyID "$K" -authenticationKeyIssuerID "$I" \
+            DEVELOPMENT_TEAM="$T" CODE_SIGN_STYLE=Automatic \
+            MARKETING_VERSION=1.0.${{ github.run_number }} CURRENT_PROJECT_VERSION=${{ github.run_number }} \
+            | tail -60; test ${PIPESTATUS[0]} -eq 0
+      - name: Export and upload to App Store Connect
+        if: steps.sec.outputs.ok == 'true' && inputs.upload
+        env:
+          K: ${{ secrets.ASC_KEY_ID }}
+          I: ${{ secrets.ASC_ISSUER_ID }}
+          T: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          sed "s/__TEAM__/$T/" build/ExportOptions.plist > $RUNNER_TEMP/ExportOptions.plist
+          xcodebuild -exportArchive -archivePath $RUNNER_TEMP/MiniFighter.xcarchive \
+            -exportOptionsPlist $RUNNER_TEMP/ExportOptions.plist -exportPath $RUNNER_TEMP/out \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey.p8 \
+            -authenticationKeyID "$K" -authenticationKeyIssuerID "$I"
+          echo "Uploaded build 1.0.${{ github.run_number }} (${{ github.run_number }}). It shows up in TestFlight after Apple processes it (5-30 min)."
+      - name: Remove key
+        if: always()
+        run: rm -rf ~/.appstoreconnect

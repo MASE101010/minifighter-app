@@ -1,11 +1,12 @@
 {
   "name": "mini-fighter",
   "version": "1.0.0",
-  "description": "Mini Fighter (מיני פייטר) Android app",
+  "description": "Mini Fighter (מיני פייטר) Android + iPhone app",
   "scripts": {
     "build": "python3 build/make_web.py && npx cap sync android",
     "open": "npx cap open android",
-    "build:test": "python3 build/make_web.py --test-ads && npx cap sync android"
+    "build:test": "python3 build/make_web.py --test-ads && npx cap sync android",
+    "build:ios": "python3 build/make_web.py && npx cap sync ios && python3 build/ios_setup.py"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +17,7 @@
     "@capacitor/app": "^8.1.2",
     "@capacitor/cli": "^8.5.2",
     "@capacitor/core": "^8.5.2",
+    "@capacitor/ios": "^8.6.0",
     "@capacitor/share": "^8.0.3",
     "@capgo/native-purchases": "^8.8.1",
     "@fontsource/rubik": "^5.3.0",

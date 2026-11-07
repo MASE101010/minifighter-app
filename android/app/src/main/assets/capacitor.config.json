@@ -8,5 +8,12 @@
 		"allowMixedContent": false,
 		"captureInput": true,
 		"webContentsDebuggingEnabled": false
+	},
+	"ios": {
+		"backgroundColor": "#0b1650",
+		"contentInset": "never",
+		"scrollEnabled": false,
+		"allowsLinkPreview": false,
+		"webContentsDebuggingEnabled": false
 	}
 }
