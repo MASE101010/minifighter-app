@@ -1,9 +1,9 @@
 {
-  "_note": "AdMob iOS app (separate from Android). Fill from AdMob > Apps > מיני פייטר (iOS). While empty, the iOS build uses Google's test ads.",
-  "app": "",
-  "banner": "",
-  "inter": "",
-  "rewarded": "",
-  "rewardedInter": "",
-  "appOpen": ""
+  "_note": "AdMob iOS app 'מיני פייטר - MINI FIGHTER (iOS)', created 8.11.2026 in the 7msapsap7 AdMob account (pub-4952145100186285).",
+  "app": "ca-app-pub-4952145100186285~1753844958",
+  "banner": "ca-app-pub-4952145100186285/4213496494",
+  "inter": "ca-app-pub-4952145100186285/8289519052",
+  "rewarded": "ca-app-pub-4952145100186285/2110077337",
+  "rewardedInter": "ca-app-pub-4952145100186285/6840706015",
+  "appOpen": "ca-app-pub-4952145100186285/7882324946"
 }
