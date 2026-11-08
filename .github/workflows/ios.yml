@@ -44,7 +44,7 @@ jobs:
         env:
           K: ${{ secrets.ASC_KEY_ID }}
           I: ${{ secrets.ASC_ISSUER_ID }}
-          P: ${{ secrets.ASC_KEY_P8 }}
+          P: ${{ secrets.ASC_KEY_P8 || secrets.APPSTORE_KEY_P8 }}
           T: ${{ secrets.APPLE_TEAM_ID }}
         run: |
           ok=true; for v in K I P T; do [ -n "${!v}" ] || ok=false; done
@@ -60,7 +60,7 @@ jobs:
       - name: App Store Connect API key
         if: steps.sec.outputs.ok == 'true'
         env:
-          P: ${{ secrets.ASC_KEY_P8 }}
+          P: ${{ secrets.ASC_KEY_P8 || secrets.APPSTORE_KEY_P8 }}
         run: |
           mkdir -p ~/.appstoreconnect/private_keys
           ASC_KEY_P8="$P" python3 build/p8.py > ~/.appstoreconnect/private_keys/AuthKey.p8
@@ -113,7 +113,7 @@ jobs:
         env:
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
-          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 || secrets.APPSTORE_KEY_P8 }}
           VERSION: ${{ needs.ios.outputs.version }}
           BUILD: ${{ github.run_number }}
         run: python3 build/asc_submit.py
