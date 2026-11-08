@@ -63,7 +63,8 @@ jobs:
           P: ${{ secrets.ASC_KEY_P8 }}
         run: |
           mkdir -p ~/.appstoreconnect/private_keys
-          printf '%s\n' "$P" > ~/.appstoreconnect/private_keys/AuthKey.p8
+          ASC_KEY_P8="$P" python3 build/p8.py > ~/.appstoreconnect/private_keys/AuthKey.p8
+          head -1 ~/.appstoreconnect/private_keys/AuthKey.p8; wc -l < ~/.appstoreconnect/private_keys/AuthKey.p8
       - name: Archive (signed automatically in the cloud)
         if: steps.sec.outputs.ok == 'true'
         env:

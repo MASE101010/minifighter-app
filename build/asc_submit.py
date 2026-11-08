@@ -4,6 +4,8 @@ sets the What's New text, attaches the build and submits. Release after approval
 Env: ASC_KEY_ID, ASC_ISSUER_ID, ASC_KEY_P8, VERSION (e.g. 1.1.0), BUILD (build number)."""
 import os, sys, time, json
 import jwt, requests
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from p8 import normalize
 
 BUNDLE = 'com.sapirproductions.minifighter'
 API = 'https://api.appstoreconnect.apple.com/v1'
@@ -14,7 +16,7 @@ VER, BUILD = os.environ['VERSION'], os.environ['BUILD']
 def token():
     now = int(time.time())
     return jwt.encode({'iss': os.environ['ASC_ISSUER_ID'], 'iat': now, 'exp': now + 1100, 'aud': 'appstoreconnect-v1'},
-                      os.environ['ASC_KEY_P8'], algorithm='ES256', headers={'kid': os.environ['ASC_KEY_ID'], 'typ': 'JWT'})
+                      normalize(os.environ['ASC_KEY_P8']), algorithm='ES256', headers={'kid': os.environ['ASC_KEY_ID'], 'typ': 'JWT'})
 
 
 def call(method, path, body=None, ok=(200, 201, 204)):

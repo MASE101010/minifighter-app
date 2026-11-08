@@ -4,6 +4,8 @@ premium_all in-app purchase. Every step is independent: a failure is reported an
 App Privacy answers are not in the public API and are filled in the browser."""
 import hashlib, json, os, sys, time, traceback
 import jwt, requests
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from p8 import normalize
 
 API = 'https://api.appstoreconnect.apple.com'
 BUNDLE = 'com.sapirproductions.minifighter'
@@ -14,7 +16,7 @@ REPORT = []
 def token():
     now = int(time.time())
     return jwt.encode({'iss': os.environ['ASC_ISSUER_ID'], 'iat': now, 'exp': now + 1100, 'aud': 'appstoreconnect-v1'},
-                      os.environ['ASC_KEY_P8'], algorithm='ES256', headers={'kid': os.environ['ASC_KEY_ID'], 'typ': 'JWT'})
+                      normalize(os.environ['ASC_KEY_P8']), algorithm='ES256', headers={'kid': os.environ['ASC_KEY_ID'], 'typ': 'JWT'})
 
 
 class ApiError(Exception):
