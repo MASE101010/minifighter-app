@@ -8,6 +8,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: pip install pyjwt cryptography requests >/dev/null
+      - name: Check key format (prints no secret)
+        env:
+          P: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          python3 - <<'PY'
+          import os,re
+          raw=os.environ.get('P','')
+          body=re.sub(r'-----(BEGIN|END)[A-Z ]*-----','',raw); body=re.sub(r'[^A-Za-z0-9+/=]','',body)
+          print('raw length',len(raw),'| lines',raw.count('\n')+1,'| has BEGIN',('BEGIN' in raw),'| has END',('END PRIVATE' in raw))
+          print('body length',len(body),'(expected 184) | standard prefix',body.startswith('MIGTAgEAMBMGByqGSM49'))
+          PY
       - name: Fill App Store Connect
         env:
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
