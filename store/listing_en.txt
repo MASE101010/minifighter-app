@@ -1,0 +1,43 @@
+=== Name (max 30) ===
+Mini Fighter
+
+=== Subtitle (max 30) ===
+Online battles with friends
+
+=== Promotional Text (max 170) ===
+20+ fighters, 14 arenas and a boss on every stage. Open a room, share the code and fight together, up to 8 players!
+
+=== Keywords (max 100, commas, no spaces) ===
+fighting,brawler,beat em up,arcade,action,multiplayer,online,pvp,boss,fighters,friends,2d
+
+=== Description (max 4000) ===
+Mini Fighter is a fast, colorful fighting game in the style of the classic beat-em-ups, with more than 20 fighters, 14 arenas and special moves for every character. Play solo, against the computer, or online with friends, all for free!
+
+ONLINE BATTLES WITH FRIENDS
+Open a room, share the code and fight together, up to 8 players from anywhere. Free-for-all, duel, or color teams: blue, red, green and purple. Any split you like, plus computer fighters on your side.
+
+ROAD TO THE TOP
+13 stages, a different boss in each one and a final boss at the end. Progress is saved after every stage.
+
+20+ FIGHTERS
+Every fighter has their own powers: fire, ice, lightning, wind, rock and more. And at the end, the Shadow and the Virus are waiting for you.
+
+SPECIAL MOVES
+At least 4 special attacks per fighter, combos, runs, dashes, grabs and throws. A single swipe on the move wheel fires a special.
+
+MADE FOR IPHONE
+Comfortable joystick and buttons, fitted to the full iPhone screen.
+
+The game is free and contains ads. The optional one-time Full Version removes forced ads, unlocks every fighter and lets you continue a fight without watching an ad.
+
+Website: https://minifighter.co.il
+
+=== What's New ===
+Mini Fighter arrives on iPhone! 20+ fighters, 14 arenas, Road to the Top and online battles with friends, up to 8 players.
+
+=== App Review notes (paste into "Notes" in App Review Information) ===
+No login or account is needed; every mode is available right away.
+Online multiplayer: Main menu > מולטיפלייר (Multiplayer) > create a room. A second device can join with the 4-letter room code; computer fighters can also be added so a single device can test a match.
+The app shows Google AdMob ads (banner on menus, interstitials between matches, optional rewarded ads to continue a fight). Ads never appear during a fight. The App Tracking Transparency prompt appears on first launch, before any ad loads.
+In-app purchase "premium_all" (Full Version, non-consumable): Main menu > the "⭐ בלי פרסומות" (No ads) chip, also in Settings. The same screen has a "שחזור רכישה" (Restore Purchase) button.
+The interface is in Hebrew.
