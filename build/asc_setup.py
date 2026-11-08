@@ -28,7 +28,7 @@ def call(method, path, body=None):
     r = requests.request(method, url, headers={'Authorization': 'Bearer ' + token(), 'Content-Type': 'application/json'},
                          data=json.dumps(body) if body is not None else None, timeout=120)
     if r.status_code >= 300:
-        raise ApiError(f'{method} {path} -> {r.status_code}: {r.text[:800]}')
+        raise ApiError(f'{method} {path} -> {r.status_code}: {r.text[:3000]}')
     return r.json() if r.text else {}
 
 
@@ -128,15 +128,27 @@ def _():
                   gambling=False, unrestrictedWebAccess=False, lootBox=False, messagingAndChat=False,
                   parentalControls=False, ageAssurance=False, userGeneratedContent=False, advertising=True,
                   healthOrWellnessTopics=False, kidsAgeBand=None, ageRatingOverrideV2='THIRTEEN_PLUS')
-    bad = []
-    for k, v in fields.items():
+    import re
+    dropped = []
+    for attempt in range(12):
         try:
-            call('PATCH', f'/ageRatingDeclarations/{ar}', {'data': {'type': 'ageRatingDeclarations', 'id': ar, 'attributes': {k: v}}})
+            call('PATCH', f'/ageRatingDeclarations/{ar}', {'data': {'type': 'ageRatingDeclarations', 'id': ar, 'attributes': fields}})
+            return 'saved' + (' (skipped: ' + ', '.join(dropped) + ')' if dropped else '')
         except ApiError as e:
-            bad.append(k)
-            if len(bad) == 1:
-                print('age rating first error:', str(e)[:900])
-    return 'not accepted: ' + ', '.join(bad) if bad else 'all fields'
+            msg = str(e)
+            req = re.findall(r"value for the attribute '(\w+)'", msg)
+            if req:
+                for k in req:
+                    fields[k] = 'NONE' if k not in ('kidsAgeBand',) else None
+                print('added required:', req)
+                continue
+            ptrs = [p for p in re.findall(r'/data/attributes/(\w+)', msg) if p in fields]
+            if not ptrs:
+                raise
+            for p in ptrs:
+                fields.pop(p, None); dropped.append(p)
+            print('dropped:', ptrs, msg[:300])
+    raise ApiError('age rating: too many retries')
 
 
 vers = call('GET', f'/apps/{APP}/appStoreVersions?filter[platform]=IOS')['data']
