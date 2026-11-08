@@ -72,6 +72,10 @@ L = {
     'en-US': dict(name='Mini Fighter - Brawl Online', subtitle=section(EN, 'Subtitle'), promo=section(EN, 'Promotional Text'),
                   keywords=section(EN, 'Keywords'), desc=section(EN, 'Description')),
 }
+import re as _re
+_EMO = _re.compile('[\U00010000-\U0010FFFF\u2600-\u27BF\uFE0F\u200D]')
+for _d in L.values():
+    _d['desc'] = _re.sub(r'[ \t]+\n', '\n', _EMO.sub('', _d['desc'])).replace('\n ', '\n').strip()
 NOTES = section(EN, 'App Review notes')
 SITE, PRIVACY, SUPPORT = 'https://minifighter.co.il', 'https://minifighter.co.il/privacy/', 'https://minifighter.co.il/contact/'
 
@@ -92,12 +96,11 @@ infos = call('GET', f'/apps/{APP}/appInfos')['data']
 INFO = next(i for i in infos if i['attributes'].get('appStoreState') not in ('READY_FOR_SALE', 'REPLACED_WITH_NEW_INFO'))['id']
 
 
-@step('category Games > Action, Arcade')
+@step('category Games > Action')
 def _():
     call('PATCH', f'/appInfos/{INFO}', {'data': {'type': 'appInfos', 'id': INFO, 'relationships': {
         'primaryCategory': {'data': {'type': 'appCategories', 'id': 'GAMES'}},
-        'primarySubcategoryOne': {'data': {'type': 'appCategories', 'id': 'GAMES_ACTION'}},
-        'primarySubcategoryTwo': {'data': {'type': 'appCategories', 'id': 'GAMES_ARCADE'}}}}})
+        'primarySubcategoryOne': {'data': {'type': 'appCategories', 'id': 'GAMES_ACTION'}}}}})
 
 
 @step('app info texts (name, subtitle, privacy URL)')
@@ -131,6 +134,8 @@ def _():
             call('PATCH', f'/ageRatingDeclarations/{ar}', {'data': {'type': 'ageRatingDeclarations', 'id': ar, 'attributes': {k: v}}})
         except ApiError as e:
             bad.append(k)
+            if len(bad) == 1:
+                print('age rating first error:', str(e)[:900])
     return 'not accepted: ' + ', '.join(bad) if bad else 'all fields'
 
 
