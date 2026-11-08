@@ -64,20 +64,34 @@ jobs:
         run: |
           mkdir -p ~/.appstoreconnect/private_keys
           ASC_KEY_P8="$P" python3 build/p8.py > ~/.appstoreconnect/private_keys/AuthKey.p8
-          head -1 ~/.appstoreconnect/private_keys/AuthKey.p8; wc -l < ~/.appstoreconnect/private_keys/AuthKey.p8
-      - name: Archive (signed automatically in the cloud)
+          pip3 install --break-system-packages pyjwt cryptography requests >/dev/null
+      - name: Temporary App Store certificate + profile
+        id: sign
         if: steps.sec.outputs.ok == 'true'
         env:
-          K: ${{ secrets.ASC_KEY_ID }}
-          I: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 || secrets.APPSTORE_KEY_P8 }}
+        run: python3 build/asc_sign.py create
+      - name: Keychain
+        if: steps.sec.outputs.ok == 'true'
+        run: |
+          KC=$RUNNER_TEMP/mf.keychain-db; KP=$(uuidgen)
+          security create-keychain -p "$KP" "$KC"
+          security set-keychain-settings -lut 21600 "$KC"
+          security unlock-keychain -p "$KP" "$KC"
+          security import $RUNNER_TEMP/signing.p12 -P "${{ steps.sign.outputs.p12_password }}" -A -t cert -f pkcs12 -k "$KC"
+          security set-key-partition-list -S apple-tool:,apple: -k "$KP" "$KC" >/dev/null
+          security list-keychain -d user -s "$KC" $(security list-keychains -d user | tr -d '"')
+          security find-identity -v -p codesigning "$KC"
+      - name: Archive (App Store signing)
+        if: steps.sec.outputs.ok == 'true'
+        env:
           T: ${{ secrets.APPLE_TEAM_ID }}
         run: |
+          python3 build/ios_manual_sign.py "$T" "${{ steps.sign.outputs.profile_name }}"
           xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Release \
             -destination 'generic/platform=iOS' -archivePath $RUNNER_TEMP/MiniFighter.xcarchive archive \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey.p8 \
-            -authenticationKeyID "$K" -authenticationKeyIssuerID "$I" \
-            DEVELOPMENT_TEAM="$T" CODE_SIGN_STYLE=Automatic CODE_SIGN_IDENTITY="Apple Distribution" \
             MARKETING_VERSION=${{ steps.v.outputs.name }} CURRENT_PROJECT_VERSION=${{ github.run_number }} \
             | tail -60; test ${PIPESTATUS[0]} -eq 0
       - name: Export and upload to App Store Connect
@@ -88,17 +102,37 @@ jobs:
           I: ${{ secrets.ASC_ISSUER_ID }}
           T: ${{ secrets.APPLE_TEAM_ID }}
         run: |
-          sed "s/__TEAM__/$T/" build/ExportOptions.plist > $RUNNER_TEMP/ExportOptions.plist
+          cat > $RUNNER_TEMP/ExportOptions.plist <<PL
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>signingStyle</key><string>manual</string>
+            <key>teamID</key><string>$T</string>
+            <key>signingCertificate</key><string>Apple Distribution</string>
+            <key>provisioningProfiles</key><dict><key>com.sapirproductions.minifighter</key><string>${{ steps.sign.outputs.profile_name }}</string></dict>
+            <key>uploadSymbols</key><true/>
+            <key>manageAppVersionAndBuildNumber</key><false/>
+          </dict></plist>
+          PL
+          sed -i '' 's/^          //' $RUNNER_TEMP/ExportOptions.plist
           xcodebuild -exportArchive -archivePath $RUNNER_TEMP/MiniFighter.xcarchive \
             -exportOptionsPlist $RUNNER_TEMP/ExportOptions.plist -exportPath $RUNNER_TEMP/out \
-            -allowProvisioningUpdates \
             -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey.p8 \
             -authenticationKeyID "$K" -authenticationKeyIssuerID "$I"
           echo "done=true" >> $GITHUB_OUTPUT
           echo "Uploaded ${{ steps.v.outputs.name }} (${{ github.run_number }}). It shows up in TestFlight after Apple processes it (5-30 min)."
+      - name: Remove temporary certificate + profile
+        if: always() && steps.sec.outputs.ok == 'true'
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 || secrets.APPSTORE_KEY_P8 }}
+        run: python3 build/asc_sign.py cleanup || true
       - name: Remove key
         if: always()
-        run: rm -rf ~/.appstoreconnect
+        run: rm -rf ~/.appstoreconnect $RUNNER_TEMP/signing.p12; security delete-keychain $RUNNER_TEMP/mf.keychain-db 2>/dev/null || true
 
   # Waiting for Apple's processing happens on a cheap Linux machine, not on the Mac
   submit:
