@@ -77,7 +77,7 @@ jobs:
             -allowProvisioningUpdates \
             -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey.p8 \
             -authenticationKeyID "$K" -authenticationKeyIssuerID "$I" \
-            DEVELOPMENT_TEAM="$T" CODE_SIGN_STYLE=Automatic \
+            DEVELOPMENT_TEAM="$T" CODE_SIGN_STYLE=Automatic CODE_SIGN_IDENTITY="Apple Distribution" \
             MARKETING_VERSION=${{ steps.v.outputs.name }} CURRENT_PROJECT_VERSION=${{ github.run_number }} \
             | tail -60; test ${PIPESTATUS[0]} -eq 0
       - name: Export and upload to App Store Connect
