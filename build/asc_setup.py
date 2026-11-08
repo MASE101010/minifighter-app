@@ -127,7 +127,7 @@ def _():
                   violenceRealisticProlongedGraphicOrSadistic='NONE', gunsOrOtherWeapons='NONE',
                   gambling=False, unrestrictedWebAccess=False, lootBox=False, messagingAndChat=False,
                   parentalControls=False, ageAssurance=False, userGeneratedContent=False, advertising=True,
-                  healthOrWellnessTopics=False, kidsAgeBand=None, ageRatingOverrideV2='THIRTEEN_PLUS')
+                  healthOrWellnessTopics=False, socialMedia=False, kidsAgeBand=None, ageRatingOverrideV2='THIRTEEN_PLUS')
     import re
     dropped = []
     for attempt in range(12):
