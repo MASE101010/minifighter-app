@@ -1,0 +1,81 @@
+name: Smoke test 2.0 on emulator / simulator
+# Debug builds with test ads and a status logger (make_web.py --smoke); nothing is signed for release or uploaded.
+on:
+  workflow_dispatch:
+    inputs:
+      android:
+        type: boolean
+        default: true
+      ios:
+        description: 'iPhone simulator (Mac minutes)'
+        type: boolean
+        default: true
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci && pip install playwright >/dev/null && python3 -m playwright install --with-deps chromium >/dev/null
+      - name: www in Chromium as https://localhost, plain and with Capacitor's Android bridge simulated
+        run: python3 build/make_web.py && python3 build/smoke_www.py --shots smoke && python3 build/smoke_www.py --native --shots smoke
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: smoke-web, path: smoke }
+  android:
+    if: inputs.android
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21 }
+      - run: npm ci
+      - name: Debug APK (test ads, smoke logger)
+        run: |
+          python3 build/make_web.py --test-ads --smoke && npx cap sync android
+          cd android && chmod +x gradlew && ./gradlew assembleDebug --no-daemon
+      - name: KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules && sudo udevadm trigger --name-match=kvm
+      - name: Boot on the emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          script: bash build/smoke_device.sh android android/app/build/outputs/apk/debug/app-debug.apk
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: smoke-android, path: smoke }
+  ios:
+    if: inputs.ios
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Newest Xcode
+        run: |
+          X=$(ls -d /Applications/Xcode_*.app | grep -v beta | sort -V | tail -1)
+          sudo xcode-select -s "$X/Contents/Developer"; xcodebuild -version
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci && pip3 install --break-system-packages pillow >/dev/null
+      - name: Simulator build (test ads, smoke logger)
+        run: |
+          python3 build/make_web.py --test-ads --smoke && npx cap sync ios && python3 build/ios_setup.py
+          xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' -derivedDataPath $RUNNER_TEMP/dd build CODE_SIGNING_ALLOWED=NO | tail -20
+          test ${PIPESTATUS[0]} -eq 0
+      - name: Boot on the simulator
+        run: bash build/smoke_device.sh ios "$(ls -d $RUNNER_TEMP/dd/Build/Products/Debug-iphonesimulator/App.app)"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: smoke-ios, path: smoke }
