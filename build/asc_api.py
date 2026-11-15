@@ -38,7 +38,7 @@ def call(method, path, body=None, ok404=False):
     if ok404 and r.status_code == 404:
         return None
     if r.status_code >= 300:
-        raise ApiError(f'{method} {path} -> {r.status_code}: {r.text[:2500]}', r.status_code)
+        raise ApiError(f'{method} {path} -> {r.status_code}: {r.text[:12000]}', r.status_code)
     return r.json() if r.text else {}
 
 

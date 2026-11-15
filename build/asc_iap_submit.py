@@ -14,8 +14,9 @@ for i in all_pages(f'/v1/apps/{APP}/inAppPurchasesV2?limit=200'):
         print('SENT', a['productId'])
     except ApiError as e:
         txt = str(e); j = txt[txt.find('{'):]
+        if 'call' in globals() and len(j) >= 2490: print('NOTE: error body was cut at 2500 characters')
         try:
             for er in json.loads(j)['errors']:
-                print('REJECTED', a['productId'], er.get('code'), '|', er.get('detail'))
+                print('REJECTED', a['productId'], er.get('code'), '|', er.get('detail'), '|', json.dumps(er.get('meta', {}), ensure_ascii=False)[:1500])
         except Exception:
             print('REJECTED', a['productId'], txt[:1500])
