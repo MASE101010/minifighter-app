@@ -16,3 +16,5 @@ for s in call(f'/v1/reviewSubmissions?filter[app]={app}&limit=5')['data']:
     print('STATUS submission', s['attributes'].get('state'), s['attributes'].get('submittedDate'))
 for i in call(f'/v1/apps/{app}/inAppPurchasesV2')['data']:
     print('STATUS iap', i['attributes']['productId'], i['attributes']['state'])
+for b in call(f'/v1/builds?filter[app]={app}&sort=-uploadedDate&limit=5&include=preReleaseVersion')['data']:
+    a = b['attributes']; print('STATUS build', a.get('version'), a.get('processingState'), a.get('uploadedDate'), 'expired' if a.get('expired') else '')
