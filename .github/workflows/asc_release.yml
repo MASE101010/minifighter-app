@@ -1,0 +1,43 @@
+name: App Store release (prepare / submit)
+# prepare: create or reuse the version from version.txt, attach build <build>, release MANUAL, then fill the page
+#          (texts, review notes, age rating with loot boxes) and the in-app purchases. Nothing is submitted.
+# submit:  the same version + build go to App Review together with every catalog in-app purchase in READY_TO_SUBMIT.
+on:
+  workflow_dispatch:
+    inputs:
+      build:
+        description: 'Build number (the iPhone workflow run number)'
+        type: string
+        required: true
+      stage:
+        type: choice
+        options: [prepare, submit]
+        default: prepare
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 || secrets.APPSTORE_KEY_P8 }}
+      BUILD: ${{ inputs.build }}
+      RELEASE_TYPE: MANUAL
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install pyjwt cryptography requests >/dev/null
+      - name: Version + build (not submitted)
+        if: inputs.stage == 'prepare'
+        run: VERSION=$(tr -d '[:space:]' < version.txt) SUBMIT=false python3 build/asc_submit.py
+      - name: Store page, review notes, age rating
+        if: inputs.stage == 'prepare'
+        run: python3 build/asc_setup.py
+      - name: In-app purchases + 2.0 age rating answers
+        if: inputs.stage == 'prepare'
+        run: python3 build/asc_iap.py
+      - name: Submit for review (version + in-app purchases)
+        if: inputs.stage == 'submit'
+        run: VERSION=$(tr -d '[:space:]' < version.txt) SUBMIT=true python3 build/asc_submit.py
+      - name: Status
+        if: always()
+        run: python3 build/asc_status.py && python3 build/asc_iap_status.py

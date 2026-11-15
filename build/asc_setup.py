@@ -156,11 +156,11 @@ VER = next(v for v in vers if v['attributes']['appStoreState'] in ('PREPARE_FOR_
 VID = VER['id']
 
 
-@step('version (number, copyright, auto release)')
+@step('version (number, copyright, release type)')
 def _():
     v = open(os.path.join(ROOT, 'version.txt')).read().strip()
     call('PATCH', f'/appStoreVersions/{VID}', {'data': {'type': 'appStoreVersions', 'id': VID, 'attributes': {
-        'versionString': v, 'copyright': '2026 Michael Sapir', 'releaseType': 'AFTER_APPROVAL'}}})
+        'versionString': v, 'copyright': '2026 Sapir Productions Ltd.', 'releaseType': os.environ.get('RELEASE_TYPE', 'MANUAL')}}})
     return v
 
 

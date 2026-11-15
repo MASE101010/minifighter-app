@@ -57,13 +57,13 @@ vers = call('GET', f'/apps/{app_id}/appStoreVersions?filter[platform]=IOS&limit=
 cur = next((v for v in vers if v['attributes']['appStoreState'] in EDITABLE), None)
 if any(v['attributes']['appStoreState'] in ('WAITING_FOR_REVIEW', 'IN_REVIEW') for v in vers):
     raise SystemExit('Another version is already waiting for / in review. Try again after Apple finishes it.')
+REL = os.environ.get('RELEASE_TYPE', 'MANUAL')   # MANUAL: the owner releases after approval
 if cur:
     vid = cur['id']
-    if cur['attributes']['versionString'] != VER:
-        call('PATCH', f'/appStoreVersions/{vid}', {'data': {'type': 'appStoreVersions', 'id': vid, 'attributes': {'versionString': VER}}})
+    call('PATCH', f'/appStoreVersions/{vid}', {'data': {'type': 'appStoreVersions', 'id': vid, 'attributes': {'versionString': VER, 'releaseType': REL}}})
 else:
     vid = call('POST', '/appStoreVersions', {'data': {'type': 'appStoreVersions',
-          'attributes': {'platform': 'IOS', 'versionString': VER, 'releaseType': 'AFTER_APPROVAL'},
+          'attributes': {'platform': 'IOS', 'versionString': VER, 'releaseType': REL},
           'relationships': {'app': {'data': {'type': 'apps', 'id': app_id}}}}})['data']['id']
 print('version', VER, vid)
 
@@ -80,6 +80,10 @@ for loc in call('GET', f'/appStoreVersions/{vid}/appStoreVersionLocalizations')[
 
 # 4. attach the build
 call('PATCH', f'/appStoreVersions/{vid}/relationships/build', {'data': {'type': 'builds', 'id': build_id}})
+
+if os.environ.get('SUBMIT', 'true').lower() != 'true':
+    print(f'Prepared {VER} ({BUILD}): version {vid} with the build attached, release {REL}. Not submitted (SUBMIT=false).')
+    sys.exit(0)
 
 # 5. submit for review
 subs = call('GET', f'/reviewSubmissions?filter[app]={app_id}&filter[platform]=IOS&filter[state]=READY_FOR_REVIEW')['data']
@@ -112,4 +116,6 @@ if os.environ.get('SUBMIT_IAPS', 'true').lower() == 'true' and os.path.exists(ca
                 print('in-app purchase NOT sent:', a['productId'], str(e)[:300])
 
 call('PATCH', f'/reviewSubmissions/{sid}', {'data': {'type': 'reviewSubmissions', 'id': sid, 'attributes': {'submitted': True}}})
-print(f'Submitted {VER} ({BUILD}) for App Review. It goes live automatically after approval.')
+st = call('GET', f'/reviewSubmissions/{sid}')['data']['attributes'].get('state')
+vs = call('GET', f'/appStoreVersions/{vid}')['data']['attributes'].get('appStoreState')
+print(f'Submitted {VER} ({BUILD}) for App Review: submission {st}, version {vs}, release {REL}.')
