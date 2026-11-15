@@ -24,4 +24,4 @@ for pid in list(want) + [x for x in have if x not in want]:
     locs = ','.join(sorted(l['attributes']['locale'] for l in call('GET', f'/v2/inAppPurchases/{iid}/inAppPurchaseLocalizations')['data']))
     sh = call('GET', f'/v2/inAppPurchases/{iid}/appStoreReviewScreenshot', ok404=True)
     shot = ((sh or {}).get('data') or {}).get('attributes', {}).get('assetDeliveryState', {}) or {}
-    print(f"IAP {pid:22} {a.get('inAppPurchaseType', ''):26} {price:>7} {a.get('state', ''):22} {locs:9} {shot.get('state', 'none')}")
+    print(f"IAP {pid:22} {a.get('inAppPurchaseType', ''):26} {price:>7} {a.get('state', ''):22} {locs:9} {shot.get('state', 'none')} {'; '.join(e.get('description', e.get('code', '')) for e in (shot.get('errors') or []))[:200]}")
