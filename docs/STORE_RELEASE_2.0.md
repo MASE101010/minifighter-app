@@ -75,8 +75,10 @@ The repository has no `PLAY_SERVICE_ACCOUNT_JSON` secret, so `play_iap.yml` stop
 ## 3. Release steps
 
 ### App Store (2.0)
-1. Set `version.txt` to the 2.0 version (e.g. `2.0.0`) and bundle the v2 build into the app (`www/` from the v2
-   game build, as described in minifighter-source STORE_PRODUCTS.md "What the app wrapper needs").
+1. Done: `version.txt` is 2.0.0 and `game/v2web` holds the split v2 build pinned in `game/SOURCE.txt`. To ship a
+   newer game commit: `python3 build/update_game.py /path/to/minifighter-source <commit>`, commit, push (the push
+   builds the Android AAB/APK), then Run workflow on **Build iPhone app** (upload on, submit off for TestFlight).
+   Optional check before release: Actions > **Smoke test 2.0** (web, Android emulator, iPhone simulator).
 2. Run **App Store page setup** (`asc_setup.yml`): it needs an editable version; if none exists yet, the iOS
    workflow's submit job creates it, or create "2.0.0" in App Store Connect (+ Version). It writes the 2.0 texts,
    the new App Review notes (`store/listing_en.txt`) and the age rating with loot boxes declared.
