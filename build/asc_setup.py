@@ -125,7 +125,7 @@ def _():
                   profanityOrCrudeHumor='NONE', sexualContentGraphicAndNudity='NONE', sexualContentOrNudity='NONE',
                   violenceCartoonOrFantasy='FREQUENT_OR_INTENSE', violenceRealistic='NONE',
                   violenceRealisticProlongedGraphicOrSadistic='NONE', gunsOrOtherWeapons='NONE',
-                  gambling=False, unrestrictedWebAccess=False, lootBox=False, messagingAndChat=False,
+                  gambling=False, unrestrictedWebAccess=False, lootBox=True, messagingAndChat=False,   # 2.0: reward chests (in-game currency) = loot boxes
                   parentalControls=False, ageAssurance=False, userGeneratedContent=False, advertising=True,
                   healthOrWellnessTopics=False, socialMedia=False, kidsAgeBand=None, ageRatingOverrideV2='THIRTEEN_PLUS')
     import re

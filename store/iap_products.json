@@ -1,0 +1,545 @@
+{
+ "source": "minifighter-source docs/STORE_PRODUCTS.md",
+ "products": [
+  {
+   "id": "mf_gems_1",
+   "kind": "consumable",
+   "appleType": "CONSUMABLE",
+   "ils": 4.9,
+   "section": "gems",
+   "reference": "Handful of Gems (mf_gems_1)",
+   "he": {
+    "name": "קומץ יהלומים",
+    "apple": "60 יהלומים",
+    "play": "60 יהלומים למשחק מיני פייטר"
+   },
+   "en": {
+    "name": "Handful of Gems",
+    "apple": "60 gems",
+    "play": "60 gems for Mini Fighter"
+   }
+  },
+  {
+   "id": "mf_gems_2",
+   "kind": "consumable",
+   "appleType": "CONSUMABLE",
+   "ils": 9.9,
+   "section": "gems",
+   "reference": "Bag of Gems (mf_gems_2)",
+   "he": {
+    "name": "שקית יהלומים",
+    "apple": "130 יהלומים, 7% בונוס",
+    "play": "130 יהלומים למשחק מיני פייטר (7% בונוס)"
+   },
+   "en": {
+    "name": "Bag of Gems",
+    "apple": "130 gems, 7% bonus",
+    "play": "130 gems for Mini Fighter (7% bonus)"
+   }
+  },
+  {
+   "id": "mf_gems_3",
+   "kind": "consumable",
+   "appleType": "CONSUMABLE",
+   "ils": 19.9,
+   "section": "gems",
+   "reference": "Box of Gems (mf_gems_3)",
+   "he": {
+    "name": "תיבת יהלומים",
+    "apple": "280 יהלומים, 15% בונוס",
+    "play": "280 יהלומים למשחק מיני פייטר (15% בונוס)"
+   },
+   "en": {
+    "name": "Box of Gems",
+    "apple": "280 gems, 15% bonus",
+    "play": "280 gems for Mini Fighter (15% bonus)"
+   }
+  },
+  {
+   "id": "mf_gems_4",
+   "kind": "consumable",
+   "appleType": "CONSUMABLE",
+   "ils": 49.9,
+   "section": "gems",
+   "reference": "Crate of Gems (mf_gems_4)",
+   "he": {
+    "name": "ארגז יהלומים",
+    "apple": "750 יהלומים, 23% בונוס",
+    "play": "750 יהלומים למשחק מיני פייטר (23% בונוס)"
+   },
+   "en": {
+    "name": "Crate of Gems",
+    "apple": "750 gems, 23% bonus",
+    "play": "750 gems for Mini Fighter (23% bonus)"
+   }
+  },
+  {
+   "id": "mf_gems_5",
+   "kind": "consumable",
+   "appleType": "CONSUMABLE",
+   "ils": 99.9,
+   "section": "gems",
+   "reference": "Mountain of Gems (mf_gems_5)",
+   "he": {
+    "name": "הר של יהלומים",
+    "apple": "1600 יהלומים, 31% בונוס",
+    "play": "1600 יהלומים למשחק מיני פייטר (31% בונוס)"
+   },
+   "en": {
+    "name": "Mountain of Gems",
+    "apple": "1600 gems, 31% bonus",
+    "play": "1600 gems for Mini Fighter (31% bonus)"
+   }
+  },
+  {
+   "id": "mf_offer_starter",
+   "kind": "nonconsumable",
+   "appleType": "NON_CONSUMABLE",
+   "ils": 4.9,
+   "section": "offers",
+   "reference": "Starter Offer (mf_offer_starter)",
+   "he": {
+    "name": "מבצע פתיחה",
+    "apple": "100 יהלומים, 800 מטבעות, 200 נקודות כוח",
+    "play": "חבילה חד פעמית: 100 יהלומים, 800 מטבעות ו־200 נקודות כוח"
+   },
+   "en": {
+    "name": "Starter Offer",
+    "apple": "100 gems, 800 coins, 200 power points",
+    "play": "One time pack: 100 gems, 800 coins and 200 power points"
+   }
+  },
+  {
+   "id": "mf_bundle_hero",
+   "kind": "nonconsumable",
+   "appleType": "NON_CONSUMABLE",
+   "ils": 19.9,
+   "section": "bundles",
+   "reference": "Hero Bundle (mf_bundle_hero)",
+   "he": {
+    "name": "חבילת הגיבור",
+    "apple": "נינג׳טי, 150 יהלומים, 1500 מטבעות",
+    "play": "נינג׳טי, 150 יהלומים ו־1500 מטבעות"
+   },
+   "en": {
+    "name": "Hero Bundle",
+    "apple": "Ninjati, 150 gems, 1500 coins",
+    "play": "Ninjati, 150 gems and 1500 coins"
+   }
+  },
+  {
+   "id": "mf_bundle_legend",
+   "kind": "nonconsumable",
+   "appleType": "NON_CONSUMABLE",
+   "ils": 59.9,
+   "section": "bundles",
+   "reference": "Legend Bundle (mf_bundle_legend)",
+   "he": {
+    "name": "חבילת האגדה",
+    "apple": "הצל, הפרופסור, 400 יהלומים, 4000 מטבעות",
+    "play": "הצל והפרופסור, 400 יהלומים, 4000 מטבעות ו־300 נקודות כוח"
+   },
+   "en": {
+    "name": "Legend Bundle",
+    "apple": "Shadow, Professor, 400 gems, 4000 coins",
+    "play": "The Shadow and The Professor, 400 gems, 4000 coins and 300 power points"
+   }
+  },
+  {
+   "id": "mf_fighter_elroei",
+   "kind": "nonconsumable",
+   "appleType": "NON_CONSUMABLE",
+   "ils": 4.9,
+   "section": "fighters",
+   "reference": "Fighter: Elroei (mf_fighter_elroei)",
+   "he": {
+    "name": "לוחם: אלרועי",
+    "apple": "פותח את הלוחם אלרועי לתמיד",
+    "play": "פותח את הלוחם אלרועי לתמיד"
+   },
+   "en": {
+    "name": "Fighter: Elroei",
+    "apple": "Unlocks Elroei forever",
+    "play": "Unlocks the fighter Elroei forever"
+   }
+  },
+  {
+   "id": "mf_fighter_alin",
+   "kind": "nonconsumable",
+   "appleType": "NON_CONSUMABLE",
+   "ils": 4.9,
+   "section": "fighters",
+   "reference": "Fighter: Alin (mf_fighter_alin)",
+   "he": {
+    "name": "לוחם: אלין",
+    "apple": "פותח לתמיד את אלין",
+    "play": "פותח לתמיד את אלין"
+   },
+   "en": {
+    "name": "Fighter: Alin",
+    "apple": "Unlocks Alin forever",
+    "play": "Unlocks the fighter Alin forever"
+   }
+  },
+  {
+   "id": "mf_fighter_elaor",
+   "kind": "nonconsumable",
+   "appleType": "NON_CONSUMABLE",
+   "ils": 4.9,
+   "section": "fighters",
+   "reference": "Fighter: Elaor (mf_fighter_elaor)",
+   "he": {
+    "name": "לוחם: אלאור",
+    "apple": "פותח את הלוחם אלאור לתמיד",
+    "play": "פותח את הלוחם אלאור לתמיד"
+   },
+   "en": {
+    "name": "Fighter: Elaor",
+    "apple": "Unlocks Elaor forever",
+    "play": "Unlocks the fighter Elaor forever"
+   }
+  },
+  {
+   "id": "mf_fighter_hop",
+   "kind": "nonconsumable",
+   "appleType": "NON_CONSUMABLE",
+   "ils": 4.9,
+   "section": "fighters",
+   "reference": "Fighter: Hop (mf_fighter_hop)",
+   "he": {
+    "name": "לוחם: הופ",
+    "apple": "פותח את הלוחם הופ לתמיד",
+    "play": "פותח את הלוחם הופ לתמיד"
+   },
+   "en": {
+    "name": "Fighter: Hop",
+    "apple": "Unlocks Hop forever",
+    "play": "Unlocks the fighter Hop forever"
+   }
+  },
+  {
+   "id": "mf_fighter_fox",
+   "kind": "nonconsumable",
+   "appleType": "NON_CONSUMABLE",
+   "ils": 4.9,
+   "section": "fighters",
+   "reference": "Fighter: Fox (mf_fighter_fox)",
+   "he": {
+    "name": "לוחם: פוקס",
+    "apple": "פותח את הלוחם פוקס לתמיד",
+    "play": "פותח את הלוחם פוקס לתמיד"
+   },
+   "en": {
+    "name": "Fighter: Fox",
+    "apple": "Unlocks Fox forever",
+    "play": "Unlocks the fighter Fox forever"
+   }
+  },
+  {
+   "id": "mf_fighter_tiger",
+   "kind": "nonconsumable",
+   "appleType": "NON_CONSUMABLE",
+   "ils": 4.9,
+   "section": "fighters",
+   "reference": "Fighter: Tiger (mf_fighter_tiger)",
+   "he": {
+    "name": "לוחם: טייגר",
+    "apple": "פותח את הלוחם טייגר לתמיד",
+    "play": "פותח את הלוחם טייגר לתמיד"
+   },
+   "en": {
+    "name": "Fighter: Tiger",
+    "apple": "Unlocks Tiger forever",
+    "play": "Unlocks the fighter Tiger forever"
+   }
+  },
+  {
+   "id": "mf_fighter_hatul",
+   "kind": "nonconsumable",
+   "appleType": "NON_CONSUMABLE",
+   "ils": 4.9,
+   "section": "fighters",
+   "reference": "Fighter: Hatul (mf_fighter_hatul)",
+   "he": {
+    "name": "לוחם: חאתול",
+    "apple": "פותח את הלוחם חאתול לתמיד",
+    "play": "פותח את הלוחם חאתול לתמיד"
+   },
+   "en": {
+    "name": "Fighter: Hatul",
+    "apple": "Unlocks Hatul forever",
+    "play": "Unlocks the fighter Hatul forever"
+   }
+  },
+  {
+   "id": "mf_fighter_lito",
+   "kind": "nonconsumable",
+   "appleType": "NON_CONSUMABLE",
+   "ils": 9.9,
+   "section": "fighters",
+   "reference": "Fighter: Lito (mf_fighter_lito)",
+   "he": {
+    "name": "לוחם: ליטו",
+    "apple": "פותח את הלוחם ליטו לתמיד",
+    "play": "פותח את הלוחם ליטו לתמיד"
+   },
+   "en": {
+    "name": "Fighter: Lito",
+    "apple": "Unlocks Lito forever",
+    "play": "Unlocks the fighter Lito forever"
+   }
+  },
+  {
+   "id": "mf_fighter_raz",
+   "kind": "nonconsumable",
+   "appleType": "NON_CONSUMABLE",
+   "ils": 9.9,
+   "section": "fighters",
+   "reference": "Fighter: Dragon (mf_fighter_raz)",
+   "he": {
+    "name": "לוחם: דרגון",
+    "apple": "פותח את הלוחם דרגון לתמיד",
+    "play": "פותח את הלוחם דרגון לתמיד"
+   },
+   "en": {
+    "name": "Fighter: Dragon",
+    "apple": "Unlocks Dragon forever",
+    "play": "Unlocks the fighter Dragon forever"
+   }
+  },
+  {
+   "id": "mf_fighter_noa",
+   "kind": "nonconsumable",
+   "appleType": "NON_CONSUMABLE",
+   "ils": 9.9,
+   "section": "fighters",
+   "reference": "Fighter: Kim (mf_fighter_noa)",
+   "he": {
+    "name": "לוחם: קים",
+    "apple": "פותח לתמיד את קים",
+    "play": "פותח לתמיד את קים"
+   },
+   "en": {
+    "name": "Fighter: Kim",
+    "apple": "Unlocks Kim forever",
+    "play": "Unlocks the fighter Kim forever"
+   }
+  },
+  {
+   "id": "mf_fighter_sheleg",
+   "kind": "nonconsumable",
+   "appleType": "NON_CONSUMABLE",
+   "ils": 9.9,
+   "section": "fighters",
+   "reference": "Fighter: Frozen (mf_fighter_sheleg)",
+   "he": {
+    "name": "לוחם: פרוזן",
+    "apple": "פותח את הלוחם פרוזן לתמיד",
+    "play": "פותח את הלוחם פרוזן לתמיד"
+   },
+   "en": {
+    "name": "Fighter: Frozen",
+    "apple": "Unlocks Frozen forever",
+    "play": "Unlocks the fighter Frozen forever"
+   }
+  },
+  {
+   "id": "mf_fighter_lehava",
+   "kind": "nonconsumable",
+   "appleType": "NON_CONSUMABLE",
+   "ils": 9.9,
+   "section": "fighters",
+   "reference": "Fighter: Lehava (mf_fighter_lehava)",
+   "he": {
+    "name": "לוחם: להבה",
+    "apple": "פותח לתמיד את להבה",
+    "play": "פותח לתמיד את להבה"
+   },
+   "en": {
+    "name": "Fighter: Lehava",
+    "apple": "Unlocks Lehava forever",
+    "play": "Unlocks the fighter Lehava forever"
+   }
+  },
+  {
+   "id": "mf_fighter_barak",
+   "kind": "nonconsumable",
+   "appleType": "NON_CONSUMABLE",
+   "ils": 19.9,
+   "section": "fighters",
+   "reference": "Fighter: Barak (mf_fighter_barak)",
+   "he": {
+    "name": "לוחם: ברק",
+    "apple": "פותח את הלוחם ברק לתמיד",
+    "play": "פותח את הלוחם ברק לתמיד"
+   },
+   "en": {
+    "name": "Fighter: Barak",
+    "apple": "Unlocks Barak forever",
+    "play": "Unlocks the fighter Barak forever"
+   }
+  },
+  {
+   "id": "mf_fighter_sela",
+   "kind": "nonconsumable",
+   "appleType": "NON_CONSUMABLE",
+   "ils": 19.9,
+   "section": "fighters",
+   "reference": "Fighter: The Mountain (mf_fighter_sela)",
+   "he": {
+    "name": "לוחם: ההר",
+    "apple": "פותח את הלוחם ההר לתמיד",
+    "play": "פותח את הלוחם ההר לתמיד"
+   },
+   "en": {
+    "name": "Fighter: The Mountain",
+    "apple": "Unlocks The Mountain forever",
+    "play": "Unlocks the fighter The Mountain forever"
+   }
+  },
+  {
+   "id": "mf_fighter_maya",
+   "kind": "nonconsumable",
+   "appleType": "NON_CONSUMABLE",
+   "ils": 19.9,
+   "section": "fighters",
+   "reference": "Fighter: Ninjati (mf_fighter_maya)",
+   "he": {
+    "name": "לוחם: נינג׳טי",
+    "apple": "פותח לתמיד את נינג׳טי",
+    "play": "פותח לתמיד את נינג׳טי"
+   },
+   "en": {
+    "name": "Fighter: Ninjati",
+    "apple": "Unlocks Ninjati forever",
+    "play": "Unlocks the fighter Ninjati forever"
+   }
+  },
+  {
+   "id": "mf_fighter_tal",
+   "kind": "nonconsumable",
+   "appleType": "NON_CONSUMABLE",
+   "ils": 34.9,
+   "section": "fighters",
+   "reference": "Fighter: The Professor (mf_fighter_tal)",
+   "he": {
+    "name": "לוחם: הפרופסור",
+    "apple": "פותח את הלוחם הפרופסור לתמיד",
+    "play": "פותח את הלוחם הפרופסור לתמיד"
+   },
+   "en": {
+    "name": "Fighter: The Professor",
+    "apple": "Unlocks The Professor forever",
+    "play": "Unlocks the fighter The Professor forever"
+   }
+  },
+  {
+   "id": "mf_fighter_virus",
+   "kind": "nonconsumable",
+   "appleType": "NON_CONSUMABLE",
+   "ils": 34.9,
+   "section": "fighters",
+   "reference": "Fighter: The Virus (mf_fighter_virus)",
+   "he": {
+    "name": "לוחם: הוירוס",
+    "apple": "פותח את הלוחם הוירוס לתמיד",
+    "play": "פותח את הלוחם הוירוס לתמיד"
+   },
+   "en": {
+    "name": "Fighter: The Virus",
+    "apple": "Unlocks The Virus forever",
+    "play": "Unlocks the fighter The Virus forever"
+   }
+  },
+  {
+   "id": "mf_fighter_boss",
+   "kind": "nonconsumable",
+   "appleType": "NON_CONSUMABLE",
+   "ils": 59.9,
+   "section": "fighters",
+   "reference": "Fighter: The Shadow (mf_fighter_boss)",
+   "he": {
+    "name": "לוחם: הצל",
+    "apple": "פותח את הלוחם הצל לתמיד",
+    "play": "פותח את הלוחם הצל לתמיד"
+   },
+   "en": {
+    "name": "Fighter: The Shadow",
+    "apple": "Unlocks The Shadow forever",
+    "play": "Unlocks the fighter The Shadow forever"
+   }
+  },
+  {
+   "id": "mf_skin_michael_h",
+   "kind": "nonconsumable",
+   "appleType": "NON_CONSUMABLE",
+   "ils": 14.9,
+   "section": "skins",
+   "reference": "Skin: Hanukkah Michael (mf_skin_michael_h)",
+   "he": {
+    "name": "סקין: מיכאל חנוכה",
+    "apple": "סקין חנוכה למיכאל",
+    "play": "סקין חנוכה למיכאל: חליפת גיבור בכחול ולבן, מגן דוד וסביבון בחגורה"
+   },
+   "en": {
+    "name": "Skin: Hanukkah Michael",
+    "apple": "Hanukkah skin for Michael",
+    "play": "Hanukkah skin for Michael: a blue and white hero suit"
+   }
+  },
+  {
+   "id": "mf_skin_tuli_h",
+   "kind": "nonconsumable",
+   "appleType": "NON_CONSUMABLE",
+   "ils": 12.9,
+   "section": "skins",
+   "reference": "Skin: Hanukkah Tuli (mf_skin_tuli_h)",
+   "he": {
+    "name": "סקין: תולי של חנוכה",
+    "apple": "סקין חנוכה לתולי",
+    "play": "סקין חנוכה לתולי: סוודר כחול וכובע סרוג עם פונפון סביבון"
+   },
+   "en": {
+    "name": "Skin: Hanukkah Tuli",
+    "apple": "Hanukkah skin for Tuli",
+    "play": "Hanukkah skin for Tuli: a blue sweater and a knitted hat"
+   }
+  },
+  {
+   "id": "mf_skin_hop_h",
+   "kind": "nonconsumable",
+   "appleType": "NON_CONSUMABLE",
+   "ils": 9.9,
+   "section": "skins",
+   "reference": "Skin: Festive Hop (mf_skin_hop_h)",
+   "he": {
+    "name": "סקין: הופ חגיגית",
+    "apple": "סקין חנוכה להופ",
+    "play": "סקין חנוכה להופ: מעיל כחול נוצץ עם מגן דוד וסיכת סביבון"
+   },
+   "en": {
+    "name": "Skin: Festive Hop",
+    "apple": "Hanukkah skin for Hop",
+    "play": "Hanukkah skin for Hop: a shiny blue coat"
+   }
+  },
+  {
+   "id": "mf_pass_premium",
+   "kind": "season",
+   "appleType": "NON_RENEWING_SUBSCRIPTION",
+   "ils": 19.9,
+   "section": "pass",
+   "reference": "Premium Season Pass (mf_pass_premium)",
+   "he": {
+    "name": "כרטיס עונה פרימיום",
+    "apple": "מסלול הפרימיום של העונה",
+    "play": "מסלול הפרימיום של העונה הנוכחית: מטבעות, יהלומים, נקודות כוח ותיבות"
+   },
+   "en": {
+    "name": "Premium Season Pass",
+    "apple": "The premium track of the season",
+    "play": "The premium track of the current season: coins, gems, power points and chests"
+   }
+  }
+ ]
+}

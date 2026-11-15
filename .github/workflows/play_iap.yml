@@ -1,0 +1,31 @@
+name: Google Play in-app products (2.0 catalog)
+# Creates / updates and activates every product in store/iap_products.json on Google Play. premium_all is not touched.
+on:
+  workflow_dispatch:
+    inputs:
+      only:
+        description: 'Only these product ids (space separated, empty = all)'
+        type: string
+        default: ''
+      status_only:
+        description: 'Only print the product status table'
+        type: boolean
+        default: false
+jobs:
+  iap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install google-auth requests >/dev/null
+      - name: Create / update in-app products
+        if: ${{ !inputs.status_only }}
+        env:
+          PLAY_SA: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          IAP_ONLY: ${{ inputs.only }}
+        run: python3 build/play_iap.py
+      - name: Status
+        if: ${{ inputs.status_only }}
+        env:
+          PLAY_SA: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        run: python3 build/play_iap.py status
