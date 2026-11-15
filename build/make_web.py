@@ -48,6 +48,19 @@ if not ios_live or TEST_ADS: iosads['test']=True
 a='appOpenGapMs:4*3600*1000};'
 assert s.count(a)==1
 s=s.replace(a,a+'if(window.MF_IOS)Object.assign(ADS,'+json.dumps(iosads)+');',1)
+# 2.0 ads policy (game/src/v2/ads.js) wraps Ads.banner with its lobby rule. AdMob finishes initializing late on a phone
+# (consent form, iPhone tracking prompt), and its init re-showed a banner wanted meanwhile through api.banner(true),
+# which is now the policy's apply(): already "on", so it returned and AdMob never got showBanner (an empty reserved
+# space in the lobby). The policy keeps a handle to the original native call and init uses it.
+if 'v2 ADS POLICY' in s:
+    a="A.banner=function(){apply();};"
+    if s.count(a)==1:
+        s=s.replace(a,"A.__nativeBanner=ORIG.banner;"+a,1)
+        a="if(bannerOn){bannerOn=false;api.banner(true);}"
+        assert s.count(a)==1,a
+        s=s.replace(a,"if(bannerOn){bannerOn=false;(api.__nativeBanner||api.banner).call(api,true);}",1)
+    else:
+        print('NOTE: ads.js banner hook changed upstream; late AdMob init patch not applied (check the lobby banner)')
 # Apple tracking prompt (ATT): after the consent form, before ads load
 a="D.consent='דילוג: '+em(e);}"
 assert s.count(a)==1

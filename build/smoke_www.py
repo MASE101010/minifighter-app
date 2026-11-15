@@ -32,6 +32,7 @@ MOCK = ("window.__np=[];window.androidBridge={postMessage(m){const d=JSON.parse(
         " if(d.methodName==='getProducts')data={products:(d.options.productIdentifiers||[]).filter(i=>PR[i]).map(i=>({identifier:i,priceString:PR[i],title:i}))};"
         " if(d.methodName==='getPurchases')data={purchases:[]};"
         " if(d.methodName==='purchaseProduct'){setTimeout(()=>Capacitor.fromNative({callbackId:d.callbackId,pluginId:d.pluginId,methodName:d.methodName,success:false,error:{message:'User cancelled'}}),50);return;}}"
+        "if(d.pluginId==='AdMob'){(window.__ad=window.__ad||[]).push(d.methodName);if(d.methodName==='initialize'){setTimeout(()=>Capacitor.fromNative({callbackId:d.callbackId,pluginId:d.pluginId,methodName:d.methodName,success:true,data:{}}),6000);return;}}"
         "if(d.methodName==='addListener')return;"
         "setTimeout(()=>Capacitor.fromNative({callbackId:d.callbackId,pluginId:d.pluginId,methodName:d.methodName,success:true,data}),20);}};"
         "window.Capacitor={DEBUG:false,isLoggingEnabled:false,Plugins:{}};\n" % json.dumps(PR)) + NB + "\nwindow.Capacitor.PluginHeaders=" + json.dumps(HEADERS) + ";"
@@ -74,7 +75,18 @@ with sync_playwright() as pw:
         print('items still in web mode:', webish)
         price_ok = all(p['price'] == PR[p['id']] for p in listed if p['id'] in PR)
         ok = ok and len([p for p in listed if p['id'] in PR]) == len(PR) and not webish and price_ok
+        # AdMob initializes slowly on a phone (consent, tracking prompt): the lobby banner must still come once it is ready
+        pg.wait_for_timeout(9000)
+        ad = pg.evaluate('window.__ad||[]')
+        pol = pg.evaluate('MF2.adsPolicy?MF2.adsPolicy.state():null')
+        print('AdMob calls:', ad, '| policy:', pol and {k: pol[k] for k in ('want', 'shown', 'payer')}, '| body.ad-banner:', pg.evaluate("document.body.classList.contains('ad-banner')"))
+        if pol is not None:
+            ok = ok and pol['want'] and 'showBanner' in ad and 'loadAppOpen' not in ad and 'showAppOpen' not in ad
         pg.evaluate("MF2UI.go('shop',{tab:'shop'})"); pg.wait_for_timeout(1500)
+        ad2 = pg.evaluate('window.__ad||[]')
+        print('after opening the shop:', ad2[len(ad):], '| body.ad-banner:', pg.evaluate("document.body.classList.contains('ad-banner')"))
+        if pol is not None:
+            ok = ok and 'hideBanner' in ad2[len(ad):]
         if SHOTS:
             pg.screenshot(path=os.path.join(SHOTS, 'shop_native.png'))
     b.close()
