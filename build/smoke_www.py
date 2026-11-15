@@ -33,7 +33,8 @@ MOCK = ("window.__np=[];window.androidBridge={postMessage(m){const d=JSON.parse(
         " if(d.methodName==='getPurchases')data={purchases:[]};"
         " if(d.methodName==='purchaseProduct'){setTimeout(()=>Capacitor.fromNative({callbackId:d.callbackId,pluginId:d.pluginId,methodName:d.methodName,success:false,error:{message:'User cancelled'}}),50);return;}}"
         "if(d.pluginId==='AdMob'){(window.__ad=window.__ad||[]).push(d.methodName);if(d.methodName==='initialize'){setTimeout(()=>Capacitor.fromNative({callbackId:d.callbackId,pluginId:d.pluginId,methodName:d.methodName,success:true,data:{}}),6000);return;}}"
-        "if(d.methodName==='addListener')return;"
+        "if(d.methodName==='addListener'){(window.__ls=window.__ls||{})[d.pluginId+'.'+d.options.eventName]=d.callbackId;return;}"
+        "if(d.pluginId==='AdMob'&&d.methodName==='showBanner'){const c=(window.__ls||{})['AdMob.bannerAdSizeChanged'];if(c)setTimeout(()=>Capacitor.fromNative({callbackId:c,pluginId:'AdMob',methodName:'addListener',success:true,data:{width:320,height:56}}),300);}"
         "setTimeout(()=>Capacitor.fromNative({callbackId:d.callbackId,pluginId:d.pluginId,methodName:d.methodName,success:true,data}),20);}};"
         "window.Capacitor={DEBUG:false,isLoggingEnabled:false,Plugins:{}};\n" % json.dumps(PR)) + NB + "\nwindow.Capacitor.PluginHeaders=" + json.dumps(HEADERS) + ";"
 
@@ -80,8 +81,14 @@ with sync_playwright() as pw:
         ad = pg.evaluate('window.__ad||[]')
         pol = pg.evaluate('MF2.adsPolicy?MF2.adsPolicy.state():null')
         print('AdMob calls:', ad, '| policy:', pol and {k: pol[k] for k in ('want', 'shown', 'payer')}, '| body.ad-banner:', pg.evaluate("document.body.classList.contains('ad-banner')"))
+        # the app's banner space: AdMob reports its height (56 here); the lobby's bottom padding must equal it, full width
+        sp = pg.evaluate('''(()=>{const m=document.getElementById('menu'),r=document.getElementById('v2root');const cs=getComputedStyle(m);
+          return {pad:parseFloat(cs.paddingBottom),adh:getComputedStyle(document.documentElement).getPropertyValue('--adh').trim(),
+          rootW:r?r.getBoundingClientRect().width:0,vw:innerWidth,rootBottom:r?r.getBoundingClientRect().bottom:0,vh:innerHeight}})()''')
+        print('banner space:', sp)
         if pol is not None:
             ok = ok and pol['want'] and 'showBanner' in ad and 'loadAppOpen' not in ad and 'showAppOpen' not in ad
+            ok = ok and abs(sp['pad'] - 56) < 0.5 and sp['rootW'] >= 0.98 * sp['vw'] and sp['vh'] - sp['rootBottom'] <= 56.5
         pg.evaluate("MF2UI.go('shop',{tab:'shop'})"); pg.wait_for_timeout(1500)
         ad2 = pg.evaluate('window.__ad||[]')
         print('after opening the shop:', ad2[len(ad):], '| body.ad-banner:', pg.evaluate("document.body.classList.contains('ad-banner')"))

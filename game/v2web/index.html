@@ -9615,7 +9615,7 @@ boot();
    Owner: "the banner only on the main lobby, and much lighter ads so the game is fun".
    BANNER: shown only while the v2 lobby is the visible screen with nothing over it (no sheet, popup, reveal, chest, party
      or friends sheet, no fight). Web: our own slim slot, a fixed 320x50 AdSense unit (468x60 on wide screens) centred in a
-     dark rounded tray, fixed size (no auto / responsive format, so AdSense cannot inflate it); the v1 #webBanner is never
+     transparent strip exactly the ad's height (no tray, no padding), fixed size (no auto / responsive format, so AdSense cannot inflate it); the v1 #webBanner is never
      used. App: the AdMob banner of the shared Ads object (320x50 'BANNER'), shown and hidden by the same rule. While the
      banner is shown, the lobby gets its height as bottom padding (the v2 layout scales into the rest), never covered.
    INTERSTITIAL: none in a new player's first 3 days or first 15 matches; then at most one per 5 matches and 6 minutes
@@ -9652,24 +9652,29 @@ let tray=null,on=null,wide=null;
 const isWide=()=>innerWidth>=1000&&innerHeight>=600;
 function css(){if(document.getElementById('mf2ad-css'))return;const s=document.createElement('style');s.id='mf2ad-css';s.textContent=`
 #webBanner{display:none!important}body.wb-desk #app{height:100%!important}
-#mf2ad{position:fixed;left:50%;bottom:calc(2px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:40;display:none;align-items:center;justify-content:center;
- padding:1px;border-radius:12px;background:linear-gradient(180deg,#1a2275,#0d1347);border:2px solid #0a0e33;box-shadow:0 3px 0 #0a0e33,0 6px 14px rgba(0,0,0,.35);overflow:hidden;box-sizing:content-box}
-#mf2ad.on{display:flex}#mf2ad ins{display:block;overflow:hidden;background:#0a0e33}
-body.mf2ad-on #v2root{padding-bottom:var(--mf2adh,58px)!important}`;document.head.appendChild(s);}
+#mf2ad{position:fixed;left:0;right:0;bottom:env(safe-area-inset-bottom,0px);height:var(--mf2adh0,50px);z-index:40;display:none;justify-content:center;align-items:flex-end;background:transparent;pointer-events:none;margin:0;padding:0;border:0}
+#mf2ad.on{display:flex}#mf2ad ins{display:block;overflow:hidden;pointer-events:auto;flex:none}
+body.mf2ad-on #v2root{padding-bottom:calc(var(--mf2adh0,50px) + var(--mf2adx,0px) + env(safe-area-inset-bottom,0px))!important}`;document.head.appendChild(s);}
 function webSlot(show){css();if(!tray){tray=document.createElement('div');tray.id='mf2ad';tray.setAttribute('aria-label','פרסומת');document.body.appendChild(tray);}
  const w=isWide(),d=w?[468,60]:[320,50];
  if(show&&(!tray.firstChild||wide!==w)){wide=w;tray.innerHTML='';const ins=document.createElement('ins');ins.className='adsbygoogle';ins.style.cssText=`display:block;width:${d[0]}px;height:${d[1]}px`;
   try{ins.setAttribute('data-ad-client',ADS.webClient);ins.setAttribute('data-ad-slot',ADS.webBannerSlot);}catch(e){}ins.setAttribute('data-full-width-responsive','false');
   tray.appendChild(ins);if(!window.__mf2adTest){try{(window.adsbygoogle=window.adsbygoogle||[]).push({});}catch(e){}}}
- tray.classList.toggle("on",show);return d[1]+1*2+2*2;}
+ tray.classList.toggle("on",show);return d[1];}
 function apply(){const w=want();if(w===on)return;on=w;
  let h=0;
  if(A.h5||window.__mf2adWeb){h=webSlot(w);}
  else if(native){try{ORIG.banner.call(A,w);}catch(e){}}   // the app reserves its space through the shared body.ad-banner rule (#menu padding = the banner height)
  document.body.classList.remove('wb-desk','ad-banner');   // the v1 web banner classes never apply in v2
  if(native&&w)document.body.classList.add('ad-banner');
- document.documentElement.style.setProperty('--mf2adh',(h+8)+'px');document.body.classList.toggle('mf2ad-on',w&&(h>0));
- try{window.dispatchEvent(new Event('resize'));}catch(e){}}
+ const de=document.documentElement.style;de.setProperty('--mf2adh0',h+'px');de.setProperty('--mf2adx','0px');document.body.classList.toggle('mf2ad-on',w&&(h>0));
+ try{window.dispatchEvent(new Event('resize'));}catch(e){}
+ if(w&&h)requestAnimationFrame(()=>requestAnimationFrame(clearance));}
+/* at least 8 px between the ad and any tappable control (accidental-click policy): taken from the lobby's own bottom room;
+   only when the lowest control would come closer does the lobby give up the missing pixels */
+function clearance(){try{const ins=tray&&tray.querySelector('ins'),r=document.getElementById('v2root');if(!ins||!r||!on)return;const top=ins.getBoundingClientRect().top;
+  let low=0;r.querySelectorAll('button,a,[data-a],input').forEach(e=>{if(e.offsetParent===null)return;const b=e.getBoundingClientRect();if(b.width&&b.height&&b.bottom>low)low=b.bottom;});
+  const gap=top-low;if(gap<8){const cur=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--mf2adx'))||0;document.documentElement.style.setProperty('--mf2adx',Math.ceil(cur+8-gap)+'px');window.dispatchEvent(new Event('resize'));}}catch(e){}}
 // every v1/v2 call goes through the policy; the screen state is checked often (cheap) and on every DOM change of the menu
 A.banner=function(){apply();};
 let mo=null;function watch(){css();const m=document.getElementById('menu')||document.body;try{mo=new MutationObserver(()=>{clearTimeout(watch.t);watch.t=setTimeout(apply,30);});mo.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});}catch(e){}
