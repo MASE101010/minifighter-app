@@ -15,6 +15,10 @@ on:
         description: 'Remove premium_all from sale (ONLY after 2.0 is live; buyers can still restore)'
         type: boolean
         default: false
+      submit_ready:
+        description: 'Send every READY_TO_SUBMIT catalog product to App Review on its own'
+        type: boolean
+        default: false
       status_only:
         description: 'Only print the product status table'
         type: boolean
@@ -36,6 +40,13 @@ jobs:
           IAP_AGE_RATING: ${{ inputs.age_rating }}
           IAP_RETIRE_PREMIUM: ${{ inputs.retire_premium }}
         run: python3 build/asc_iap.py
+      - name: Send READY_TO_SUBMIT products to review
+        if: ${{ inputs.submit_ready }}
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 || secrets.APPSTORE_KEY_P8 }}
+        run: python3 build/asc_iap_submit.py
       - name: Status
         if: always()
         env:
