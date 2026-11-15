@@ -176,3 +176,15 @@ ads and ATT. Every product also carries its own review note.
   nicknames, online conduct.
 - https://minifighter.co.il/odds/ : chest odds from the game's tables (start rarity, upgrade chances, pity, contents
   by rarity, fighter chances per chest type), linked in every footer and the sitemap.
+
+## 7. Submission 2026-11-15 (build 28, game cb608142)
+- 2.0.0 (28) submitted with release MANUAL: version and review submission WAITING_FOR_REVIEW.
+- 24 in-app purchases went with it (WAITING_FOR_REVIEW): the starter offer, both bundles, all 18 fighters, the 3 skins.
+- Apple refused the 5 gem packs and the season pass through the API: STATE_ERROR.FIRST_CONSUMABLE_MUST_BE_SUBMITTED_ON_VERSION
+  and STATE_ERROR.FIRST_NON_RENEWING_SUBSCRIPTION_MUST_BE_SUBMITTED_ON_VERSION. The app never had a consumable or a
+  non-renewing product, and the first of each type can only be attached on the version page in App Store Connect
+  (the API has no call for it). They stay READY_TO_SUBMIT; in 2.0 the game shows them as "בקרוב" until approved.
+- To include them in 2.0: App Store Connect > the app > 2.0.0 > "Cancel submission" (or remove from review), then on
+  the version page, "In-App Purchases and Subscriptions" > Select > tick mf_gems_1..5 and mf_pass_premium > Done >
+  Add for Review > Submit. Otherwise attach them the same way to the next version (2.0.1). After the first of each
+  type is approved, later ones can be sent alone (Actions > App Store in-app purchases > submit_ready).
