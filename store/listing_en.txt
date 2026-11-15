@@ -28,16 +28,20 @@ At least 4 special attacks per fighter, combos, runs, dashes, grabs and throws. 
 MADE FOR IPHONE
 Comfortable joystick and buttons, fitted to the full iPhone screen.
 
-The game is free and contains ads. The optional one-time Full Version removes forced ads, unlocks every fighter and lets you continue a fight without watching an ad.
+The game is free, contains ads and offers optional in-app purchases (gems, fighters, skins and a season pass), each protected by a parent gate. Reward chests are earned by playing or bought with in-game currency only; their odds are shown in the game and at minifighter.co.il/odds
 
 Website: https://minifighter.co.il
 
 === What's New ===
-Mini Fighter arrives on iPhone! 20+ fighters, 14 arenas, Road to the Top and online battles with friends, up to 8 players.
+Mini Fighter 2.0 is here! Ranked online battles: duel, duos, crown and free-for-all. Trophies and leagues, a season pass with new fighters, daily quests and reward chests. Friends list, parties of up to 3 friends and player tags. Hanukkah skins, cloud save with a restore code, and a new shop. Real-money purchases are protected by a parent gate. Full Version owners keep everything they got.
 
 === App Review notes (paste into "Notes" in App Review Information) ===
-No login or account is needed; every mode is available right away.
-Online multiplayer: Main menu > מולטיפלייר (Multiplayer) > create a room. A second device can join with the 4-letter room code; computer fighters can also be added so a single device can test a match.
-The app shows Google AdMob ads (banner on menus, interstitials between matches, optional rewarded ads to continue a fight). Ads never appear during a fight. The App Tracking Transparency prompt appears on first launch, before any ad loads.
-In-app purchase "premium_all" (Full Version, non-consumable): Main menu > the "⭐ בלי פרסומות" (No ads) chip, also in Settings. The same screen has a "שחזור רכישה" (Restore Purchase) button.
+No login is needed. Progress is saved on the device and, automatically, in our cloud (an anonymous account with a 10-character restore code in Profile; no personal details).
+ONLINE: Lobby > the big fight button. Ranked modes (duel, duos, crown, free-for-all) fill empty seats with computer fighters after a few seconds, so one device can test a full match. The classic friend rooms are still in Main menu > מולטיפלייר.
+FRIENDS: Lobby > friends button (under the party button). Each player has a public player tag (Profile, e.g. #K7QM2X9A); add a friend by tag, accept on the second device, then invite to a party (up to 3). There is NO free chat anywhere: players only see nicknames (16 characters) and can send 5 predefined emotes.
+IN-APP PURCHASES (30 products, see each product's review note): Lobby > "חנות" (Shop) and Lobby > "כרטיס עונה" (Season Pass). Every real-money purchase first shows a PARENT GATE ("אישור הורים"): a multiplication written in Hebrew words, e.g. "כמה זה שבע כפול שמונה?" (seven times eight), answered with digits (56). One correct answer allows one purchase; three wrong answers lock it for a minute. Restore: Shop > "שחזור רכישות".
+To test purchases use a Sandbox Apple Account (Settings > App Store > Sandbox Account). Gem packs are consumable; fighters, skins, bundles and the starter offer are non-consumable; the season pass is a non-renewing subscription for the current 28-day season.
+RANDOM ITEMS: reward chests are earned by playing or bought only with in-game coins or gems (never directly for money); the odds are shown in the game before buying and at https://minifighter.co.il/odds/
+The old "Full Version" (premium_all) is no longer sold in 2.0; owners keep it and Shop > "שחזור רכישות" restores it.
+ADS: Google AdMob (banner on menus, interstitials between matches, optional rewarded ads). Never during a fight. The App Tracking Transparency prompt appears before any ad loads.
 The interface is in Hebrew.

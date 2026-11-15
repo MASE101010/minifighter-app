@@ -92,5 +92,24 @@ try:
 except SystemExit as e:
     if 'already' not in str(e).lower():
         raise
+# 5b. 2.0 catalog: every in-app purchase of store/iap_products.json that is still READY_TO_SUBMIT goes to review
+# with this version (Apple reviews them with the build). Already approved ones are skipped, so this is a no-op later.
+cat = os.path.join(ROOT, 'store', 'iap_products.json')
+if os.environ.get('SUBMIT_IAPS', 'true').lower() == 'true' and os.path.exists(cat):
+    want = {p['id'] for p in json.load(open(cat, encoding='utf8'))['products']}
+    iaps, url = [], f'/apps/{app_id}/inAppPurchasesV2?limit=200'
+    while url:
+        r = requests.get(url if url.startswith('http') else API + url, headers={'Authorization': 'Bearer ' + token()}, timeout=60).json()
+        iaps += r.get('data', []); url = r.get('links', {}).get('next')
+    for i in iaps:
+        a = i['attributes']
+        if a['productId'] in want and a.get('state') == 'READY_TO_SUBMIT':
+            try:
+                call('POST', '/inAppPurchaseSubmissions', {'data': {'type': 'inAppPurchaseSubmissions', 'relationships': {
+                    'inAppPurchaseV2': {'data': {'type': 'inAppPurchases', 'id': i['id']}}}}})
+                print('in-app purchase sent with the version:', a['productId'])
+            except SystemExit as e:
+                print('in-app purchase NOT sent:', a['productId'], str(e)[:300])
+
 call('PATCH', f'/reviewSubmissions/{sid}', {'data': {'type': 'reviewSubmissions', 'id': sid, 'attributes': {'submitted': True}}})
 print(f'Submitted {VER} ({BUILD}) for App Review. It goes live automatically after approval.')
