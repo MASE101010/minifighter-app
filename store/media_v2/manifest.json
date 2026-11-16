@@ -1,0 +1,347 @@
+{
+ "note": "made by tools/manifest.py; do not edit by hand",
+ "locales": {
+  "he": {
+   "screenshots": {
+    "appstore_iphone69": [
+     {
+      "path": "screenshots/appstore_iphone69/iphone69_01_fight_2868x1320.jpg",
+      "bytes": 797640,
+      "md5": "1db9381f33aaa15f7ddeb32679760421",
+      "width": 2868,
+      "height": 1320
+     },
+     {
+      "path": "screenshots/appstore_iphone69/iphone69_02_crown_2868x1320.jpg",
+      "bytes": 948365,
+      "md5": "bd84410f62420360dfb0d45b150a721c",
+      "width": 2868,
+      "height": 1320
+     },
+     {
+      "path": "screenshots/appstore_iphone69/iphone69_03_chest_2868x1320.jpg",
+      "bytes": 454268,
+      "md5": "51ca479d1af2f30d2d88e65056fe15a9",
+      "width": 2868,
+      "height": 1320
+     },
+     {
+      "path": "screenshots/appstore_iphone69/iphone69_04_lobby_2868x1320.jpg",
+      "bytes": 926883,
+      "md5": "bd022d24e0d68b65128d8219b6b60542",
+      "width": 2868,
+      "height": 1320
+     },
+     {
+      "path": "screenshots/appstore_iphone69/iphone69_05_fighters_2868x1320.jpg",
+      "bytes": 826354,
+      "md5": "8a2f7a2123d0e11a34967a087808ce6f",
+      "width": 2868,
+      "height": 1320
+     },
+     {
+      "path": "screenshots/appstore_iphone69/iphone69_06_modes_2868x1320.jpg",
+      "bytes": 786302,
+      "md5": "c4cf67464b5fa605965bb6cf7be4992c",
+      "width": 2868,
+      "height": 1320
+     },
+     {
+      "path": "screenshots/appstore_iphone69/iphone69_07_pass_2868x1320.jpg",
+      "bytes": 783571,
+      "md5": "538bf5b2d7781841d41e1c286b37251b",
+      "width": 2868,
+      "height": 1320
+     },
+     {
+      "path": "screenshots/appstore_iphone69/iphone69_08_road_2868x1320.jpg",
+      "bytes": 850058,
+      "md5": "0ae700fb899214822a1f62e36e3bae92",
+      "width": 2868,
+      "height": 1320
+     }
+    ],
+    "appstore_iphone65": [
+     {
+      "path": "screenshots/appstore_iphone65/iphone65_01_fight_2778x1284.jpg",
+      "bytes": 779037,
+      "md5": "85ab8af92f80e9bfe7dd28d1d1881ce7",
+      "width": 2778,
+      "height": 1284
+     },
+     {
+      "path": "screenshots/appstore_iphone65/iphone65_02_crown_2778x1284.jpg",
+      "bytes": 942648,
+      "md5": "a25aa4f7982707eeeedcdbbf22ee9ded",
+      "width": 2778,
+      "height": 1284
+     },
+     {
+      "path": "screenshots/appstore_iphone65/iphone65_03_chest_2778x1284.jpg",
+      "bytes": 446546,
+      "md5": "52039a077567386533660e28b3a335c4",
+      "width": 2778,
+      "height": 1284
+     },
+     {
+      "path": "screenshots/appstore_iphone65/iphone65_04_lobby_2778x1284.jpg",
+      "bytes": 906564,
+      "md5": "1de2f73676e3375e548626af3498834d",
+      "width": 2778,
+      "height": 1284
+     },
+     {
+      "path": "screenshots/appstore_iphone65/iphone65_05_fighters_2778x1284.jpg",
+      "bytes": 809422,
+      "md5": "aee15c7bebfe8683452a2693a3bb2763",
+      "width": 2778,
+      "height": 1284
+     },
+     {
+      "path": "screenshots/appstore_iphone65/iphone65_06_modes_2778x1284.jpg",
+      "bytes": 772892,
+      "md5": "2186298d5567f09e94ff65694339a863",
+      "width": 2778,
+      "height": 1284
+     },
+     {
+      "path": "screenshots/appstore_iphone65/iphone65_07_pass_2778x1284.jpg",
+      "bytes": 756650,
+      "md5": "824d807dcf8041ff6b74365ef14cb3ad",
+      "width": 2778,
+      "height": 1284
+     },
+     {
+      "path": "screenshots/appstore_iphone65/iphone65_08_road_2778x1284.jpg",
+      "bytes": 826932,
+      "md5": "bda7019c22785f67d93702c320dc0d13",
+      "width": 2778,
+      "height": 1284
+     }
+    ],
+    "play_phone": [
+     {
+      "path": "screenshots/play_phone/play_phone_01_fight_1920x1080.jpg",
+      "bytes": 563034,
+      "md5": "85aa8e1b478882c03232ed49bf36d2bb",
+      "width": 1920,
+      "height": 1080
+     },
+     {
+      "path": "screenshots/play_phone/play_phone_02_crown_1920x1080.jpg",
+      "bytes": 663082,
+      "md5": "7849cdbd203df55a4e3ebf3029685edd",
+      "width": 1920,
+      "height": 1080
+     },
+     {
+      "path": "screenshots/play_phone/play_phone_03_chest_1920x1080.jpg",
+      "bytes": 320971,
+      "md5": "02f0306a1401ce9471b24fef75d14b66",
+      "width": 1920,
+      "height": 1080
+     },
+     {
+      "path": "screenshots/play_phone/play_phone_04_lobby_1920x1080.jpg",
+      "bytes": 657578,
+      "md5": "7a73bbfbdfe80c5fa277281c366b78a7",
+      "width": 1920,
+      "height": 1080
+     },
+     {
+      "path": "screenshots/play_phone/play_phone_05_fighters_1920x1080.jpg",
+      "bytes": 590045,
+      "md5": "292576685b73e4cc32ede29716460b9a",
+      "width": 1920,
+      "height": 1080
+     },
+     {
+      "path": "screenshots/play_phone/play_phone_06_modes_1920x1080.jpg",
+      "bytes": 558087,
+      "md5": "c65ed096d23645ae336159427b11a5cc",
+      "width": 1920,
+      "height": 1080
+     },
+     {
+      "path": "screenshots/play_phone/play_phone_07_pass_1920x1080.jpg",
+      "bytes": 553720,
+      "md5": "198731e8a969415b448734069ba497ac",
+      "width": 1920,
+      "height": 1080
+     },
+     {
+      "path": "screenshots/play_phone/play_phone_08_road_1920x1080.jpg",
+      "bytes": 602439,
+      "md5": "5b8f369fe260b60fcdba005f60b92368",
+      "width": 1920,
+      "height": 1080
+     }
+    ],
+    "play_tablet7": [
+     {
+      "path": "screenshots/play_tablet7/play_tablet7_01_fight_1920x1200.jpg",
+      "bytes": 578864,
+      "md5": "3d4082265db37754825a092f2648ff41",
+      "width": 1920,
+      "height": 1200
+     },
+     {
+      "path": "screenshots/play_tablet7/play_tablet7_02_crown_1920x1200.jpg",
+      "bytes": 676859,
+      "md5": "40354d3e180dc7b9e229f6ac6faaf91a",
+      "width": 1920,
+      "height": 1200
+     },
+     {
+      "path": "screenshots/play_tablet7/play_tablet7_03_chest_1920x1200.jpg",
+      "bytes": 335535,
+      "md5": "27c06df60c320af1aca0ba00a2beb5f5",
+      "width": 1920,
+      "height": 1200
+     },
+     {
+      "path": "screenshots/play_tablet7/play_tablet7_04_lobby_1920x1200.jpg",
+      "bytes": 672617,
+      "md5": "94b08d1e059339f0346a47d4d62a89c9",
+      "width": 1920,
+      "height": 1200
+     },
+     {
+      "path": "screenshots/play_tablet7/play_tablet7_05_fighters_1920x1200.jpg",
+      "bytes": 600226,
+      "md5": "4175c6d58c30c68b21a33b53883c11f2",
+      "width": 1920,
+      "height": 1200
+     },
+     {
+      "path": "screenshots/play_tablet7/play_tablet7_06_modes_1920x1200.jpg",
+      "bytes": 585472,
+      "md5": "6dec9c642cf9aebe079cd4a6f52c42de",
+      "width": 1920,
+      "height": 1200
+     },
+     {
+      "path": "screenshots/play_tablet7/play_tablet7_07_pass_1920x1200.jpg",
+      "bytes": 573091,
+      "md5": "1a610e89b3b0865fe555d3bf7e46dd40",
+      "width": 1920,
+      "height": 1200
+     },
+     {
+      "path": "screenshots/play_tablet7/play_tablet7_08_road_1920x1200.jpg",
+      "bytes": 615464,
+      "md5": "1fa75d58c1eedbbdcfa4ee14d55c59c1",
+      "width": 1920,
+      "height": 1200
+     }
+    ],
+    "play_tablet10": [
+     {
+      "path": "screenshots/play_tablet10/play_tablet10_01_fight_2560x1600.jpg",
+      "bytes": 838307,
+      "md5": "ef868855c85ea60109de5041d61cbe5a",
+      "width": 2560,
+      "height": 1600
+     },
+     {
+      "path": "screenshots/play_tablet10/play_tablet10_02_crown_2560x1600.jpg",
+      "bytes": 986028,
+      "md5": "0dc9b8bdc20c5029e045b6b4ed662a4d",
+      "width": 2560,
+      "height": 1600
+     },
+     {
+      "path": "screenshots/play_tablet10/play_tablet10_03_chest_2560x1600.jpg",
+      "bytes": 480985,
+      "md5": "43b9625445e2bb84f3cfa324e2c81cff",
+      "width": 2560,
+      "height": 1600
+     },
+     {
+      "path": "screenshots/play_tablet10/play_tablet10_04_lobby_2560x1600.jpg",
+      "bytes": 974421,
+      "md5": "95a86d3925f7a89712b5510aeb89b519",
+      "width": 2560,
+      "height": 1600
+     },
+     {
+      "path": "screenshots/play_tablet10/play_tablet10_05_fighters_2560x1600.jpg",
+      "bytes": 880270,
+      "md5": "463aa8c51cf14bb870348fd9f4aa245c",
+      "width": 2560,
+      "height": 1600
+     },
+     {
+      "path": "screenshots/play_tablet10/play_tablet10_06_modes_2560x1600.jpg",
+      "bytes": 818835,
+      "md5": "6853a16b3f5121f2a25e236bd48f7187",
+      "width": 2560,
+      "height": 1600
+     },
+     {
+      "path": "screenshots/play_tablet10/play_tablet10_07_pass_2560x1600.jpg",
+      "bytes": 817794,
+      "md5": "b43a2aad8d20e53eff69618740f7c2a8",
+      "width": 2560,
+      "height": 1600
+     },
+     {
+      "path": "screenshots/play_tablet10/play_tablet10_08_road_2560x1600.jpg",
+      "bytes": 890274,
+      "md5": "faf506cb7aeb9f49f1350b31207b758e",
+      "width": 2560,
+      "height": 1600
+     }
+    ],
+    "play_feature": [
+     {
+      "path": "screenshots/play_feature/play_feature_1024x500.jpg",
+      "bytes": 304674,
+      "md5": "2d711280ab707cb63d6919250a95eff8",
+      "width": 1024,
+      "height": 500
+     }
+    ]
+   },
+   "previews": {
+    "appstore_iphone69": [
+     {
+      "path": "video/appstore_preview_1920x886.mp4",
+      "bytes": 22137587,
+      "md5": "291f6cb603ddbb70691bbbc34ce526a5",
+      "width": 1920,
+      "height": 886,
+      "duration": 29.6,
+      "poster": "00:00:09:06",
+      "video": "h264 High 30/1 fps 5983 kb/s",
+      "audio": "aac 48000 Hz 2 ch"
+     }
+    ],
+    "appstore_iphone65": [
+     {
+      "path": "video/appstore_preview_1920x886.mp4",
+      "bytes": 22137587,
+      "md5": "291f6cb603ddbb70691bbbc34ce526a5",
+      "width": 1920,
+      "height": 886,
+      "duration": 29.6,
+      "poster": "00:00:09:06",
+      "video": "h264 High 30/1 fps 5983 kb/s",
+      "audio": "aac 48000 Hz 2 ch"
+     }
+    ]
+   },
+   "play_promo_video": {
+    "path": "video/play_promo_1920x1080.mp4",
+    "bytes": 42176682,
+    "md5": "821f7ac807a11585156cb93e68254233",
+    "width": 1920,
+    "height": 1080,
+    "duration": 48.8,
+    "poster": null,
+    "video": "h264 High 30/1 fps 6914 kb/s",
+    "audio": "aac 48000 Hz 2 ch"
+   }
+  }
+ }
+}

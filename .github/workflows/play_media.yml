@@ -1,0 +1,38 @@
+name: Google Play media (screenshots + feature graphic, 2.0)
+# Replaces the listing's phone screenshots and feature graphic (and the tablet screenshots when asked) with
+# store/media_v2 through the Android Publisher API edits. dry_run (default) changes nothing.
+# Needs the PLAY_SERVICE_ACCOUNT_JSON secret (docs/STORE_RELEASE_2.0.md section 2.1). Run by hand only.
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run: print the plan, change nothing'
+        type: boolean
+        default: true
+      locale:
+        description: 'Language of the media (key in store/media_v2/manifest.json)'
+        type: string
+        default: 'he'
+      targets:
+        description: 'Listing languages that get this media: all, or a comma separated list (iw-IL,en-US)'
+        type: string
+        default: 'all'
+      tablets:
+        description: 'Also replace the 7 inch and 10 inch tablet screenshots'
+        type: boolean
+        default: false
+jobs:
+  media:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install google-auth requests >/dev/null
+      - name: Replace the listing graphics
+        env:
+          PLAY_SA: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          LOCALE: ${{ inputs.locale }}
+          TARGETS: ${{ inputs.targets }}
+          TABLETS: ${{ inputs.tablets }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: python3 build/play_media.py

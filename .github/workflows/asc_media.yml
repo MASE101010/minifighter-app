@@ -1,0 +1,46 @@
+name: App Store media (screenshots + app previews, 2.0)
+# Replaces the screenshot sets (6.9" APP_IPHONE_67, 6.5" APP_IPHONE_65) and the app previews of one version with
+# store/media_v2 (see store/media_v2/README.md). dry_run (default) only reads from Apple and prints the plan.
+# Fails clearly when the version does not exist or is not editable. Run by hand only.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'App Store version'
+        type: string
+        default: '2.0.0'
+      locale:
+        description: 'Language of the media (folder key in store/media_v2/manifest.json)'
+        type: string
+        default: 'he'
+      dry_run:
+        description: 'Dry run: print the plan, change nothing'
+        type: boolean
+        default: true
+      targets:
+        description: 'Localizations that get this media: all, or a comma separated list (he,en-US)'
+        type: string
+        default: 'all'
+      what:
+        description: 'What to replace'
+        type: choice
+        options: [all, screenshots, previews]
+        default: all
+jobs:
+  media:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install pyjwt cryptography requests >/dev/null
+      - name: Replace screenshots and app previews
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 || secrets.APPSTORE_KEY_P8 }}
+          VERSION: ${{ inputs.version }}
+          LOCALE: ${{ inputs.locale }}
+          TARGETS: ${{ inputs.targets }}
+          WHAT: ${{ inputs.what }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: python3 build/asc_media.py
