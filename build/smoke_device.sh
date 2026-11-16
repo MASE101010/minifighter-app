@@ -9,7 +9,7 @@ if [ "$PLAT" = android ]; then
   adb wait-for-device; adb install -r "$PKG" || exit 1
   adb logcat -c
   adb shell am start -n $ID/.MainActivity
-  for i in $(seq 1 24); do sleep 5; adb logcat -d > "$OUT/log.txt"; grep -q 'MFSMOKE {"screen":"\(lobby\|onboard\)"' "$OUT/log.txt" && break; done
+  for i in $(seq 1 24); do sleep 5; adb logcat -d > "$OUT/log.txt"; grep -q 'MFSMOKE {.*"screen":"\(lobby\|onboard\)"' "$OUT/log.txt" && break; done
   sleep 8; adb logcat -d > "$OUT/log.txt"; adb exec-out screencap -p > "$OUT/android_lobby.png"
   # the real AdMob test banner in the lobby: wait for its view, then compare its place with the slot the page reports
   BRES=2
@@ -25,11 +25,15 @@ else
   xcrun simctl privacy "$UDID" grant all $ID 2>/dev/null || true
   # Capacitor prints console.log to the app's stdout (Swift.print): attach it with --console-pty
   (xcrun simctl launch --console-pty "$UDID" $ID > "$OUT/log.txt" 2>&1 &)
-  for i in $(seq 1 30); do sleep 5; grep -q 'MFSMOKE {"screen":"\(lobby\|onboard\)"' "$OUT/log.txt" && break; done
+  for i in $(seq 1 30); do sleep 5; grep -q 'MFSMOKE {.*"screen":"\(lobby\|onboard\)"' "$OUT/log.txt" && break; done
   sleep 8; xcrun simctl io "$UDID" screenshot "$OUT/ios_lobby.png"
 fi
 grep -o 'MFSMOKE .*' "$OUT/log.txt" | tail -3
 LAST=$(grep -o 'MFSMOKE {.*' "$OUT/log.txt" | tail -1)
+if [ -z "$LAST" ]; then echo "--- no status line; diagnostics ---"
+  if [ "$PLAT" = android ]; then echo "app pid: $(adb shell pidof $ID)"; adb shell dumpsys activity activities | grep -m3 -E "topResumedActivity|mResumedActivity"
+    grep -E "Capacitor|AndroidRuntime|chromium|FATAL|MFSMOKE|AdMob|Ads" "$OUT/log.txt" | tail -40 | cut -c1-300
+  else tail -40 "$OUT/log.txt" | cut -c1-300; fi; fi
 python3 - "$LAST" <<'PY'
 import json, sys
 raw = sys.argv[1][len('MFSMOKE '):] if sys.argv[1] else ''
