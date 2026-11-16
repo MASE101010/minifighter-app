@@ -9840,7 +9840,17 @@ function lobbyClear(){try{const r=v2root();if(!r||!r.isConnected)return false;if
   if(typeof G!=='undefined'&&G&&G.mode!=='demo'&&!G.over)return false;
   if(r.querySelector('.scrim,.cele,.drop,.dfrev,.coach,.toast2.big'))return false;
   if(document.querySelector('#mf2pt,#mf2fr,#mf2ms,#mf2gate,#mf2fr-inv'))return false;
-  if(document.hidden)return false;return true;}catch(e){return false;}}
+  if(document.hidden)return false;return topIsLobby();}catch(e){return false;}}
+/* whitelist, not a blocklist (owner: the banner showed over the "פרימיום פעיל!" celebration, the pass and purchase popups):
+   whatever is on top at the centre, at both buttons and at the slot must belong to the lobby screen itself. Any popup,
+   overlay or celebration, whatever its class, covers one of these points, so the banner hides. */
+function topAt(x,y){const l=document.elementsFromPoint?document.elementsFromPoint(x,y):[document.elementFromPoint(x,y)];for(const e of l){if(!e)continue;if(e.id==='mf2ad'||(e.closest&&e.closest('#mf2ad')))continue;return e;}return null;}
+function topIsLobby(){const lob=v2root().querySelector('.m2-lobby');if(!lob)return false;
+  const pts=[[innerWidth/2,innerHeight/2],[innerWidth/2,innerHeight*0.25]];
+  const f=lob.querySelector('[data-a="fight"]'),m=lob.querySelector('.m2-bottom .modeb')||lob.querySelector('[data-a="modes"]');
+  for(const b of [f,m]){if(!b)continue;const q=b.getBoundingClientRect();pts.push([q.left+q.width/2,q.top+q.height/2]);}
+  if(fit)pts.push([fit.left+AW/2,fit.top+AH/2]);
+  for(const [x,y] of pts){const e=topAt(x,y);if(!e)return false;if(!lob.contains(e)&&e!==lob)return false;}return true;}
 /* WHERE: inside the lobby's bottom row, between the קרב! button and the mode button, its bottom on that row's bottom line.
    Nothing is reserved and nothing moves (the fighter nameplate is a card on the stage beside the hero now, ui.js
    placePlate). Shown only where the 320x50 slot keeps 12 px from both buttons and from the nameplate card. */
@@ -9853,7 +9863,7 @@ async function measure(){try{const r=v2root(),lob=r&&r.querySelector('.m2-lobby'
   const bottom=Math.min(F.bottom,M.bottom),top=bottom-AH,left=Math.round((lo+hi)/2-AW/2);
   if(pl){const P=pl.getBoundingClientRect();const dx=Math.max(0,Math.max(left,P.left)-Math.min(left+AW,P.right)),dy=Math.max(0,Math.max(top,P.top)-Math.min(bottom,P.bottom));if(Math.max(dx,dy)<GAP){fit=null;return;}}
   fit={left,top:Math.round(top),margin:Math.max(0,Math.round(innerHeight-bottom))};}catch(e){fit=null;}}
-const want=()=>!payer()&&lobbyClear()&&!!fit;
+let clearSince=0;const want=()=>{if(payer()||!fit||buying()||!lobbyClear()){clearSince=0;return false;}if(!clearSince)clearSince=Date.now();return Date.now()-clearSince>=900;};
 let tray=null,on=null;
 function css(){if(document.getElementById('mf2ad-css'))return;const s=document.createElement('style');s.id='mf2ad-css';s.textContent=`
 #webBanner{display:none!important}body.wb-desk #app{height:100%!important}
@@ -9868,19 +9878,27 @@ function webSlot(show){css();if(!tray){tray=document.createElement('div');tray.i
 // the app: the AdMob banner at the bottom centre, lifted by a margin so it sits in the same slot (AdMob draws over the WebView)
 let AM=null,amOn=false,amMargin=-1;
 function admob(show){try{if(!AM&&window.Capacitor&&Capacitor.registerPlugin)AM=Capacitor.registerPlugin('AdMob');if(!AM||!(window.ADSDBG&&ADSDBG.init==='OK'))return;
-  if(show){const mg=fit?fit.margin:0;if(amOn&&mg===amMargin)return;amMargin=mg;amOn=true;
-   (amOn&&amMargin!==mg?AM.hideBanner().catch(()=>{}):Promise.resolve()).then(()=>AM.showBanner({adId:ADS.banner,adSize:'BANNER',position:'BOTTOM_CENTER',margin:mg,isTesting:ADS.test})).catch(()=>{});}
-  else if(amOn){amOn=false;amMargin=-1;AM.hideBanner().catch(()=>{});}}catch(e){}}
+  if(show){const mg=fit?fit.margin:0;if(amOn&&mg===amMargin)return;const moved=amOn&&amMargin!==mg;amMargin=mg;amOn=true;hideTill=0;
+   amPend=amPend.then(()=>moved?AM.hideBanner().catch(()=>{}):0).then(()=>amOn?AM.showBanner({adId:ADS.banner,adSize:'BANNER',position:'BOTTOM_CENTER',margin:mg,isTesting:ADS.test}):0).catch(()=>{});}
+  else if(amOn){amOn=false;amMargin=-1;hideTill=Date.now()+8000;amPend=amPend.then(()=>AM.hideBanner()).catch(()=>{});}}catch(e){}}
+/* a showBanner still loading when the screen changed could finish after the hide and leave the banner up over a popup
+   (owner: the banner over "פרימיום פעיל!" and the pass): hides wait for the pending show, and are repeated for a few seconds */
+let amPend=Promise.resolve(),hideTill=0;
+function reHide(){if(!AM||amOn||Date.now()>hideTill)return;amPend=amPend.then(()=>AM.hideBanner()).catch(()=>{});}
+// no banner while a purchase runs and for a moment after (the store sheet, then the celebration)
+let buyTill=0;const buying=()=>Date.now()<buyTill;
+function hookBuy(){try{const I=window.MF2&&MF2.iap;if(!I||I.__adHook)return;I.__adHook=1;for(const k of ['buy','restore']){const f=I[k];if(typeof f!=='function')continue;
+  I[k]=function(){buyTill=Date.now()+600000;apply();let r;try{r=f.apply(this,arguments);}catch(e){buyTill=Date.now()+3000;throw e;}Promise.resolve(r).then(()=>{buyTill=Date.now()+3000;},()=>{buyTill=Date.now()+3000;});return r;};}}catch(e){}}
 let busyM=false;
 function apply(){if(!busyM){busyM=true;measure().then(()=>{busyM=false;apply2();});}}
-function apply2(){const w=want(),key=w?JSON.stringify(fit):'off';if(key===on)return;on=key;
+function apply2(){const w=want(),key=w?JSON.stringify(fit):'off';if(!w&&native&&!(A.h5||window.__mf2adWeb))reHide();if(key===on)return;on=key;
  if(A.h5||window.__mf2adWeb)webSlot(w);else if(native)admob(w);
  document.body.classList.remove('wb-desk','ad-banner');   // the v1 banner classes never apply in v2 (nothing is reserved)
  document.body.classList.toggle('mf2ad-on',!!w);}
 const shown=()=>!!on&&on!=='off';
 // every v1/v2 call goes through the policy; the screen state is checked often (cheap) and on every DOM change of the menu
 A.banner=function(){apply();};
-let mo=null;function watch(){css();try{mo=new MutationObserver(()=>{clearTimeout(watch.t);watch.t=setTimeout(apply,30);});mo.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});}catch(e){}
+let mo=null;function watch(){css();hookBuy();setTimeout(hookBuy,1500);try{mo=new MutationObserver(()=>{clearTimeout(watch.t);watch.t=setTimeout(apply,30);});mo.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});}catch(e){}
  setInterval(apply,700);document.addEventListener('visibilitychange',apply);addEventListener('resize',()=>setTimeout(apply,60));apply();}
 // ---------------- interstitials ----------------
 let resultAt=0,quietSince=0;   // quietSince: a chest, a purchase, a reward from the shop or the tutorial happened after the last result
