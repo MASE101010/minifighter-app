@@ -1,3 +1,1 @@
-9eaf9230b3aeaa1016db6b8fb35905972aebd136 minifighter-source (2026-11-16 11:36:14 +0200)
-Built with: git archive of that commit, MF_V2=1 python3 game/tools/build.py && python3 game/tools/split_web.py
-Rebuild: python3 build/update_game.py /path/to/minifighter-source [commit]
+4c5cc18144098d412f83f77e377d9e2de209faf4 minifighter-source (2026-11-16 15:43:13 +0200)
