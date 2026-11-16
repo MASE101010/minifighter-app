@@ -10,7 +10,8 @@ if [ "$what" = all ] || [ "$what" = shots ]; then
   python3 -u compose.py            # headline + frame, every store size, feature graphic
 fi
 if [ "$what" = all ] || [ "$what" = video ]; then
-  python3 -u video_capture.py appstore   # frame-exact takes, 1920x886
+  python3 -u video_capture.py appstore   # frame-exact takes, 1920x886 (app preview)
+  python3 -u video_capture.py play       # the same takes at 1920x1080 (Play promo)
   python3 -u video_edit.py               # the cuts, captions and sound
 fi
 python3 -u manifest.py             # spec check, manifest.json, contact sheets
