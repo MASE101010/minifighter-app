@@ -102,6 +102,14 @@ for g,i in [("עוברת לכל מכשיר עם אותו חשבון גוגל","�
     assert s.count(g)==1,g
     s=s.replace(g,i,1)
 bridge='''<script>
+// iPhone: the Google Mobile Ads SDK may change the app's audio session while a full-screen ad plays; when it closes,
+// the native MFAudio plugin (ios/App/App/AppDelegate.swift) sets category playback (no mixing) and activates it again
+(function(){const C=window.Capacitor;if(!C||!C.registerPlugin||!(C.getPlatform&&C.getPlatform()==='ios'))return;
+ const A=C.registerPlugin('MFAudio'),M=C.registerPlugin('AdMob');window.__mfAudioLast=null;
+ const re=r=>{try{A.setPlayback({reason:r}).then(x=>{window.__mfAudioLast=Object.assign({reason:r},x||{});}).catch(e=>{window.__mfAudioLast={reason:r,error:String(e&&e.message||e)};});}catch(e){}};
+ for(const ev of ['interstitialAdDismissed','interstitialAdFailedToShow','onRewardedVideoAdDismissed','onRewardedVideoAdFailedToShow','onRewardedInterstitialAdDismissed','onRewardedInterstitialAdFailedToShow','appOpenAdDismissed'])
+  {try{M.addListener(ev,()=>re(ev));}catch(e){}}
+ re('page');})();
 // Android back button: closes menus step by step, pauses a running fight, leaves the app from the title screen
 (function(){const C=window.Capacitor;if(!C||!C.registerPlugin)return;const App=C.registerPlugin('App');
  const vis=q=>{const e=document.querySelector(q);if(!e||!e.getClientRects().length)return false;const c=getComputedStyle(e);return c.display!=='none'&&c.visibility!=='hidden'&&+c.opacity>0;};
@@ -130,7 +138,9 @@ setInterval(()=>{try{const M=window.MF2,U=window.MF2UI,I=M&&M.iap;const pr=I&&I.
 if(U&&U.state&&(U.state()||{}).name==='onboard'&&M.setName&&!window.__smokeNamed){window.__smokeNamed=1;try{M.setName('Bodek');title();}catch(e){}}   // smoke: past the first-run naming screen to the lobby (where the banner lives)
 const AP=M&&M.adsPolicy&&M.adsPolicy.state?M.adsPolicy.state():null,lob=document.querySelector('#v2root .m2-lobby'),rc=e=>{if(!e)return null;const r=e.getBoundingClientRect();return [r.left,r.top,r.right,r.bottom].map(v=>Math.round(v*10)/10);};
 const lay=lob?{fight:rc(lob.querySelector('[data-a="fight"]')),mode:rc(lob.querySelector('.m2-bottom .modeb')||lob.querySelector('[data-a="modes"]')),plate:rc(lob.querySelector('.pband.placed .plate')),w:innerWidth,h:innerHeight,dpr:devicePixelRatio,ad:AP&&{shown:AP.shown,fit:AP.fit,payer:AP.payer}}:null;
-console.log('MFSMOKE '+JSON.stringify({lay,screen:U&&U.state&&(U.state()||{}).name,native:!!(I&&I.native),iapReady:!!(I&&I.ready),listed:pr.filter(p=>p.listed).length,products:pr.length,
+const SX=window.MF2SFX;if(SX&&SX.unlock&&!window.__smokeUnlock&&U&&U.state&&(U.state()||{}).name==='lobby'){window.__smokeUnlock=1;try{SX.unlock();}catch(e){}}   // smoke: the game's unlock without a real tap
+const si=SX&&SX.info?SX.info():null,audio=si?{state:si.state,unlocked:si.unlocked,session:si.session,ios:si.ios,native:window.__mfAudioLast}:null;
+console.log('MFSMOKE '+JSON.stringify({lay,audio,screen:U&&U.state&&(U.state()||{}).name,native:!!(I&&I.native),iapReady:!!(I&&I.ready),listed:pr.filter(p=>p.listed).length,products:pr.length,
 web:M&&M.shop?M.shop().filter(i=>i.kind==='real'&&(i.reason==='web'||i.reason==='test')).length:-1,platform:window.Capacitor&&Capacitor.getPlatform(),errors:E.slice(-6)}));}catch(e){console.log('MFSMOKE fail '+e);}},5000);})();</script>"""
 if SMOKE: s=s.replace('<head>','<head>'+SMOKE_JS,1)
 assert '<head>' in s

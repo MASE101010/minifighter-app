@@ -42,6 +42,7 @@ try:
 except Exception:
     print('SMOKE FAIL: no status line from the app'); sys.exit(1)
 ok = d.get('screen') in ('lobby', 'onboard') and d.get('native') and not any(e.startswith('load ') for e in d.get('errors', []))
+print('audio:', d.get('audio'), '(context state after the game\'s own unlock, no real tap; native = MFAudio.setPlayback answer)')
 print('platform', d.get('platform'), '| screen', d.get('screen'), '| purchases native', d.get('native'), '| billing ready', d.get('iapReady'),
       '| products listed by the store', d.get('listed'), 'of', d.get('products'), '| web-mode items', d.get('web'), '| errors', d.get('errors'))
 print('SMOKE', 'PASS' if ok else 'FAIL')

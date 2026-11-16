@@ -1,5 +1,7 @@
 import UIKit
 import Capacitor
+import AVFoundation
+import WebKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -7,7 +9,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        // Mini Fighter: game sound plays like a game (category playback: ignores the silent switch, does not mix
+        // with other apps' audio), set at launch and again after anything that may change it
+        MFAudio.setPlayback("launch")
+        let nc = NotificationCenter.default
+        nc.addObserver(forName: AVAudioSession.interruptionNotification, object: nil, queue: .main) { note in
+            let raw = note.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt
+            if raw == AVAudioSession.InterruptionType.ended.rawValue { MFAudio.setPlayback("interruption ended") }
+        }
+        nc.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in
+            MFAudio.setPlayback("active")
+        }
         return true
     }
 
@@ -40,5 +52,56 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                           sessionRole: connectingSceneSession.role)
         config.delegateClass = SceneDelegate.self
         return config
+    }
+}
+
+// MARK: - Mini Fighter audio session
+
+enum MFAudio {
+    /// .playback, mode default, no options (mixWithOthers off), then active
+    static func setPlayback(_ why: String) {
+        let session = AVAudioSession.sharedInstance()
+        do {
+            if session.category != .playback || !session.categoryOptions.isEmpty {
+                try session.setCategory(.playback, mode: .default, options: [])
+            }
+            try session.setActive(true)
+        } catch {
+            NSLog("MFAudio: setPlayback (\(why)) failed: \(error.localizedDescription)")
+        }
+    }
+}
+
+/// window.Capacitor.Plugins.MFAudio.setPlayback(): the page calls it when an AdMob full-screen ad closes
+/// (the Google Mobile Ads SDK may change the shared audio session while its ad plays)
+@objc(MFAudioPlugin)
+public class MFAudioPlugin: CAPPlugin, CAPBridgedPlugin {
+    public let identifier = "MFAudioPlugin"
+    public let jsName = "MFAudio"
+    public let pluginMethods: [CAPPluginMethod] = [
+        CAPPluginMethod(name: "setPlayback", returnType: CAPPluginReturnPromise)
+    ]
+
+    @objc func setPlayback(_ call: CAPPluginCall) {
+        DispatchQueue.main.async {
+            MFAudio.setPlayback(call.getString("reason") ?? "js")
+            let s = AVAudioSession.sharedInstance()
+            call.resolve(["category": s.category.rawValue, "mixWithOthers": s.categoryOptions.contains(.mixWithOthers)])
+        }
+    }
+}
+
+/// The app's bridge view controller (Main.storyboard): registers MFAudio and keeps inline media playback
+/// without a user gesture explicit (Capacitor's default today)
+class MFViewController: CAPBridgeViewController {
+    override func capacitorDidLoad() {
+        bridge?.registerPluginInstance(MFAudioPlugin())
+    }
+
+    override func webViewConfiguration(for instanceConfiguration: InstanceConfiguration) -> WKWebViewConfiguration {
+        let c = super.webViewConfiguration(for: instanceConfiguration)
+        c.allowsInlineMediaPlayback = true
+        c.mediaTypesRequiringUserActionForPlayback = []
+        return c
     }
 }
