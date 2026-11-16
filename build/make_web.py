@@ -52,7 +52,31 @@ s=s.replace(a,a+'if(window.MF_IOS)Object.assign(ADS,'+json.dumps(iosads)+');',1)
 # (consent form, iPhone tracking prompt), and its init re-showed a banner wanted meanwhile through api.banner(true),
 # which is now the policy's apply(): already "on", so it returned and AdMob never got showBanner (an empty reserved
 # space in the lobby). The policy keeps a handle to the original native call and init uses it.
-if 'v2 ADS POLICY' in s:
+if 'v2 ADS POLICY' in s and 'function admob(show)' in s:
+    # ads.js (from v2 cc78a7b) shows the AdMob banner itself (BOTTOM_CENTER + a margin into the lobby slot).
+    # 1) consent first, as in v1: the banner waits for the shared Ads init to finish (UMP consent form, iPhone tracking
+    #    prompt); ads.js only waited for AdMob.initialize, which comes before both.
+    a="if(!AM||!(window.ADSDBG&&ADSDBG.init==='OK'))return;"
+    assert s.count(a)==1,a
+    s=s.replace(a,"if(!AM||!(window.ADSDBG&&ADSDBG.init==='OK')||!A.__amReady)return;",1)
+    # 2) late init: ads.js stores the wanted state before AdMob can take it and never retries; when the shared init
+    #    is done it re-runs ads.js once (the slot is measured again, then showBanner with the margin)
+    a="A.banner=function(){apply();};"
+    assert s.count(a)==1,a
+    s=s.replace(a,a+"A.__adsKick=()=>{on=null;amOn=false;amMargin=-1;apply();};",1)
+    a="if(bannerOn){bannerOn=false;api.banner(true);}"
+    assert s.count(a)==1,a
+    s=s.replace(a,"api.__amReady=true;if(api.__adsKick)api.__adsKick();else if(bannerOn){bannerOn=false;api.banner(true);}",1)
+    # 3) iPhone: the plugin counts the margin from the bottom of the SAFE AREA (safeAreaLayoutGuide), the page from
+    #    the bottom of the screen (the WebView covers it, contentInset never): take the bottom inset off the margin.
+    #    Android: the app is immersive (no bars), margin in dp from the window bottom = the page's own bottom.
+    a="margin:Math.max(0,Math.round(innerHeight-bottom))"
+    assert s.count(a)==1,a
+    s=s.replace(a,"margin:Math.max(0,Math.round(innerHeight-bottom-(window.MF_IOS?__mfSab():0)))",1)
+    s=s.replace('<head>','<head><script>window.__mfSab=function(){if(window.__mfSabTest!=null)return window.__mfSabTest;try{const d=document.createElement("div");d.style.cssText="position:fixed;left:0;bottom:0;width:1px;height:env(safe-area-inset-bottom,0px);visibility:hidden;pointer-events:none";document.body.appendChild(d);const h=d.getBoundingClientRect().height;d.remove();return h||0;}catch(e){return 0;}};</script>',1)
+elif 'v2 ADS POLICY' in s:
+    # older ads.js (it called the shared Ads.banner): init re-showed a banner wanted before it was ready through
+    # api.banner(true) = the policy's apply(), which returned early; keep the original native call for init
     a="A.banner=function(){apply();};"
     if s.count(a)==1:
         s=s.replace(a,"A.__nativeBanner=ORIG.banner;"+a,1)
@@ -103,7 +127,10 @@ core=core.split('//# sourceMappingURL')[0]
 SMOKE_JS="""<script>(function(){const E=window.__mfErr=[];addEventListener('error',e=>{const t=e.target;E.push(t&&t!==window&&(t.src||t.href)?'load '+(t.src||t.href).slice(-60):String(e.message).slice(0,120));},true);
 addEventListener('unhandledrejection',e=>E.push('rej '+String(e.reason&&e.reason.message||e.reason).slice(0,120)));
 setInterval(()=>{try{const M=window.MF2,U=window.MF2UI,I=M&&M.iap;const pr=I&&I.products?I.products():[];
-console.log('MFSMOKE '+JSON.stringify({screen:U&&U.state&&(U.state()||{}).name,native:!!(I&&I.native),iapReady:!!(I&&I.ready),listed:pr.filter(p=>p.listed).length,products:pr.length,
+if(U&&U.state&&(U.state()||{}).name==='onboard'&&M.setName&&!window.__smokeNamed){window.__smokeNamed=1;try{M.setName('Bodek');title();}catch(e){}}   // smoke: past the first-run naming screen to the lobby (where the banner lives)
+const AP=M&&M.adsPolicy&&M.adsPolicy.state?M.adsPolicy.state():null,lob=document.querySelector('#v2root .m2-lobby'),rc=e=>{if(!e)return null;const r=e.getBoundingClientRect();return [r.left,r.top,r.right,r.bottom].map(v=>Math.round(v*10)/10);};
+const lay=lob?{fight:rc(lob.querySelector('[data-a="fight"]')),mode:rc(lob.querySelector('.m2-bottom .modeb')||lob.querySelector('[data-a="modes"]')),plate:rc(lob.querySelector('.pband.placed .plate')),w:innerWidth,h:innerHeight,dpr:devicePixelRatio,ad:AP&&{shown:AP.shown,fit:AP.fit,payer:AP.payer}}:null;
+console.log('MFSMOKE '+JSON.stringify({lay,screen:U&&U.state&&(U.state()||{}).name,native:!!(I&&I.native),iapReady:!!(I&&I.ready),listed:pr.filter(p=>p.listed).length,products:pr.length,
 web:M&&M.shop?M.shop().filter(i=>i.kind==='real'&&(i.reason==='web'||i.reason==='test')).length:-1,platform:window.Capacitor&&Capacitor.getPlatform(),errors:E.slice(-6)}));}catch(e){console.log('MFSMOKE fail '+e);}},5000);})();</script>"""
 if SMOKE: s=s.replace('<head>','<head>'+SMOKE_JS,1)
 assert '<head>' in s

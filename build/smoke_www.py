@@ -32,11 +32,45 @@ MOCK = ("window.__np=[];window.androidBridge={postMessage(m){const d=JSON.parse(
         " if(d.methodName==='getProducts')data={products:(d.options.productIdentifiers||[]).filter(i=>PR[i]).map(i=>({identifier:i,priceString:PR[i],title:i}))};"
         " if(d.methodName==='getPurchases')data={purchases:[]};"
         " if(d.methodName==='purchaseProduct'){setTimeout(()=>Capacitor.fromNative({callbackId:d.callbackId,pluginId:d.pluginId,methodName:d.methodName,success:false,error:{message:'User cancelled'}}),50);return;}}"
-        "if(d.pluginId==='AdMob'){(window.__ad=window.__ad||[]).push(d.methodName);if(d.methodName==='initialize'){setTimeout(()=>Capacitor.fromNative({callbackId:d.callbackId,pluginId:d.pluginId,methodName:d.methodName,success:true,data:{}}),6000);return;}}"
+        "if(d.pluginId==='AdMob'){(window.__ad=window.__ad||[]).push(d.methodName);if(d.methodName==='showBanner')(window.__adopts=window.__adopts||[]).push(d.options);if(d.methodName==='initialize'){setTimeout(()=>Capacitor.fromNative({callbackId:d.callbackId,pluginId:d.pluginId,methodName:d.methodName,success:true,data:{}}),6000);return;}}"
         "if(d.methodName==='addListener'){(window.__ls=window.__ls||{})[d.pluginId+'.'+d.options.eventName]=d.callbackId;return;}"
         "if(d.pluginId==='AdMob'&&d.methodName==='showBanner'){const c=(window.__ls||{})['AdMob.bannerAdSizeChanged'];if(c)setTimeout(()=>Capacitor.fromNative({callbackId:c,pluginId:'AdMob',methodName:'addListener',success:true,data:{width:320,height:56}}),300);}"
         "setTimeout(()=>Capacitor.fromNative({callbackId:d.callbackId,pluginId:d.pluginId,methodName:d.methodName,success:true,data}),20);}};"
         "window.Capacitor={DEBUG:false,isLoggingEnabled:false,Plugins:{}};\n" % json.dumps(PR)) + NB + "\nwindow.Capacitor.PluginHeaders=" + json.dumps(HEADERS) + ";"
+
+PLACE_JS = """(sab)=>{const o=(window.__adopts||[]).slice(-1)[0];const st=MF2.adsPolicy.state();if(!st.shown||!o)return {shown:false,fit:st.fit};
+ const W=innerWidth,H=innerHeight,bw=320,bh=50,left=W/2-bw/2,bottom=H-sab-o.margin,top=bottom-bh;
+ const lob=document.querySelector('#v2root .m2-lobby');const f=lob.querySelector('[data-a="fight"]').getBoundingClientRect();
+ const m=(lob.querySelector('.m2-bottom .modeb')||lob.querySelector('[data-a="modes"]')).getBoundingClientRect();
+ const P=(lob.querySelector('.pband.placed .plate')||{getBoundingClientRect:()=>null}).getBoundingClientRect();
+ const L=f.left<m.left?f:m,R=f.left<m.left?m:f;
+ const pg=P?Math.max(Math.max(left,P.left)-Math.min(left+bw,P.right),Math.max(top,P.top)-Math.min(bottom,P.bottom)):null;
+ return {shown:true,W,H,margin:o.margin,position:o.position,banner:[Math.round(left),Math.round(top),Math.round(left+bw),Math.round(bottom)],
+  gapLeft:Math.round(left-L.right),gapRight:Math.round(R.left-(left+bw)),bottomVsSlot:Math.round(bottom-Math.min(f.bottom,m.bottom)),plateGap:pg==null?null:Math.round(pg),fit:st.fit};}"""
+
+
+def placement(pg):
+    """Where AdMob would draw the banner from the margin ads.js sent (BOTTOM_CENTER): Android counts the margin from
+    the window bottom (the app is immersive), iPhone from the bottom of the safe area. It must sit in the lobby slot:
+    at least 12 px from the fight and mode buttons and from the nameplate card, its bottom on the row's bottom line."""
+    good = True
+    for plat, sab in (('android', 0), ('ios', 21)):
+        for w, h in ((844, 390), (932, 430), (740, 360), (915, 412)):
+            pg.set_viewport_size({'width': w, 'height': h})
+            pg.evaluate(f"window.MF_IOS={'true' if plat == 'ios' else 'false'};window.__mfSabTest={sab}")
+            pg.evaluate("title()"); pg.wait_for_timeout(1500); pg.evaluate("MF2.adsPolicy.apply()"); pg.wait_for_timeout(900)
+            r = pg.evaluate(PLACE_JS, sab)
+            if not r['shown']:
+                print(f'placement {plat} {w}x{h}: no banner (the slot does not fit at this size: fit={r["fit"]})'); continue
+            # iPhone: AdMob anchors to the safe area, so a slot whose bottom line is inside the home-indicator band gets
+            # the banner's bottom on the safe-area line instead (never in the band); everything else is the same
+            want_shift = 0 if plat == 'android' else -max(0, sab - (h - (r['banner'][3] - r['bottomVsSlot'])))
+            fine = r['gapLeft'] >= 12 and r['gapRight'] >= 12 and abs(r['bottomVsSlot'] - want_shift) <= 1 and (r['plateGap'] is None or r['plateGap'] >= 12) and r['banner'][1] >= 0 and r['banner'][3] <= h - sab + 1
+            good = good and fine
+            print(f"placement {plat} {w}x{h}: {'OK ' if fine else 'BAD'} margin {r['margin']} banner {r['banner']} gaps L{r['gapLeft']} R{r['gapRight']} plate {r['plateGap']} bottom vs slot {r['bottomVsSlot']}")
+    pg.evaluate("window.MF_IOS=false;window.__mfSabTest=null")
+    return good
+
 
 bad, errors, fails = [], [], []
 with sync_playwright() as pw:
@@ -81,14 +115,9 @@ with sync_playwright() as pw:
         ad = pg.evaluate('window.__ad||[]')
         pol = pg.evaluate('MF2.adsPolicy?MF2.adsPolicy.state():null')
         print('AdMob calls:', ad, '| policy:', pol and {k: pol[k] for k in ('want', 'shown', 'payer')}, '| body.ad-banner:', pg.evaluate("document.body.classList.contains('ad-banner')"))
-        # the app's banner space: AdMob reports its height (56 here); the lobby's bottom padding must equal it, full width
-        sp = pg.evaluate('''(()=>{const m=document.getElementById('menu'),r=document.getElementById('v2root');const cs=getComputedStyle(m);
-          return {pad:parseFloat(cs.paddingBottom),adh:getComputedStyle(document.documentElement).getPropertyValue('--adh').trim(),
-          rootW:r?r.getBoundingClientRect().width:0,vw:innerWidth,rootBottom:r?r.getBoundingClientRect().bottom:0,vh:innerHeight}})()''')
-        print('banner space:', sp)
         if pol is not None:
             ok = ok and pol['want'] and 'showBanner' in ad and 'loadAppOpen' not in ad and 'showAppOpen' not in ad
-            ok = ok and abs(sp['pad'] - 56) < 0.5 and sp['rootW'] >= 0.98 * sp['vw'] and sp['vh'] - sp['rootBottom'] <= 56.5
+            ok = ok and ad.index('showBanner') > ad.index('prepareInterstitial')   # only after the shared init (consent first)
         pg.evaluate("MF2UI.go('shop',{tab:'shop'})"); pg.wait_for_timeout(1500)
         ad2 = pg.evaluate('window.__ad||[]')
         print('after opening the shop:', ad2[len(ad):], '| body.ad-banner:', pg.evaluate("document.body.classList.contains('ad-banner')"))
@@ -96,6 +125,8 @@ with sync_playwright() as pw:
             ok = ok and 'hideBanner' in ad2[len(ad):]
         if SHOTS:
             pg.screenshot(path=os.path.join(SHOTS, 'shop_native.png'))
+        if pol is not None:
+            ok = placement(pg) and ok
     b.close()
 print('missing bundle files:', bad[:10])
 print('page errors:', errors[:5])

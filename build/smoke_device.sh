@@ -11,6 +11,12 @@ if [ "$PLAT" = android ]; then
   adb shell am start -n $ID/.MainActivity
   for i in $(seq 1 24); do sleep 5; adb logcat -d > "$OUT/log.txt"; grep -q 'MFSMOKE {"screen":"\(lobby\|onboard\)"' "$OUT/log.txt" && break; done
   sleep 8; adb logcat -d > "$OUT/log.txt"; adb exec-out screencap -p > "$OUT/android_lobby.png"
+  # the real AdMob test banner in the lobby: wait for its view, then compare its place with the slot the page reports
+  BRES=2
+  for i in $(seq 1 18); do adb shell dumpsys activity top > "$OUT/views.txt"; adb logcat -d > "$OUT/log.txt"
+    python3 "$(dirname "$0")/android_banner.py" "$OUT/views.txt" "$OUT/log.txt" > "$OUT/banner.txt"; BRES=$?; [ $BRES -ne 2 ] && break; sleep 5; done
+  cat "$OUT/banner.txt"; adb exec-out screencap -p > "$OUT/android_banner.png"
+  [ $BRES -eq 1 ] && echo "SMOKE FAIL: banner outside the lobby slot" && exit 1
 else
   UDID=$(xcrun simctl list devices available -j | python3 -c "import json,sys;d=json.load(sys.stdin)['devices'];print(next(x['udid'] for k,v in d.items() if 'iOS' in k for x in v if 'iPhone' in x['name']))")
   xcrun simctl boot "$UDID"; xcrun simctl bootstatus "$UDID" -b

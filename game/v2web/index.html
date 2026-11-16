@@ -2330,6 +2330,17 @@ html body #mf2pt,html body #mf2fr{background:rgba(6,8,32,.74);backdrop-filter:bl
 html body #mf2fr-inv{background:linear-gradient(180deg,#2a379f,#1f2a85);border:3px solid #ffd23f;font-family:Rubik,Arial,sans-serif}
 /* the hero picture keeps clear of the news line above it */
 .v2 .m2-lobby .m2-stage .hero{padding-top:12px;box-sizing:border-box}
+/* top bar badges (inbox count, login dot, friends requests, profile dot) stay inside the icon's top corner and on screen */
+.v2 .m2-top .dot{animation:none}
+.v2 .m2-top .lic .dot{top:8px;left:0}
+.v2 .m2-top .prof .dot{top:6px}
+.v2 .m2-top .frb .dot{top:8px;left:auto;right:0}
+/* the fighter nameplate: a compact card on the stage beside the hero (placePlate), the bottom-centre slot is the ad's */
+.v2 .m2-lobby .pband{position:absolute;left:var(--plx,auto);right:auto;top:var(--ply,auto);bottom:auto;width:var(--plw,150px);height:auto;display:block;z-index:4;visibility:hidden}
+.v2 .m2-lobby .pband.placed{visibility:visible}
+.v2 .m2-lobby .pband .plate{flex-direction:column;align-items:center;justify-content:center;height:auto;min-height:var(--tap,56px);width:100%;padding:8px 8px 10px;gap:5px;text-align:center}
+.v2 .m2-lobby .pband .plate .nm{font-size:22px;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.v2 .m2-lobby .pband .plate .pkslots{justify-content:center}
 
 /* ===================== Mini Fighter 2.0: skins UI (owner: SKINS agent; the UI agent may restyle) =====================
    Injected after ui.css in the v2 build only. Text sizes use the --f13/--f14 vars (at least 12.8 px on screen). */
@@ -8258,7 +8269,7 @@ function fitZ(){if(!root||!root.isConnected)return;const cs=getComputedStyle(roo
 function fitTexts(el){(el||root).querySelectorAll('.fit').forEach(e=>{e.style.fontSize='';e.style.whiteSpace='';e.style.overflowWrap='';let fs=parseFloat(getComputedStyle(e).fontSize),min=Math.min(fs,Math.max(fs*.55,12.5/((root&&root._z)||1))),n=0;
  while((e.scrollWidth>e.clientWidth+1||e.scrollHeight>e.clientHeight+2)&&fs>min&&n++<30){fs=Math.max(min,fs-1);e.style.fontSize=fs+'px';}
  if(e.scrollWidth>e.clientWidth+1){e.style.whiteSpace='normal';e.style.overflowWrap='anywhere';}});}
-addEventListener('resize',()=>requestAnimationFrame(()=>{if(active()){fitZ();fitTexts();anchorArt();}}));
+addEventListener('resize',()=>requestAnimationFrame(()=>{if(active()){fitZ();fitTexts();anchorArt();placePlate();}}));
 let lastScr=null;
 let COACH=0,scrT=0,LVUP=null,CELEQ=[];
 function mount(html,cls){clearInterval(heroTimer);clearInterval(scrT);openSheet=null;const ent=!!(SCR&&SCR.name!==lastScr&&lastScr);HENT=!!(SCR&&SCR.name!==lastScr);lastScr=SCR&&SCR.name;
@@ -8419,7 +8430,7 @@ S.lobby={back:null,show(){const s=st(),sel=s.selected,f=s.fighters[sel]||{},ms=M
  </aside>
  <footer class="m2-bottom"><button class="b n modeb" data-a="modes"><span class="mi" style="background:${(MODECOL[m.id]||MODECOL.duel)[1]}">${modeArt(m.id,96,96)}</span><span class="mt"><small>${esc(modeShort(m))}</small><b class="o fit">${esc(m.title)}</b></span>${ico('chev',24)}${m.bonus?`<span class="x2" aria-label="מטבעות כפולים היום">${ico('coin',16)}x2</span>`:''}</button>
   <button class="b y fight" data-a="fight" data-first><span class="fx"></span><span>קרב!</span></button></footer>`;
- mount(html,'m2-lobby');
+ mount(html,'m2-lobby');placePlate();
  if(s.welcome)sheetWelcome(s.welcome);
  else if(!COACH&&!LVUP&&!CELEQ.length&&loginDue())setTimeout(()=>{if(SCR&&SCR.name==='lobby'&&!openSheet&&loginDue()){UIS.loginDay=new Date().toDateString();saveUIS();sheetLogin();}},650);
  else if(COACH){const c=COACH;COACH=0;setTimeout(()=>{if(SCR&&SCR.name==='lobby'&&!openSheet)coachStart(c);},400);}
@@ -8503,7 +8514,7 @@ S.modes={back:()=>go('lobby'),show(){const s=st(),ms=MF().modes();
 function startSearch(){if(!MF())return;try{goFull();}catch(_){}mm={state:'searching',mode:st().mode,elapsed:0,teams:null,t0:Date.now(),seen:new Set()};go('mm');try{MF().findMatch();}catch(e){console.error(e);}}
 function slotHTML(sl,i,seen){if(sl&&!sl.name)sl=Object.assign({},sl,{name:sl.isYou?'אני':'שחקן'});if(!sl)return `<div class="slot2"><div class="pc wait">${ico('search',54)}</div><span class="nm os">מחפש...</span><span class="tag" style="color:#c9d1ff">ממתין</span></div>`;
  const key=(sl.name||'')+'|'+sl.fighter,isNew=!seen.has(key);seen.add(key);
- return `<div class="slot2 ${sl.isYou?'me':''} ${isNew?'in':''}${rqc(frar(sl.fighter))}"><div class="pc">${cvP(sl.skin||sl.fighter,236,300)}${rtag(frar(sl.fighter),'stg')}${Array.isArray(sl.perks)&&sl.perks.length?`<span class="pkslots mini pkr">${sl.perks.slice(0,2).map(p=>`<i class="psl on" title="${esc(p.name||'')}">${pico(p.icon,16)}</i>`).join('')}</span>`:''}</div><span class="nm os fit">${esc(sl.name)}</span><span class="tag fit">${esc(fname(sl.fighter))} · ${fmt(sl.trophies)}</span></div>`;}
+ return `<div class="slot2 ${sl.isYou?'me':''} ${isNew?'in':''}${rqc(frar(sl.fighter))}"><div class="pc">${cvP(sl.skin||sl.fighter,236,300)}</div><span class="nm os fit">${esc(sl.name)}</span><span class="tag fit">${esc(fname(sl.fighter))} · ${fmt(sl.trophies)}</span></div>`;}
 function mmTeams(){const d=mm,s=st(),ms=MF().modes(),m=ms.find(x=>x.id===d.mode)||ms[0];const me={name:s.name||'אני',fighter:s.selected,trophies:(s.fighters[s.selected]||{}).trophies||0,isYou:true};
  const n=m.players||2,ts=m.teamSize||(d.mode==='ffa'?1:n/2);let t=d.teams&&d.teams.length?d.teams:[[me]];
  if(d.mode==='ffa'){const all=[].concat(...t).filter(Boolean);while(all.length<n)all.push(null);return `<div class="ffa">${all.slice(0,n).map(x=>slotHTML(x,0,d.seen)).join('')}</div>`;}
@@ -9411,7 +9422,22 @@ function ptPlace(stage){const hb=stage.querySelector('.hero .hbx'),z=stage.query
   const a=A||[.25,.75,.02,.96],L=(il+a[0]*iw-S.left)/k,R=(il+a[1]*iw-S.left)/k,T=(it+a[2]*ih-S.top)/k,F=(it+a[3]*ih-S.top)/k,W=S.width/k,gap=8;
   const room=Math.max(0,Math.min(L-gap,W-R-gap)),sw=Math.max(56,Math.min(118,room)),sh=Math.min((F-T)*.78,sw*1.5);
   z.style.cssText=`--sw:${sw.toFixed(0)}px;--sh:${sh.toFixed(0)}px;--fy:${F.toFixed(0)}px;--lx:${(L-gap-sw).toFixed(0)}px;--rx:${(R+gap).toFixed(0)}px`;
-  const c=stage.querySelector('.ptc');if(c)c.style.cssText=`--cl:${L.toFixed(0)}px;--cw:${(R-L).toFixed(0)}px;--ct:${T.toFixed(0)}px;--fy:${F.toFixed(0)}px`;});}
+  const c=stage.querySelector('.ptc');if(c)c.style.cssText=`--cl:${L.toFixed(0)}px;--cw:${(R-L).toFixed(0)}px;--ct:${T.toFixed(0)}px;--fy:${F.toFixed(0)}px`;placePlate();});}
+/* the fighter nameplate is a compact card standing on the stage beside the hero (owner: the bottom-centre slot is the
+   ad's), at knee to waist height, on the side with more room between the hero (and its invite slot) and the side
+   column; never on the hero's alpha box, the invite slots, the side columns or the top bar. Same place with or without
+   an ad. Positions in design px of the lobby. */
+function placePlate(){const lob=root&&root.querySelector('.m2.m2-lobby'),st=lob&&lob.querySelector('.m2-stage'),hb=st&&st.querySelector('.hero .hbx'),pb=lob&&lob.querySelector('.pband');if(!pb||!hb)return;const id=hb.dataset.hero;
+ heroAlpha(id).then(A=>{if(!pb.isConnected)return;const z=root._z||1,M=lob.getBoundingClientRect(),B=hb.getBoundingClientRect(),m=heroMeta(id),kk=100/.95,iw=B.width*kk/100,ih=B.height*kk/100,il=B.left+B.width*(50-m.cx*kk)/100,it=B.top+B.height*(98.5-m.foot*kk)/100;
+  const a=A||[.25,.75,.02,.96],X=v=>(v-M.left)/z,Y=v=>(v-M.top)/z,hL=X(il+a[0]*iw),hR=X(il+a[1]*iw),hT=Y(it+a[2]*ih),hF=Y(it+a[3]*ih),g=10;
+  const R=(q)=>{const e=lob.querySelector(q);if(!e||e.offsetParent===null)return null;const r=e.getBoundingClientRect();return {l:X(r.left),r:X(r.right),t:Y(r.top),b:Y(r.bottom)};};
+  const side=R('.m2-side'),pan=R('.m2-panels'),fight=R('[data-a="fight"]'),mode=R('.m2-bottom .modeb')||R('[data-a="modes"]');
+  let rR=hR,lL=hL;lob.querySelectorAll('.ptz .ptslot,.ptc .ptslot').forEach(e=>{const r=e.getBoundingClientRect();if(!r.width)return;const l=X(r.left),rr=X(r.right);if(l>=hR-2)rR=Math.max(rR,rr);else if(rr<=hL+2)lL=Math.min(lL,l);});
+  const W=lob.clientWidth,rightRoom=[rR+g,(side?side.l:W)-g],leftRoom=[(pan?pan.r:0)+g,lL-g];
+  const use=(rightRoom[1]-rightRoom[0])>=(leftRoom[1]-leftRoom[0])?rightRoom:leftRoom,w=Math.max(96,Math.min(170,use[1]-use[0]));
+  pb.style.setProperty('--plw',w.toFixed(0)+'px');pb.style.setProperty('--plx',((use[0]+use[1])/2-w/2).toFixed(0)+'px');
+  const h=pb.offsetHeight||100,bottomMax=Math.min(fight?fight.t:9e9,mode?mode.t:9e9)-12,cy=hT+(hF-hT)*.62;
+  pb.style.setProperty('--ply',Math.max(hT,Math.min(bottomMax-h,cy-h/2)).toFixed(0)+'px');pb.classList.add('placed');});}
 function lobbyIcons(){const L=loginSt(),I=inboxSt();let h='';
  if(I)h+=`<button class="hit lic" data-a="inbox" aria-label="דואר${I.unread?`, ${I.unread} הודעות חדשות`:''}"><span class="lib">${IC.mail(26)}</span>${I.unread?`<i class="dot n">${I.unread}</i>`:''}</button>`;
  if(L)h+=`<button class="hit lic" data-a="login" aria-label="פרס כניסה יומי${L.canClaim?', אפשר לאסוף':''}"><span class="lib">${IC.cal(26)}</span>${L.canClaim?'<i class="dot"></i>':''}</button>`;
@@ -9614,10 +9640,10 @@ boot();
 ;/* v2 ADS POLICY (v2 build only; the production build never includes this file, its shared `Ads` object stays as it is).
    Owner: "the banner only on the main lobby, and much lighter ads so the game is fun".
    BANNER: shown only while the v2 lobby is the visible screen with nothing over it (no sheet, popup, reveal, chest, party
-     or friends sheet, no fight). Web: our own slim slot, a fixed 320x50 AdSense unit (468x60 on wide screens) centred in a
-     transparent strip exactly the ad's height (no tray, no padding), fixed size (no auto / responsive format, so AdSense cannot inflate it); the v1 #webBanner is never
-     used. App: the AdMob banner of the shared Ads object (320x50 'BANNER'), shown and hidden by the same rule. While the
-     banner is shown, the lobby gets its height as bottom padding (the v2 layout scales into the rest), never covered.
+     or friends sheet, no fight), and only where its slot fits (see measure). Web: our own fixed 320x50 AdSense unit (no
+     auto / responsive format, no frame, no padding), the v1 #webBanner is never used. App: the AdMob 320x50 'BANNER' at
+     the bottom centre, lifted by a margin into the same slot. The slot sits INSIDE the lobby's bottom row: nothing is
+     reserved, the lobby never shrinks, nothing moves.
    INTERSTITIAL: none in a new player's first 3 days or first 15 matches; then at most one per 5 matches and 6 minutes
      apart, only when going back to the lobby after a result (MF2.continueAfterResult), never right after a win streak, a
      chest, a purchase or the tutorial. Every other caller (v1 menus, online result, pause) gets nothing.
@@ -9646,39 +9672,47 @@ function lobbyClear(){try{const r=v2root();if(!r||!r.isConnected)return false;if
   if(r.querySelector('.scrim,.cele,.drop,.dfrev,.coach,.toast2.big'))return false;
   if(document.querySelector('#mf2pt,#mf2fr,#mf2ms,#mf2gate,#mf2fr-inv'))return false;
   if(document.hidden)return false;return true;}catch(e){return false;}}
-const want=()=>!payer()&&lobbyClear();
-// the slim web slot (our own element; the v1 #webBanner is hidden for good in the v2 build)
-let tray=null,on=null,wide=null;
-const isWide=()=>innerWidth>=1000&&innerHeight>=600;
+/* WHERE: inside the lobby's bottom row, between the קרב! button and the mode button, its bottom on that row's bottom line.
+   Nothing is reserved and nothing moves (the fighter nameplate is a card on the stage beside the hero now, ui.js
+   placePlate). Shown only where the 320x50 slot keeps 12 px from both buttons and from the nameplate card. */
+const AW=320,AH=50,GAP=12;
+let fit=null;   // {left, top, margin} in CSS px, or null when the slot does not fit at this size
+async function measure(){try{const r=v2root(),lob=r&&r.querySelector('.m2-lobby');if(!lob){fit=null;return;}
+  const f=lob.querySelector('[data-a="fight"]'),m=lob.querySelector('.m2-bottom .modeb')||lob.querySelector('[data-a="modes"]'),pl=lob.querySelector('.pband.placed .plate');if(!f||!m){fit=null;return;}
+  const F=f.getBoundingClientRect(),M=m.getBoundingClientRect(),lo=Math.min(F.right,M.right)+GAP,hi=Math.max(F.left,M.left)-GAP;
+  if(hi-lo<AW){fit=null;return;}
+  const bottom=Math.min(F.bottom,M.bottom),top=bottom-AH,left=Math.round((lo+hi)/2-AW/2);
+  if(pl){const P=pl.getBoundingClientRect();const dx=Math.max(0,Math.max(left,P.left)-Math.min(left+AW,P.right)),dy=Math.max(0,Math.max(top,P.top)-Math.min(bottom,P.bottom));if(Math.max(dx,dy)<GAP){fit=null;return;}}
+  fit={left,top:Math.round(top),margin:Math.max(0,Math.round(innerHeight-bottom))};}catch(e){fit=null;}}
+const want=()=>!payer()&&lobbyClear()&&!!fit;
+let tray=null,on=null;
 function css(){if(document.getElementById('mf2ad-css'))return;const s=document.createElement('style');s.id='mf2ad-css';s.textContent=`
 #webBanner{display:none!important}body.wb-desk #app{height:100%!important}
-#mf2ad{position:fixed;left:0;right:0;bottom:env(safe-area-inset-bottom,0px);height:var(--mf2adh0,50px);z-index:40;display:none;justify-content:center;align-items:flex-end;background:transparent;pointer-events:none;margin:0;padding:0;border:0}
-#mf2ad.on{display:flex}#mf2ad ins{display:block;overflow:hidden;pointer-events:auto;flex:none}
-body.mf2ad-on #v2root{padding-bottom:calc(var(--mf2adh0,50px) + var(--mf2adx,0px) + env(safe-area-inset-bottom,0px))!important}`;document.head.appendChild(s);}
+#mf2ad{position:fixed;z-index:40;display:none;width:${AW}px;height:${AH}px;background:transparent;margin:0;padding:0;border:0}
+#mf2ad.on{display:block}#mf2ad ins{display:block;overflow:hidden}`;document.head.appendChild(s);}
 function webSlot(show){css();if(!tray){tray=document.createElement('div');tray.id='mf2ad';tray.setAttribute('aria-label','פרסומת');document.body.appendChild(tray);}
- const w=isWide(),d=w?[468,60]:[320,50];
- if(show&&(!tray.firstChild||wide!==w)){wide=w;tray.innerHTML='';const ins=document.createElement('ins');ins.className='adsbygoogle';ins.style.cssText=`display:block;width:${d[0]}px;height:${d[1]}px`;
+ if(show&&!tray.firstChild){const ins=document.createElement('ins');ins.className='adsbygoogle';ins.style.cssText=`display:block;width:${AW}px;height:${AH}px`;
   try{ins.setAttribute('data-ad-client',ADS.webClient);ins.setAttribute('data-ad-slot',ADS.webBannerSlot);}catch(e){}ins.setAttribute('data-full-width-responsive','false');
   tray.appendChild(ins);if(!window.__mf2adTest){try{(window.adsbygoogle=window.adsbygoogle||[]).push({});}catch(e){}}}
- tray.classList.toggle("on",show);return d[1];}
-function apply(){const w=want();if(w===on)return;on=w;
- let h=0;
- if(A.h5||window.__mf2adWeb){h=webSlot(w);}
- else if(native){try{ORIG.banner.call(A,w);}catch(e){}}   // the app reserves its space through the shared body.ad-banner rule (#menu padding = the banner height)
- document.body.classList.remove('wb-desk','ad-banner');   // the v1 web banner classes never apply in v2
- if(native&&w)document.body.classList.add('ad-banner');
- const de=document.documentElement.style;de.setProperty('--mf2adh0',h+'px');de.setProperty('--mf2adx','0px');document.body.classList.toggle('mf2ad-on',w&&(h>0));
- try{window.dispatchEvent(new Event('resize'));}catch(e){}
- if(w&&h)requestAnimationFrame(()=>requestAnimationFrame(clearance));}
-/* at least 8 px between the ad and any tappable control (accidental-click policy): taken from the lobby's own bottom room;
-   only when the lowest control would come closer does the lobby give up the missing pixels */
-function clearance(){try{const ins=tray&&tray.querySelector('ins'),r=document.getElementById('v2root');if(!ins||!r||!on)return;const top=ins.getBoundingClientRect().top;
-  let low=0;r.querySelectorAll('button,a,[data-a],input').forEach(e=>{if(e.offsetParent===null)return;const b=e.getBoundingClientRect();if(b.width&&b.height&&b.bottom>low)low=b.bottom;});
-  const gap=top-low;if(gap<8){const cur=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--mf2adx'))||0;document.documentElement.style.setProperty('--mf2adx',Math.ceil(cur+8-gap)+'px');window.dispatchEvent(new Event('resize'));}}catch(e){}}
+ if(show&&fit){tray.style.left=fit.left+'px';tray.style.top=fit.top+'px';}
+ tray.classList.toggle('on',!!show);}
+// the app: the AdMob banner at the bottom centre, lifted by a margin so it sits in the same slot (AdMob draws over the WebView)
+let AM=null,amOn=false,amMargin=-1;
+function admob(show){try{if(!AM&&window.Capacitor&&Capacitor.registerPlugin)AM=Capacitor.registerPlugin('AdMob');if(!AM||!(window.ADSDBG&&ADSDBG.init==='OK'))return;
+  if(show){const mg=fit?fit.margin:0;if(amOn&&mg===amMargin)return;amMargin=mg;amOn=true;
+   (amOn&&amMargin!==mg?AM.hideBanner().catch(()=>{}):Promise.resolve()).then(()=>AM.showBanner({adId:ADS.banner,adSize:'BANNER',position:'BOTTOM_CENTER',margin:mg,isTesting:ADS.test})).catch(()=>{});}
+  else if(amOn){amOn=false;amMargin=-1;AM.hideBanner().catch(()=>{});}}catch(e){}}
+let busyM=false;
+function apply(){if(!busyM){busyM=true;measure().then(()=>{busyM=false;apply2();});}}
+function apply2(){const w=want(),key=w?JSON.stringify(fit):'off';if(key===on)return;on=key;
+ if(A.h5||window.__mf2adWeb)webSlot(w);else if(native)admob(w);
+ document.body.classList.remove('wb-desk','ad-banner');   // the v1 banner classes never apply in v2 (nothing is reserved)
+ document.body.classList.toggle('mf2ad-on',!!w);}
+const shown=()=>!!on&&on!=='off';
 // every v1/v2 call goes through the policy; the screen state is checked often (cheap) and on every DOM change of the menu
 A.banner=function(){apply();};
-let mo=null;function watch(){css();const m=document.getElementById('menu')||document.body;try{mo=new MutationObserver(()=>{clearTimeout(watch.t);watch.t=setTimeout(apply,30);});mo.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});}catch(e){}
- setInterval(apply,700);document.addEventListener('visibilitychange',apply);addEventListener('resize',()=>{if(on&&tray&&isWide()!==wide){on=null;apply();}});apply();}
+let mo=null;function watch(){css();try{mo=new MutationObserver(()=>{clearTimeout(watch.t);watch.t=setTimeout(apply,30);});mo.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});}catch(e){}
+ setInterval(apply,700);document.addEventListener('visibilitychange',apply);addEventListener('resize',()=>setTimeout(apply,60));apply();}
 // ---------------- interstitials ----------------
 let resultAt=0,quietSince=0;   // quietSince: a chest, a purchase, a reward from the shop or the tutorial happened after the last result
 const mark=()=>{quietSince=Date.now();};
@@ -9697,8 +9731,8 @@ A.interstitial=async function(){if(!gate)return;gate=false;const d=due(MF2.lastR
 if(typeof MF2.continueAfterResult==='function'){const _c=MF2.continueAfterResult;MF2.continueAfterResult=function(){const r=MF2.lastResult,toLobby=MF2.adCtx==='lobby';MF2.adCtx=null;if(r)r.adDue=toLobby;gate=toLobby;const p=_c.apply(this,arguments);Promise.resolve(p).finally(()=>{gate=false;});return p;};}
 try{MF2.on('reward',e=>{if(e&&/^(shop|iap|drop|tutorial)$/.test(e.source))mark();});MF2.on('iap',mark);MF2.on('tutorial',mark);}catch(e){}
 for(const k of ['openDrop','finishDrop','buy']){if(typeof MF2[k]==='function'){const f=MF2[k];MF2[k]=function(){mark();return f.apply(this,arguments);};}}   // a chest opened or anything bought after the result
-MF2.adsPolicy={state:()=>Object.assign({payer:payer(),want:want(),shown:!!on,quietSince,resultAt},ld()),want,due:()=>due(MF2.lastResult),apply,CFG,
- reset:o=>{sv(Object.assign({first:Date.now(),matches:0,since:0,last:0},o||{}));quietSince=0;resultAt=0;on=null;apply();}};
+MF2.adsPolicy={state:()=>Object.assign({payer:payer(),want:want(),shown:shown(),fit,quietSince,resultAt},ld()),want,due:()=>due(MF2.lastResult),apply,CFG,
+ reset:o=>{sv(Object.assign({first:Date.now(),matches:0,since:0,last:0},o||{}));quietSince=0;resultAt=0;on=null;apply();},measure};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',watch);else watch();
 })();
 
