@@ -8060,13 +8060,37 @@ function session(){const quiet=levels().mute||hidden;
 // iOS also puts the context in "interrupted" (a call, Siri, a full-screen ad changing the audio session) or leaves it
 // suspended; nothing resumed it until the next tap. A light watchdog (the director's 350 ms timer) resumes it.
 let resumeTry=0,adQuiet=false;
-function keepAlive(){try{if(!AC||!unlocked||hidden||adQuiet||dead)return;if(AC.state!=='running'&&Date.now()-resumeTry>1200){resumeTry=Date.now();const p=AC.resume();if(p&&p.then)p.then(()=>applyMusic(),()=>{});}}catch(e){}}
+function keepAlive(){try{if(!AC||!unlocked||adQuiet||dead)return;if(hidden)return;
+  if(AC.state!=='running'){stallT=0;if(Date.now()-resumeTry>1200){resumeTry=Date.now();const p=AC.resume();if(p&&p.then)p.then(()=>applyMusic(),()=>{});}return;}
+  // "running" but the clock stands still: the iPhone left the context dead after a system sheet (owner: no sound at all
+  // after a real-money purchase, 2026-11-17). First a suspend / resume kick, then a new context.
+  const ct=AC.currentTime,now=Date.now();if(ct!==stallC){stallC=ct;stallT=now;stallN=0;return;}if(!stallT){stallT=now;return;}
+  if(now-stallT>1500){stallT=now;stallN++;if(stallN===1)kick('stall');else if(stallN>=2){stallN=0;rebuild('stall');}}}catch(e){}}
+let stallC=-1,stallT=0,stallN=0,wantRebuild=false,revives=0,lastWhy='';
+const nativeSession=why=>{try{if(win.__mfAudioRe)win.__mfAudioRe('sfx:'+why);}catch(e){}};
+function kick(why){try{if(!AC||dead)return;lastWhy='kick:'+why;nativeSession(why);session();const a=AC,go=()=>{try{if(a!==AC||hidden||adQuiet)return;const p=a.resume();if(p&&p.then)p.then(()=>applyMusic(),()=>{});}catch(e){}};
+  const q=a.suspend();if(q&&q.then)q.then(go,go);else setTimeout(go,60);}catch(e){}}
+// a new context with the same sounds; the music the director wants starts again on it. Outside a tap the iPhone may
+// keep a new context suspended, so the next tap finishes the job (gesture() -> unlock()).
+function rebuild(why){try{if(dead||!ACtor)return;lastWhy='rebuild:'+why;revives++;const old=AC;try{clearInterval(MUS.timer);}catch(e){}MUS.timer=0;MUS.cur=null;MUS.node=null;MUS.gain=null;MUS.decoding={};
+  voices.length=0;AC=null;E=null;try{if(old&&old.close)old.close().catch(()=>{});}catch(e){}nativeSession(why);
+  if(unlocked){unlock();wantRebuild=!AC||AC.state!=='running';}}catch(e){}}
+/* after anything that takes the audio away from the page without hiding it (the App Store / Google Play purchase
+   sheet, Face ID, a system alert, the app coming back to the front): put the session back, kick the context, and
+   check a little later that the clock really runs; if not, a new context. */
+function revive(why){try{if(dead||!unlocked)return;if(hidden&&document.hidden!==true)vis();if(hidden||adQuiet)return;lastWhy='revive:'+why;nativeSession(why);session();
+  if(!AC){unlock();return;}kick(why);const a=AC,c0=a.currentTime;
+  setTimeout(()=>{try{if(a!==AC||hidden||adQuiet)return;if(a.state!=='running'||a.currentTime===c0){if(a.state==='running')rebuild(why);else{wantRebuild=true;const p=a.resume();if(p&&p.then)p.then(()=>applyMusic(),()=>{});}}}catch(e){}},1400);}catch(e){}}
+function hookBuys(){try{const I=win.MF2&&win.MF2.iap;if(!I||I.__sfxHook)return;I.__sfxHook=1;for(const k of ['buy','restore']){const f=I[k];if(typeof f!=='function')continue;
+  I[k]=function(){let r;try{r=f.apply(this,arguments);}catch(e){revive('buy');throw e;}const done=()=>{revive('buy');setTimeout(()=>revive('buy2'),2500);};Promise.resolve(r).then(done,done);return r;};}}catch(e){}}
+hookBuys();setTimeout(hookBuys,1200);
+try{if(IOS)win.addEventListener('focus',()=>revive('focus'));}catch(e){}
 function unlock(){try{if(dead)return false;
   if(!AC){AC=new ACtor();E=build(AC);const L=levels();E.sfx.gain.value=L.sfx;E.mus.gain.value=L.music*MUS_BASE;decode(E,'victory');decode(E,'chest');
    AC.onstatechange=()=>{if(AC.state==='running')applyMusic();else if(!hidden&&!adQuiet)setTimeout(keepAlive,300);};unlockAt=Date.now();}
   unlocked=true;session();if(AC.state!=='running'&&!hidden&&!adQuiet){const p=AC.resume();if(p&&p.then)p.then(()=>applyMusic(),()=>{});}
   applyMusic();return true;}catch(e){dead=true;return false;}}
-function gesture(){gestures++;unlock();}
+function gesture(){gestures++;if(wantRebuild&&AC&&AC.state==='running'&&AC.currentTime===stallC&&stallT&&Date.now()-stallT>700){wantRebuild=false;rebuild('tap');return;}wantRebuild=false;unlock();}
 // full-screen ads (Ads.interstitial / Ads.reward, the web AdSense break and the app's AdMob): the engine's own quiet()
 // only pauses the old engine's context, so the v2 music played on under the ad and could be cut by the ad's audio
 // session. Our context is paused for the ad and resumed when it closes.
@@ -8101,8 +8125,9 @@ const API={
  setVolume(o){try{if(o&&o.sfx!==undefined)OWN.s=clampN(+o.sfx||0,0,1);if(o&&o.music!==undefined)OWN.u=clampN(+o.music||0,0,1);saveOwn();applyVolume();}catch(e){}return levels();},
  mute(b){try{if(b!==undefined){OWN.m=b?1:0;saveOwn();applyVolume();}}catch(e){}return levels().mute;},
  refresh:applyVolume,levels,names:()=>Object.keys(D),songs:()=>Object.keys(LOOP).concat(Object.keys(SONG)),has:n=>!!resolve(n),render,
- info:()=>({ok:!dead,unlocked,state:AC?AC.state:'none',hidden,ios:IOS,session:sessionMode,adQuiet,played,calls,gestures,voices:voices.length,music:MUS.cur,want:MUS.want,fightReady:!!(E&&E.buf.music_fight),loop:MUS.node?[MUS.node.loop,MUS.node.loopStart,MUS.node.loopEnd]:null,log:LOG.slice(),levels:levels(),defs:D,auto:AUTO}),
+ info:()=>({revives,lastWhy,ok:!dead,unlocked,state:AC?AC.state:'none',hidden,ios:IOS,session:sessionMode,adQuiet,played,calls,gestures,voices:voices.length,music:MUS.cur,want:MUS.want,fightReady:!!(E&&E.buf.music_fight),loop:MUS.node?[MUS.node.loop,MUS.node.loopStart,MUS.node.loopEnd]:null,log:LOG.slice(),levels:levels(),defs:D,auto:AUTO}),
  _ac:()=>AC,       // tests only: the context (to simulate an iOS interruption)
+ revive,_stallInfo:()=>({revives,lastWhy,stallN}),
  _quietAd:quietAd,  // tests only: what Ads.interstitial / Ads.reward do around a full-screen ad
  forceSilentEl:false,   // tests only: use the <audio> session path off iOS
  auto:true        // set false to stop the built-in triggers (fight observer, MF2 events, button taps)
@@ -8205,7 +8230,8 @@ function director(){try{if(!API.auto||dead)return;
   if(want!==MUS.want){MUS.want=want;applyMusic(want&&want!=='lobby'?.25:want?1.4:.5);}
   else if(unlocked&&MUS.want&&!MUS.cur)applyMusic();
   if(E&&AC){const L=levels();if(Math.abs(E.sfx.gain.value-L.sfx)>.01||Math.abs(E.mus.gain.value-L.music*MUS_BASE)>.01)applyVolume();}}catch(e){}}
-setInterval(()=>{if(!hidden){director();keepAlive();}},350);
+setInterval(()=>{if(hidden&&document.hidden!==true)vis();   // a pagehide with no pageshow after it (iPhone system sheets) must not leave the game silent
+ if(!hidden){director();keepAlive();}},350);
 
 /* ---- MF2 events: matchmaking, results ---- */
 try{const X=win.MF2;if(X&&typeof X.on==='function'){

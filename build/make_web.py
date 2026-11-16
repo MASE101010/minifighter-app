@@ -109,6 +109,8 @@ bridge='''<script>
  const re=r=>{try{A.setPlayback({reason:r}).then(x=>{window.__mfAudioLast=Object.assign({reason:r},x||{});}).catch(e=>{window.__mfAudioLast={reason:r,error:String(e&&e.message||e)};});}catch(e){}};
  for(const ev of ['interstitialAdDismissed','interstitialAdFailedToShow','onRewardedVideoAdDismissed','onRewardedVideoAdFailedToShow','onRewardedInterstitialAdDismissed','onRewardedInterstitialAdFailedToShow','appOpenAdDismissed'])
   {try{M.addListener(ev,()=>re(ev));}catch(e){}}
+ window.__mfAudioRe=re;   // the game's sound engine calls it when it revives the sound (after a purchase sheet, a dead context)
+ try{C.registerPlugin('App').addListener('appStateChange',st=>{if(st&&st.isActive){re('active');try{if(window.MF2SFX&&MF2SFX.revive)MF2SFX.revive('active');}catch(e){}}});}catch(e){}
  re('page');})();
 // Android back button: closes menus step by step, pauses a running fight, leaves the app from the title screen
 (function(){const C=window.Capacitor;if(!C||!C.registerPlugin)return;const App=C.registerPlugin('App');
