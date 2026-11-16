@@ -7385,7 +7385,12 @@ window.mf2Labels.placed=placed;
 // arena paintings and effect strips are decoded off the main thread as soon as they load (img.decode, PERF), so the
 // first draw of each does not decode it on the main thread mid-fight
 const HORIZON=.70,PIM={},PBG={};
-function arenaImg(name){let im=PIM[name];if(im===undefined){const src=typeof V2_ART!=='undefined'&&V2_ART['arena_'+name];if(!src){PIM[name]=null;return null;}im=PIM[name]=new Image();im.src=src;if(im.decode)im.decode().catch(()=>{});}return im&&im.complete&&im.naturalWidth?im:null;}
+function arenaImg(name){let im=PIM[name];if(im===undefined){const src=typeof V2_ART!=='undefined'&&V2_ART['arena_'+name];if(!src){PIM[name]=null;return null;}im=PIM[name]=new Image();im._ok=!im.decode;im.onload=()=>{if(!im.decode)im._ok=1;};im.src=src;if(im.decode)im.decode().then(()=>{im._ok=1;},()=>{im._ok=1;});}return im&&im._ok&&im.complete&&im.naturalWidth?im:null;}
+/* iPhone (WebKit): drawing an image whose decode() is still running can paint nothing, and a layer built then stayed
+   blank for the whole session (owner's video: no arena, every frame smeared over the last). Layers are built only after
+   the decode settles, and a freshly built layer is checked for paint before it is used; a blank one is dropped and
+   rebuilt on a later frame, the procedural arena stands in meanwhile. */
+function painted(c){try{const t=document.createElement('canvas');t.width=8;t.height=8;const x=t.getContext('2d');x.drawImage(c,0,0,c.width,c.height,0,0,8,8);const d=x.getImageData(0,0,8,8).data;t.width=t.height=0;let n=0;for(let i=3;i<d.length;i+=4)if(d[i]>8)n++;return n>=8;}catch(e){return true;}}
 function tile(x,im,sy,sh,dy,dh,total,sc){const iw=im.naturalWidth*sc;x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';
  for(let px=0,i=0;px<total;px+=iw,i++){if(i%2){x.save();x.translate(px+iw,0);x.scale(-1,1);x.drawImage(im,0,sy,im.naturalWidth,sh,-.5,dy,iw+1,dh);x.restore();}else x.drawImage(im,0,sy,im.naturalWidth,sh,px-.5,dy,iw+1,dh);}}
 function paintedBG(name){const im=arenaImg(name);if(!im)return null;let L=PBG[name];if(L&&L.k===K&&L.w===W)return L;
@@ -7397,6 +7402,8 @@ function paintedBG(name){const im=arenaImg(name);if(!im)return null;let L=PBG[na
  // a soft contact line under the horizon and a shaded front edge, so the floor reads as ground
  let gd=g.createLinearGradient(0,ZMIN,0,ZMIN+22);gd.addColorStop(0,'rgba(0,0,30,.28)');gd.addColorStop(1,'rgba(0,0,30,0)');g.fillStyle=gd;g.fillRect(0,ZMIN,STAGE_W+P*2,22);
  gd=g.createLinearGradient(0,ZMAX-30,0,H);gd.addColorStop(0,'rgba(6,8,40,0)');gd.addColorStop(1,'rgba(6,8,40,.3)');g.fillStyle=gd;g.fillRect(0,ZMAX-30,STAGE_W+P*2,H-ZMAX+30);
+ if(!painted(far)||!painted(gr)){far.width=far.height=gr.width=gr.height=0;PBG[name]=null;const n=(PIM['_t'+name]|0)+1;PIM['_t'+name]=n;
+  im._ok=0;setTimeout(()=>{im._ok=1;},n<4?400*n:5000);return null;}   // retry soon, then every 5 s; the procedural arena stands in meanwhile
  return PBG[name]={far,mid,gr,fw,mw:0,pf,pm:.5,pg:P,k:K,w:W,_amb:1,painted:1};}
 {const _dbg=drawBG;
  drawBG=function(name,cam){
@@ -7498,7 +7505,8 @@ function scanBands(cv){if(BAND.has(cv))return BAND.get(cv);BAND.set(cv,null);
    r+=n;}catch(e){BAND.set(cv,null);tmp.width=tmp.height=0;return;}
   if(r<h){setTimeout(job,0);return;}
   let y0=0;while(y0<h&&!any[y0])y0++;let y1=h;while(y1>y0&&!any[y1-1])y1--;let o=h;while(o>0&&op[o-1])o--;
-  BAND.set(cv,{y0,y1,op:o,h});tmp.width=tmp.height=0;};
+  tmp.width=tmp.height=0;if(y1-y0<h*.05){BAND.set(cv,null);return;}   // a blank or nearly blank scan (layer not painted yet, iPhone canvas read-back): never cull from it, draw it whole
+  BAND.set(cv,{y0,y1,op:o,h});};
  setTimeout(job,30);return null;}
 P.bands=cv=>BAND.get(cv)||null;
 {const CP=CanvasRenderingContext2D.prototype;let inBg=false,seq=null;   // CP.drawImage is looked up per call, so a later wrapper of the prototype still sees these draws
@@ -7513,7 +7521,8 @@ P.bands=cv=>BAND.get(cv)||null;
    return CP.drawImage.call(this,im,x,y,w,h);}
   return CP.drawImage.apply(this,arguments);};
  const _bg=drawBG;
- drawBG=function(name,cam){if(!P.snap&&!P.cull)return _bg(name,cam);const s0=seq;seq=[];inBg=true;
+ drawBG=function(name,cam){try{ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';ctx.fillStyle='#0b1030';ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);ctx.restore();}catch(e){}
+  if(!P.snap&&!P.cull)return _bg(name,cam);const s0=seq;seq=[];inBg=true;
   try{return _bg(name,cam);}finally{inBg=false;const s=seq;seq=s0;
    // the last layer drawn is the floor: the earlier ones may skip what it covers (learned on this draw, used from the next)
    if(s.length>=2){const g=s[s.length-1];for(let i=0;i<s.length-1;i++)OCC.set(s[i],g);}}};}
