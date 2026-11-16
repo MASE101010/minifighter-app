@@ -6,3 +6,5 @@ android/.gradle/
 android/app/src/main/assets/public/
 android/keystore.properties
 *.jks
+__pycache__/
+*.pyc
