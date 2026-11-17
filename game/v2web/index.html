@@ -2349,6 +2349,44 @@ html body #mf2fr-inv{background:linear-gradient(180deg,#2a379f,#1f2a85);border:3
 /* launch audit: the v1 screens kept in v2 (settings, help, keys, rooms, premium, room lobby) ran under the iPhone notch / Dynamic Island in landscape; keep them inside the safe area like the fighter select */
 #menu.mf2old{padding-left:calc(10px + env(safe-area-inset-left,0px));padding-right:calc(10px + env(safe-area-inset-right,0px))}
 
+/* ===== QA pass 2026-11-17 (tests/v2/test_tap_overlap.py). The screens are drawn at --z, so a 44 px design box is only
+   34 px on an iPhone: every tap target is at least 40 real px (44 where the layout has the room), hit boxes do not touch, a way back is always in reach ===== */
+.v2{--t44:calc(44px / var(--z,1))}
+.v2 .fdet .fiib{min-width:max(44px,var(--t44));min-height:max(44px,var(--t44))}
+.v2 .fdet .fa .fiib~.ft2{left:calc(max(44px,var(--t44)) + 12px)}
+.v2 .pfp{width:max(44px,var(--t44));height:max(44px,var(--t44))}
+.v2 .fims .msc,.v2 .fibot.two .fims .msc{height:max(44px,var(--t44));min-height:max(44px,var(--t44))}
+.v2 .m2-top .ib{min-width:calc(40px / var(--z,1))}
+/* the news strip's hit box began 3 px inside the top bar's buttons: same pill position, hit box below the bar */
+.v2 .nws{top:65px;height:calc(var(--tap,56px) - 3px);min-height:0}
+/* the old panels are zoomed to fit (fitPanel), so 48 px design = 40 px or more on a phone */
+#menu.mf2old .sld input{height:48px}
+#menu.mf2old .sel2 .s2ar::before{inset:-6px -5px}
+#menu.mf2old .room2 .lemos button.emf{min-width:46px;min-height:46px}
+#menu.mf2old .room2 .larr .lar{position:relative}#menu.mf2old .room2 .larr .lar::before{content:"";position:absolute;inset:-9px 0}
+/* count badges: white on the bright red was 3.3:1 and 9 px on a phone */
+.v2 .dot.n,.v2 .lic .dot,.v2 .sbtn .dot.n{background:#d62839}
+.v2 .dot.n,.v2 .lic .dot{font-size:max(13px,calc(11px / var(--z,1)))}
+.v2 .frb .frn.z{background:#5d649c}
+/* help and the key settings scroll: their buttons were below the fold, nothing on screen led back */
+#menu.mf2old .panel.help .btns,#menu.mf2old .panel:has(>table.kt) .btns{position:sticky;bottom:-10px;z-index:3;margin-top:6px;padding:8px 0;background:linear-gradient(180deg,rgba(31,42,133,0),#1f2a85 34%)}
+/* modes screen on a 667 px phone: the challenge button cut its modifier line ("אנרגיה בלי סוף" read "אנרגיה בלי סון") */
+.v2.ph .m2-casual .xch{flex:2 1 0;padding:0 8px;gap:6px}
+.v2.ph .m2-casual .xgrp{flex:2.8 1 0}
+/* a toast is a message, not a target: it sat on the modes screen's bottom buttons and swallowed their taps */
+.v2 .toast2{pointer-events:none}
+.v2 .nw{white-space:nowrap}
+/* onboarding name sheet: a way back to the first screen (it was a one-way street) */
+.v2 .sheet.onn .srow2 .b{height:var(--tap,56px)}.v2 .sheet.onn .srow2 .onbk{flex:.55}
+/* pressed feedback on the tap targets that had none (news strip, profile icons, chest chip, info button, fighter arrows) */
+.v2 .nws:active .nwp,.v2 .pfp:active,.v2 .m2-top .dchip:active,.v2 .fdet .fiib:active{scale:.94;filter:brightness(1.15)}
+#menu.mf2old .sel2 .s2ar:active{transform:translateY(2px);filter:brightness(1.15)}
+/* the premium card of the pass header: 44 real px high where the 58 px header allows */
+.v2 .m2-head .pcta{height:clamp(54px,calc(44px / var(--z,1)),58px)}
+/* 16:9 screens (iPhone SE, a 1920x1080 window): the full top bar let the trophies pill spill over its neighbours; the gaps tighten, then the league name gives way and its shield stays (fitTop) */
+.v2 .m2-top.tight{gap:4px}
+.v2 .m2-top.tight2 .troph .lg{font-size:0;gap:0;padding:2px 4px}
+
 /* ===================== Mini Fighter 2.0: skins UI (owner: SKINS agent; the UI agent may restyle) =====================
    Injected after ui.css in the v2 build only. Text sizes use the --f13/--f14 vars (at least 12.8 px on screen). */
 /* fighter info sheet: the art pane holds the hero, the rarity tag and the skins row (the hero box shrinks, nothing covers it) */
@@ -6700,13 +6738,13 @@ MF2.startExtra=function(id){if(id==='training')return MF2.startTraining()?{ok:tr
 const CSS=`#menu .mf2mvp{display:flex;align-items:center;gap:8px;margin:6px auto 2px;padding:5px 8px;max-width:92%;border-radius:12px;background:linear-gradient(180deg,#ffe27a,#f5a623);color:#2a1600;direction:rtl;box-sizing:border-box}
 #menu .mf2mvp .mi{width:calc(44px*var(--k,1));height:calc(44px*var(--k,1));flex:none;border-radius:10px;background:#3a2380 center/cover no-repeat;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font:900 22px SapirPop,Rubik,Arial;color:#fff}
 #menu .mf2mvp .mt{flex:1;min-width:0;text-align:right;line-height:1.15}#menu .mf2mvp .mt b{display:block;font:900 calc(16px*var(--k,1)) SapirPop,Rubik,Arial}#menu .mf2mvp .mt span{font:700 calc(13px*var(--k,1)) Rubik,Arial}
-#menu .mf2mvp button{flex:none;font:800 calc(13px*var(--k,1)) Rubik,Arial;padding:7px 10px;border-radius:10px;border:2px solid #2a1600;background:#fff;color:#2a1600;min-height:36px;cursor:pointer}
+#menu .mf2mvp button{flex:none;font:800 calc(13px*var(--k,1)) Rubik,Arial;padding:7px 10px;border-radius:10px;border:2px solid #2a1600;background:#fff;color:#2a1600;min-height:36px;cursor:pointer;position:relative}#menu .mf2mvp button::after{content:"";position:absolute;inset:-8px -6px}#menu .mf2mvp button:active{filter:brightness(.9)}
 #mf2ms{position:fixed;inset:0;z-index:60;background:rgba(6,10,30,.82);display:flex;align-items:center;justify-content:center;direction:rtl;font-family:Rubik,Arial,sans-serif}
 #mf2ms .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}#mf2ms td.sf{white-space:nowrap;text-align:left}#mf2ms td.sf button{display:inline-block;width:auto;font:800 13px Rubik,Arial;min-height:30px;padding:2px 8px;margin:1px}
 #mf2ms .bx{background:#1a2270;color:#fff;border:3px solid #0b1440;border-radius:16px;padding:10px 12px;width:min(96vw,700px);max-height:92vh;overflow:auto;box-sizing:border-box}
 #mf2ms h2{margin:0 0 6px;font:900 20px SapirPop,Rubik,Arial;color:#ffd84a;text-align:center}#mf2ms table{width:100%;border-collapse:collapse;font:700 15px Rubik,Arial}
 #mf2ms th{font:800 13px Rubik,Arial;color:#c9d2ff;padding:3px 4px}#mf2ms td{padding:5px 4px;text-align:center;border-top:1px solid #ffffff22}#mf2ms td:first-child{text-align:right}
-#mf2ms tr.me td{background:#ffffff14}#mf2ms tr.mvp td:first-child::after{content:' ★';color:#ffd84a}#mf2ms button{display:block;margin:8px auto 0;font:800 16px Rubik,Arial;padding:8px 22px;border-radius:12px;border:0;background:#3a7bff;color:#fff;min-height:40px;cursor:pointer}`;
+#mf2ms tr.me td{background:#ffffff14}#mf2ms tr.mvp td:first-child::after{content:' ★';color:#ffd84a}#mf2ms button{display:block;margin:8px auto 0;font:800 16px Rubik,Arial;padding:8px 22px;border-radius:12px;border:0;background:#3a7bff;color:#fff;min-height:40px;cursor:pointer}#mf2ms button:active{filter:brightness(1.15);transform:translateY(1px)}#mf2ms td.sf button{min-height:40px;min-width:52px;background:#4a4f80}#mf2ms td.sf button.bl{background:#8a2335}`;
 function css(){if(document.getElementById('mf2mscss'))return;const e=document.createElement('style');e.id='mf2mscss';e.textContent=CSS;document.head.appendChild(e);}
 const escH=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function heroUrl(id){try{return typeof V2_HERO==='function'?V2_HERO(id,true):null;}catch(e){return null;}}
@@ -6867,7 +6905,8 @@ const CSS=`
 #mf2pt .pt-mem{display:flex;align-items:center;gap:.5em;background:rgba(255,255,255,.12);border-radius:12px;padding:.3em .6em;margin:.3em 0}
 #mf2pt .pt-mem b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#mf2pt .pt-mem small{opacity:.85}
 #mf2pt .pt-msg{min-height:1.3em;text-align:center;color:#ffe066;font-weight:700;margin:.3em 0}
-#mf2pt .pt-x{position:sticky;top:0;float:left;min-height:2.2em;padding:.2em .7em}
+#mf2pt .pt-x{position:sticky;top:0;float:left;min-height:40px;min-width:64px;padding:.2em .7em}
+#mf2pt button:not(:disabled):active{transform:translateY(2px);box-shadow:0 1px 0 #10154f;filter:brightness(1.12)}#mf2pt button{min-height:max(2.6em,40px)}#mf2pt input{min-height:42px}
 #v2root .m2-stage .mf2pt-inv{position:absolute;top:4%;inset-inline-start:3%;z-index:6;font:inherit;font-weight:900;font-size:21px;line-height:1.2;color:#fff;background:#157a3f;border:3px solid #10154f;border-radius:14px;padding:6px 14px;text-shadow:0 2px 0 #0a3a1e;box-shadow:0 4px 0 #10154f;display:flex;gap:6px;align-items:center;cursor:pointer}
 #v2root .m2-stage .mf2pt-inv span{font:inherit;color:inherit}
 .mf2pt-fig{position:absolute;bottom:14%;width:22%;height:62%;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;pointer-events:none}
@@ -7064,6 +7103,7 @@ const CSS=`
 #mf2fr .fr-tr{font-weight:900;color:#ffe066;white-space:nowrap}
 #mf2fr .fr-sec{margin:.6em 0 .2em;font-weight:900;opacity:.9}#mf2fr .fr-empty{text-align:center;opacity:.85;margin:1em 0}
 #mf2fr .fr-msg{min-height:1.3em;text-align:center;color:#ffe066;font-weight:700}
+#mf2fr button{min-height:max(2.4em,40px)}#mf2fr input{min-height:40px}#mf2fr button:not(:disabled):active{transform:translateY(2px);box-shadow:0 1px 0 #10154f;filter:brightness(1.12)}#mf2fr .fr-retry{align-self:center;min-width:9em;min-height:44px;margin-bottom:.4em}
 .mf2fr-face{width:2.6em;height:2.6em;border-radius:50%;background-color:#2a3a8f;background-repeat:no-repeat;border:2px solid #10154f;flex:none;overflow:hidden;display:inline-block}
 .mf2fr-face canvas{width:100%;height:100%}
 #v2root .m2-stage .mf2fr-btn{position:absolute;top:calc(4% + 60px);inset-inline-start:3%;z-index:6;font:inherit;font-weight:900;font-size:22px;line-height:1.15;color:#fff;background:#3346d6;border:3px solid #10154f;border-radius:14px;padding:4px 12px;box-shadow:0 4px 0 #10154f;display:flex;gap:6px;align-items:center;cursor:pointer}
@@ -7097,7 +7137,7 @@ function row(f){const st=f.online?(f.st==='match'?'match':f.st==='party'?'party'
   <button class="${confirmRm===f.tag?'r':'n'}" data-fr="remove" data-tag="${f.tag}" aria-label="הסרה: ${esc(f.name)}">${confirmRm===f.tag?'בטוח?':'הסרה'}</button>${SB({tag:f.tag,name:f.name,friend:true})}</div>`;}
 function renderSheet(){if(!sheetEl)return;const s=api.state(),o=s.reason&&!s.ready?s.reason:null;
  let h=`<div class="fr-card"><div class="fr-hd"><h2>חברים</h2>${s.tag?`<span class="fr-my" aria-label="התג שלי">#${s.tag}</span><button class="n" data-fr="copy">העתקה</button>`:''}<button class="n" data-fr="close">סגירה</button></div>`;
- if(o&&o!=='offline'&&o!=='rate'||(!s.tag&&o)){h+=`<p class="fr-empty">${esc(ERR[o]||ERR.offline)}</p></div>`;sheetEl.innerHTML=h;return;}
+ if(o&&o!=='offline'&&o!=='rate'||(!s.tag&&o)){h+=`<p class="fr-empty">${esc(ERR[o]||ERR.offline)}</p>${o==='offline'||!ERR[o]?`<button class="y fr-retry" data-fr="retry">נסו שוב</button>`:''}<p class="fr-msg" role="status">${esc(msg)}</p></div>`;sheetEl.innerHTML=h;return;}
  h+=`<div class="fr-tabs" role="tablist"><button role="tab" class="${tab==='friends'?'on':''}" data-fr="tab" data-t="friends" aria-selected="${tab==='friends'}">חברים · ${s.online}/${s.friends.length}</button><button role="tab" class="${tab==='req'?'on':''}" data-fr="tab" data-t="req" aria-selected="${tab==='req'}">בקשות${s.requests.length?`<i>${s.requests.length}</i>`:''}</button></div>`;
  h+='<div class="fr-list">';
  if(tab==='friends'){h+=`<div class="fr-add"><input id="mf2fr-in" maxlength="10" autocomplete="off" placeholder="#K7QM2X9A" aria-label="התג של החבר" value="${esc(addVal)}"><button class="y" data-fr="add">הוסיפו חבר</button></div>`;
@@ -7113,7 +7153,9 @@ function renderSheet(){if(!sheetEl)return;const s=api.state(),o=s.reason&&!s.rea
 async function doAdd(tag){const t=cleanTag(tag||addVal);if(!TAG_RE.test(t)){msg=ERR.tag;renderSheet();return;}const r=await api.add(t);msg=r.ok?OKMSG[r.result]||'':ERR[r.reason]||ERR.offline;if(r.ok&&!tag)addVal='';renderSheet();}
 async function onClick(e){const b=e.target.closest('[data-fr]');if(!b){if(e.target===sheetEl)closeSheet();return;}const a=b.dataset.fr,t=b.dataset.tag;
  if(a!=='remove')confirmRm=null;
- if(a==='close'){closeSheet();return;}if(a==='copy'){copyTag(api.state().tag);return;}
+ if(a==='close'){closeSheet();return;}
+ if(a==='retry'){b.disabled=true;msg='מתחברים...';const m=sheetEl.querySelector('.fr-msg');if(m)m.textContent=msg;try{await beat();}catch(_){}msg=api.state().ready?'':'עדיין אין חיבור';renderSheet();return;}
+ if(a==='copy'){copyTag(api.state().tag);return;}
  if(a==='tab'){tab=b.dataset.t;msg='';renderSheet();return;}
  if(a==='add'){doAdd(t);return;}
  if(a==='remove'){if(confirmRm!==t){confirmRm=t;renderSheet();return;}confirmRm=null;}
@@ -7170,7 +7212,8 @@ const CSS=`
 #mf2sf button.r,#mf2del button.r{background:#c8283e}#mf2sf button.n,#mf2del button.n{background:#4a4f80}
 #mf2sf .col{display:flex;flex-direction:column;gap:.3em}
 .mf2sf-b{font-size:.85em;min-height:2.2em;padding:.2em .6em;margin:0 .1em;background:#4a4f80;white-space:nowrap}.mf2sf-b.bl{background:#8a2335}
-.mf2del-row .b.r{background:#b3253a}`;
+.mf2del-row .b.r{background:#b3253a}
+.mf2sf-b{min-height:40px}#mf2sf button,#mf2del button{min-height:max(2.5em,44px)}#mf2sf button:active,#mf2del button:active,.mf2sf-b:active{transform:translateY(2px);box-shadow:0 1px 0 #10154f;filter:brightness(1.12)}`;
 function style(){if(document.getElementById('mf2sf-css'))return;const s=document.createElement('style');s.id='mf2sf-css';s.textContent=CSS;document.head.appendChild(s);}
 function overlay(id,html){style();let o=document.getElementById(id);if(o)o.remove();o=document.createElement('div');o.id=id;o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');
  o.innerHTML=`<div class="bx">${html}</div>`;o.addEventListener('keydown',e=>e.stopPropagation(),true);(document.body).appendChild(o);const f=o.querySelector('button');try{f&&f.focus();}catch(e){}return o;}
@@ -8454,9 +8497,9 @@ function fitZ(){if(!root||!root.isConnected)return;const cs=getComputedStyle(roo
 function fitTexts(el){(el||root).querySelectorAll('.fit').forEach(e=>{e.style.fontSize='';e.style.whiteSpace='';e.style.overflowWrap='';let fs=parseFloat(getComputedStyle(e).fontSize),min=Math.min(fs,Math.max(fs*.55,12.5/((root&&root._z)||1))),n=0;
  while((e.scrollWidth>e.clientWidth+1||e.scrollHeight>e.clientHeight+2)&&fs>min&&n++<30){fs=Math.max(min,fs-1);e.style.fontSize=fs+'px';}
  if(e.scrollWidth>e.clientWidth+1){e.style.whiteSpace='normal';e.style.overflowWrap='anywhere';}});}
-addEventListener('resize',()=>requestAnimationFrame(()=>{if(active()){fitZ();fitTexts();anchorArt();placePlate();}}));
+addEventListener('resize',()=>requestAnimationFrame(()=>{if(active()){fitZ();fitTexts();anchorArt();placePlate();fitTop();}}));
 let lastScr=null;
-let COACH=0,scrT=0,LVUP=null,CELEQ=[];
+let COACH=0,scrT=0,LVUP=null,CELEQ=[];let CASRET=0;
 function mount(html,cls){clearInterval(heroTimer);clearInterval(scrT);openSheet=null;const ent=!!(SCR&&SCR.name!==lastScr&&lastScr);HENT=!!(SCR&&SCR.name!==lastScr);lastScr=SCR&&SCR.name;
  show(`<div class="v2${KF?' kf':''}" id="v2root"><div class="m2z"><div class="m2 ${cls||''}${ent?' ent':''}">${html}</div></div></div>`,()=>goBack());
  root=document.getElementById('v2root');SCREEN='v2';LR=(pn,d)=>{kbOn();nav(d<0?'L':'R');};fitZ();paintAll();fitTexts();anchorArt();
@@ -8550,7 +8593,7 @@ const ACT={
  goal:b=>{let r=null;try{r=MF().claimGoal(b.dataset.id);}catch(_){}if(!r){snd('err');return;}busy=1;b.disabled=true;closeSheet();reveal2(r.fighter,()=>{busy=0;if(SCR&&SCR.name==='fighters')S.fighters.show({id:r.fighter});else if(SCR&&S[SCR.name])S[SCR.name].show(SCR.arg);});},
  quest:b=>{const r=MF().claimQuest(b.dataset.id);if(!r){snd('err');return;}busy=1;b.disabled=true;b.classList.add('burst');chestOpen([{type:'coins',amount:r.coins||r.amount},{type:'pass',amount:r.passXp}],a=>{snd('claim');flyTo(a||b,'coins',6,()=>{busy=0;S.lobby.show();sheetQuests();});});},
  mode:b=>{const m=MF().modes().find(x=>x.id===b.dataset.id);if(!m)return;if(!m.unlocked){snd('err');b.animate([{transform:'translateX(0)'},{transform:'translateX(-8px)'},{transform:'translateX(8px)'},{transform:'translateX(0)'}],{duration:260});toast2(`${m.title} נפתח ב־\u2060${fmt(m.unlockAt)} גביעים`);return;}MF().setMode(m.id);go('lobby');},
- casual:b=>{const m=b.dataset.m;if(m==='mp'&&typeof mpMenu==='function')mpMenu();else if(typeof selectScreen==='function')selectScreen(m);},
+ casual:b=>{const m=b.dataset.m;CASRET=1;if(m==='mp'&&typeof mpMenu==='function')mpMenu();else if(typeof selectScreen==='function')selectScreen(m);},
  help:()=>{closeSheet();if(typeof help==='function')help();},settings:()=>{closeSheet();if(typeof settingsScreen==='function')settingsScreen('title');},keys:()=>{closeSheet();if(typeof keysScreen==='function')keysScreen();},
  premium:()=>{closeSheet();if(typeof premiumScreen==='function')premiumScreen(()=>go(SCR&&SCR.name==='shop'?'shop':'lobby',SCR&&SCR.arg));},
  closesheet:()=>closeSheet(),
@@ -8606,16 +8649,16 @@ S.lobby={back:null,show(){const s=st(),sel=s.selected,f=s.fighters[sel]||{},ms=M
 </section>
  <div class="pband"><button class="pan plate${rqc(frar(sel))}" data-a="hero" aria-label="${esc(fname(sel))}, רמה ${f.level||1}, פתיחת הלוחמים"><span class="nm o">${esc(fname(sel))}</span>${rtag(frar(sel),'ptg')}<span class="lvl">רמה ${f.level||1}</span><span class="tr">${ico('trophy',22)}${fmt(f.trophies)}</span>${f.perks&&(f.perks.equipped||[]).length?`<span class="pkslots mini">${perksOf(sel).filter(p=>p.equipped).map(p=>`<i class="psl on">${pico(p.icon,18)}</i>`).join('')}</span>`:''}</button></div>
  <aside class="m2-panels">
-  <button class="pan card pcd${hasArt('hanukkah')?' hk':''}${pass.premium?' pmo':''}" data-a="pass">${hasArt('hanukkah')?'<i class="ai ai-hanukkah hkb"></i>':''}<span class="hd"><span class="ttl o">כרטיס עונה</span><span class="mt">${ico('clock',16)}${days} ימים</span></span>
+  <button class="pan card pcd${hasArt('hanukkah')?' hk':''}${pass.premium?' pmo':''}" data-a="pass">${hasArt('hanukkah')?'<i class="ai ai-hanukkah hkb"></i>':''}<span class="hd"><span class="ttl o">כרטיס עונה</span><span class="mt">${ico('clock',16)}${days===1?'יום אחד':days+' ימים'}</span></span>
    <span class="passrow"><span class="pl o">${pass.level}${pass.premium?`<i class="pmcr" aria-label="פרימיום">${IC.crown(14)}</i>`:''}</span><span class="bar"><i style="width:${Math.min(100,100*pass.xp/Math.max(1,pass.xpNext))}%"></i><b>${fmt(pass.xp)}/${fmt(pass.xpNext)}</b></span></span>
-   ${(n=>n?`<span class="ln tz">${cvP(n.x.free.fighter,64,64,'tzp')}<span>${n.ready?`${esc(fname(n.x.free.fighter))} מחכה לכם!`:n.gate&&n.lvOk?`${esc(fname(n.x.free.fighter))}: ${gateTxt(n.gate)}`:`עוד ${n.left} שלבים עד ${esc(fname(n.x.free.fighter))}`}${n.gate&&!n.ready&&!n.lvOk?`<i class="gchip sm">${ico('lock',11)}<span>${fmt(n.gate.trophies)}</span></i>`:''}</span></span>`:`<span class="ln">עוד ${fmt(Math.max(0,pass.xpNext-pass.xp))} נקודות לפרס הבא</span>`)(passNext(s))}${passCan(s)?`<i class="dot n">${passCan(s)}</i>`:''}</button>
+   ${(n=>n?`<span class="ln tz">${cvP(n.x.free.fighter,64,64,'tzp')}<span>${n.ready?`${esc(fname(n.x.free.fighter))} מחכה לכם!`:n.gate&&n.lvOk?`${esc(fname(n.x.free.fighter))}: ${gateTxt(n.gate)}`:`${n.left===1?'עוד שלב אחד':`עוד ${n.left} שלבים`} עד ${esc(fname(n.x.free.fighter))}`}${n.gate&&!n.ready&&!n.lvOk?`<i class="gchip sm">${ico('lock',11)}<span>${fmt(n.gate.trophies)}</span></i>`:''}</span></span>`:`<span class="ln">עוד ${fmt(Math.max(0,pass.xpNext-pass.xp))} נקודות לפרס הבא</span>`)(passNext(s))}${passCan(s)?`<i class="dot n">${passCan(s)}</i>`:''}</button>
   <button class="pan card" data-a="quests" aria-label="משימות יומיות${qcan?', יש פרס לאסוף':''}"><span class="hd"><span class="ttl o">${hasArt('bt_quests')?ai('bt_quests',24):''}משימות יומיות</span>${qcan?`<i class="dot n">${qs.filter(q=>q.done&&!q.claimed).length+gN}</i>`:`<span class="mt">${qs.filter(q=>q.claimed).length}/${qs.length}</span>`}</span>
    ${qs.slice(0,3).map(q=>`<span class="qm"><span class="qt"><span class="qx fit">${esc(q.text)}</span>${q.claimed||q.done?'':`<span class="bar g" aria-hidden="true"><i style="width:${Math.min(100,100*q.prog/Math.max(1,q.goal))}%"></i></span>`}</span>${q.claimed?`<span class="chk">${ico('check',15)}</span>`:q.done?`<span class="rw can">קבלו</span>`:`<span class="rw">${ico('coin',20)}${fmt((q.reward&&(q.reward.coins||q.reward.amount))||0)}</span>`}</span>`).join('')}
   </button>
  </aside>
  <footer class="m2-bottom"><button class="b n modeb" data-a="modes"><span class="mi" style="background:${(MODECOL[m.id]||MODECOL.duel)[1]}">${modeArt(m.id,96,96)}</span><span class="mt"><small>${esc(modeShort(m))}</small><b class="o fit">${esc(m.title)}</b></span>${ico('chev',24)}${m.bonus?`<span class="x2" aria-label="מטבעות כפולים היום">${ico('coin',16)}x2</span>`:''}</button>
   <button class="b y fight" data-a="fight" data-first><span class="fx"></span><span>קרב!</span></button></footer>`;
- mount(html,'m2-lobby');placePlate();
+ mount(html,'m2-lobby');placePlate();fitTop();
  if(s.welcome)sheetWelcome(s.welcome);
  else if(!COACH&&!LVUP&&!CELEQ.length&&loginDue())setTimeout(()=>{if(SCR&&SCR.name==='lobby'&&!openSheet&&loginDue()){UIS.loginDay=new Date().toDateString();saveUIS();sheetLogin();}},650);
  else if(COACH){const c=COACH;COACH=0;setTimeout(()=>{if(SCR&&SCR.name==='lobby'&&!openSheet)coachStart(c);},400);}
@@ -8952,8 +8995,8 @@ S.shop={back:()=>go('lobby'),show(arg){const s=st(),tab=(arg&&arg.tab)||UIS.shop
     :`<div class="pc2 ${done?'done':'lock'}${fg}${!done&&x.level===p.level+1?' nx':''}" data-nav aria-label="רמה ${x.level}: ${b.small} ${b.b}${done?', נאסף':''}">${done?`<span class="ck">${ico('check',16)}</span>`:''}${b.ic}<b class="fit">${b.b}</b><small class="fit">${b.small}</small></div>`;};
   const fin=passFinals(s),nx=passNext(s),lv=p.levels||tr.length||30;
   body=`<div class="shop"><div class="pan ptop"><span class="pl"><span class="o">${p.level}</span></span>
-   <div class="pi"><span class="o fit">${anim('dreidel',30,'','drd')}${SEASON_NAME} · שלב ${p.level}/${lv}</span><span class="bar"><i style="width:${Math.min(100,100*p.xp/Math.max(1,p.xpNext))}%"></i><b>${fmt(p.xp)}/${fmt(p.xpNext)}</b></span><span class="mt">${ico('clock',16)}נשארו ${days} ימים</span></div>
-   ${fin.length?` <div class="gp${hasArt('hanukkah')?' hk':''}" role="group" aria-label="הפרס הגדול: לוחמים חדשים בסוף העונה">${hasArt('hanukkah')?'<i class="ai ai-hanukkah hkb"></i>':''}<span class="gpt"><b class="o">הפרס הגדול</b><span class="fit">${nx?(nx.ready?`${esc(fname(nx.x.free.fighter))} מחכה לכם!`:nx.gate&&nx.lvOk?`${esc(fname(nx.x.free.fighter))}: ${gateTxt(nx.gate)}`:`עוד ${nx.left} שלבים עד ${esc(fname(nx.x.free.fighter))}`):'אספתם את כולם!'}</span></span>
+   <div class="pi"><span class="o fit">${anim('dreidel',30,'','drd')}${SEASON_NAME} · <span class="nw">שלב ${p.level}/${lv}</span></span><span class="bar"><i style="width:${Math.min(100,100*p.xp/Math.max(1,p.xpNext))}%"></i><b>${fmt(p.xp)}/${fmt(p.xpNext)}</b></span><span class="mt">${ico('clock',16)}${days===1?'נשאר יום אחד':`נשארו ${days} ימים`}</span></div>
+   ${fin.length?` <div class="gp${hasArt('hanukkah')?' hk':''}" role="group" aria-label="הפרס הגדול: לוחמים חדשים בסוף העונה">${hasArt('hanukkah')?'<i class="ai ai-hanukkah hkb"></i>':''}<span class="gpt"><b class="o">הפרס הגדול</b><span class="fit">${nx?(nx.ready?`${esc(fname(nx.x.free.fighter))} מחכה לכם!`:nx.gate&&nx.lvOk?`${esc(fname(nx.x.free.fighter))}: ${gateTxt(nx.gate)}`:`${nx.left===1?'עוד שלב אחד':`עוד ${nx.left} שלבים`} עד ${esc(fname(nx.x.free.fighter))}`):'אספתם את כולם!'}</span></span>
     <span class="gpf">${fin.map((x,k)=>{const got=x.claimed||x.free.owned,isN=nx&&nx.x===x;return `<span class="gf${got?' got':''}${isN?' nxt':''}${k===fin.length-1?' grand':''}">${cvP(x.free.fighter,96,96)}<i>${got?ico('check',12):x.level}</i></span>`;}).join('')}</span></div>`:''}</div>
    <div class="pwrap${p.premium?' pown':''}"><div class="pcol lab"><span class="prow-l">חינם</span><span class="pnum" style="visibility:hidden"></span>${p.premium?`<span class="prow-l pm pon">${IC.crown(18)}<span>פרימיום</span></span>`:`<button class="prow-l pm poff" data-a="premsheet" aria-label="מסלול פרימיום, נעול. פרטים וקנייה">${IC.lock(16)}<span>פרימיום</span></button>`}</div><div class="ptrack"><div class="pcols">
    ${tr.map(x=>`<div class="pcol${x.final||(x.free&&x.free.type==='fighter')?' fin':''}">${cell(x,0)}<span class="pnum ${x.level<=p.level?'r':''} o">${x.level}</span>${cell(x,1)}</div>`).join('')}</div></div></div>
@@ -8973,7 +9016,7 @@ S.profile={back:()=>go('lobby'),show(){const s=st(),ids=(s.order||Object.keys(s.
  <div class="pan pcard"><div class="pa" style="background:radial-gradient(80% 90% at 50% 100%,${fbg[0]},${fbg[1]})"><div class="plat"></div>${cvF(skn(fav),320,320,'win')}<span class="lvl pbadge">רמה ${s.level}</span></div>
   <div class="pcb"><label for="m2name">השם שלכם במשחק (2 עד 14 תווים)</label><div class="nin"><input id="m2name" maxlength="14" autocomplete="off" spellcheck="false" placeholder="הקלידו שם" value="${esc(s.name||'')}"><button class="b g" data-a="savename" data-enter><span class="o">שמירה</span></button></div><span class="msg2" role="status"></span>
   <span class="xpr"><span class="lvl">${s.level}</span><span class="bar c"><i style="width:${Math.min(100,100*(s.xp||0)/Math.max(1,s.xpNext||1))}%"></i><b>${fmt(s.xp||0)}/${fmt(s.xpNext||0)}</b></span></span></div></div>
- <div class="pmain"><div class="pan lgrow">${shield(s.league,58)}<span class="lgt"><b class="o fit">ליגת ${esc(lgLabel(s.league))}</b><span class="bar y"><i style="width:${lp}%"></i><b>${fmt(s.trophies)}${span?' / '+fmt(lg.max+1):''}</b></span><small>${span?`עוד ${fmt(Math.max(0,lg.max+1-s.trophies))} גביעים לדרגה הבאה`:'הדרגה הגבוהה ביותר'}</small></span></div>
+ <div class="pmain"><div class="pan lgrow">${shield(s.league,58)}<span class="lgt"><b class="o fit">ליגת ${esc(lgLabel(s.league))}</b><span class="bar y"><i style="width:${lp}%"></i><b>${fmt(s.trophies)}${span?' / '+fmt(lg.max+1):''}</b></span><small>${span?(k=>k===1?'עוד גביע אחד לדרגה הבאה':`עוד ${fmt(k)} גביעים לדרגה הבאה`)(Math.max(0,lg.max+1-s.trophies)):'הדרגה הגבוהה ביותר'}</small></span></div>
   <div class="sg3">${stat(ico('swords',30),fmt(m),'קרבות')}${stat(ico('crown',30),fmt(stt.wins||0),'ניצחונות')}${stat(`<span class="wring" style="--p:${wr}"><span>${wr}%</span></span>`,'','אחוז ניצחונות','wr')}
    ${stat(ico('star',30),fmt(Math.max(stt.best||0,s.trophies)),'שיא גביעים')}${stat(cvP(fav,72,72,'fav'),esc(fname(fav)),'לוחם אהוב')}${stat(ico('fighters',30),`${nU}/${ids.length}`,'לוחמים פתוחים')}</div>
   <div class="pacts">${(a=>a?`<div class="acct"><span class="act1"><small>קוד שחזור</small>${a.code?`<b class="code fit" dir="ltr">${esc(fmtCode(a.code))}</b>`:`<b class="code no">${NOCODE}</b>`}</span><button class="b n" data-a="account" aria-label="חשבון ושחזור"><span class="o">עוד</span></button></div>`:'')(acct())}${odds?`<button class="b n oddb" data-a="dropodds" aria-label="תיבות פרס: אחוזי זכייה">${ico('drop',24)}<span class="o fit">אחוזי זכייה</span></button>`:''}<button class="b n" data-a="settings">${ico('gear',24)}<span class="o">הגדרות</span></button>${sp?`<button class="b o" data-a="premium">${ico('star',24)}<span class="o">גרסה מלאה</span></button>`:''}</div></div></div>`;
@@ -8986,7 +9029,7 @@ const fmtCode=c=>{c=String(c||'').replace(/[^0-9A-Za-z]/g,'').toUpperCase();retu
 const NOCODE='יופיע אחרי החיבור הראשון לרשת';
 function copyText(t){try{if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(t).then(()=>true,()=>false);}catch(_){}
  try{const i=document.createElement('textarea');i.value=t;i.style.cssText='position:fixed;opacity:0';document.body.appendChild(i);i.select();const ok=document.execCommand('copy');i.remove();return Promise.resolve(ok);}catch(_){return Promise.resolve(false);}}
-function ago(ts){if(!ts)return 'עוד לא נשמר';const m=Math.max(0,Math.round((Date.now()-ts)/6e4));return m<1?'ממש עכשיו':m<60?`לפני ${m} דקות`:m<1440?`לפני ${Math.round(m/60)} שעות`:`לפני ${Math.round(m/1440)} ימים`;}
+function ago(ts){if(!ts)return 'עוד לא נשמר';const m=Math.max(0,Math.round((Date.now()-ts)/6e4));const h=Math.round(m/60),d=Math.round(m/1440);return m<1?'ממש עכשיו':m===1?'לפני דקה':m<60?`לפני ${m} דקות`:m<1440?(h===1?'לפני שעה':`לפני ${h} שעות`):d===1?'לפני יום':`לפני ${d} ימים`;}
 function sheet(html,cls,label){closeSheet();const d=document.createElement('div');d.className='scrim';d.innerHTML=`<div class="pan sheet ${cls||''}" role="dialog" aria-label="${label||''}">${html}</div>`;
  d.addEventListener('click',e=>{if(e.target===d)closeSheet();});root.querySelector('.m2z').appendChild(d);openSheet=d;paintAll(d);fitTexts(d);const f=d.querySelector('[data-first]')||d.querySelector('input,button');if(f)f.focus({preventScroll:true});return d;}
 function sheetAccount(){if(!root)return;const a=acct();if(!a){sheetRestore();return;}
@@ -9267,7 +9310,7 @@ let ONB_TUT=false;
 function onbName(tut){ONB_TUT=!!tut;const s=st();
  const d=sheet(`<span class="sh2 o">איך קוראים לכם?</span><p>השם שיופיע בקרבות. אפשר לשנות אחר כך בפרופיל.</p>
  <div class="nin"><input id="m2name" maxlength="14" autocomplete="off" spellcheck="false" value="${esc(s.name||randName())}" aria-label="השם שלכם" data-first><button class="b n" data-a="onbrand" aria-label="שם אקראי"><span class="o">אחר</span></button></div>
- <span class="msg2" role="alert"></span><button class="b y" data-a="onbname" data-enter><span>${tut?'להדרכה!':'ללובי!'}</span></button>`,'onn','בחירת שם');
+ <span class="msg2" role="alert"></span><div class="srow2"><button class="b n onbk" data-a="closesheet"><span class="o">חזרה</span></button><button class="b y" data-a="onbname" data-enter><span>${tut?'להדרכה!':'ללובי!'}</span></button></div>`,'onn','בחירת שם');
  const i=d.querySelector('#m2name');if(i)i.select();}
 function onbSaveName(b){const i=root.querySelector('#m2name'),m=root.querySelector('.onn .msg2'),v=(i.value||'').trim();if(v.length<2){m.textContent='השם צריך להיות לפחות 2 תווים';snd('err');return;}
  const ok=MF().setName(v);if(!ok){m.textContent='אי אפשר להשתמש בשם הזה';snd('err');return;}UIS.onb=1;saveUIS();closeSheet();snd('claim');
@@ -9321,7 +9364,7 @@ function hookOld(){if(typeof show==='function'&&!show._v2){const sh=show;show=fu
 let tries=0,booted=false;
 function boot(){if(booted)return;if(!window.MF2||typeof show!=='function'){if(tries++<200)setTimeout(boot,50);return;}booted=true;artCss();hookPad();hookPause();hookHud();
  const oldTitle=title;window.__mf2OldTitle=oldTitle;
- title=function(){SCREEN='title';try{if(G&&!G.net){if(G.mf&&!G.mf.reported&&G.mode!=='demo'&&!G.over&&has(MF(),'abandon'))MF().abandon();G=null;}}catch(_){}try{showTouch(false);}catch(_){}if(typeof Ads!=='undefined')try{Ads.banner(true);}catch(_){}go(needOnboard()?'onboard':'lobby');};
+ title=function(){const from=typeof SCREEN!=='undefined'?SCREEN:'';SCREEN='title';try{if(G&&!G.net){if(G.mf&&!G.mf.reported&&G.mode!=='demo'&&!G.over&&has(MF(),'abandon'))MF().abandon();G=null;}}catch(_){}try{showTouch(false);}catch(_){}if(typeof Ads!=='undefined')try{Ads.banner(true);}catch(_){}const toModes=CASRET&&(from==='select'||from==='mp');CASRET=0;go(needOnboard()?'onboard':toModes?'modes':'lobby');};   // back from a casual screen opened on the modes screen returns there
  MF2.on('change',()=>{if(!active()||busy)return;updPills();if(SCR&&SCR.name==='lobby'&&!openSheet){const f=document.activeElement&&document.activeElement.dataset&&document.activeElement.dataset.a;S.lobby.show();if(f){const e=root.querySelector(`[data-a="${f}"]`);if(e)e.focus({preventScroll:true});}}});
  MF2.ui=Object.assign(MF2.ui||{},{partyStage:ptStage});MF2.on('friends',frUpd);MF2.on('mm',onMM);MF2.on('result',onResult);MF2.on('challenge',onChal);MF2.on('tutorial',onTutorial);MF2.on('drops',()=>{try{if(SCR&&SCR.name==='lobby'&&!openSheet&&active())go('lobby');else if(SCR&&SCR.name==='results')dropOffer();}catch(_){}});MF2.on('account',()=>{try{if(openSheet&&openSheet.querySelector('.acc')&&!openSheet.querySelector(':disabled'))sheetAccount();}catch(_){}});hookOld();applyFeel();
  MF2.on('match',e=>{if(e&&e.state==='start'){mm=null;busy=0;clearInterval(mmTimer);clearInterval(tipTimer);clearInterval(heroTimer);if(active())try{hideMenu();}catch(_){}}});
@@ -9631,6 +9674,13 @@ function ptPlace(stage){const hb=stage.querySelector('.hero .hbx'),z=stage.query
    ad's), at knee to waist height, on the side with more room between the hero (and its invite slot) and the side
    column; never on the hero's alpha box, the invite slots, the side columns or the top bar. Same place with or without
    an ad. Positions in design px of the lobby. */
+// lobby top bar on 16:9 screens (iPhone SE 667x375, a 1920x1080 window): the row is full there and the trophies pill spilled
+// over the coins pill and the chest chip. First the gaps tighten; if that is not enough the league name gives way (its
+// shield stays; the name is in the aria-label, the profile and the trophy road).
+function fitTop(){try{const t=root&&root.querySelector('.m2-lobby .m2-top');if(!t)return;t.classList.remove('tight','tight2');const b=t.querySelector('.troph'),p=b&&b.querySelector('.pill');if(!b||!p)return;
+ const hit=()=>{const a=p.getBoundingClientRect();for(const e of t.children){if(e===b||e.classList.contains('sp'))continue;const v=e.querySelector('.pill')||e,q=v.getBoundingClientRect(),m=v===e&&!e.classList.contains('pill')?q.width*.12:0;
+   if(Math.min(a.right,q.right-m)-Math.max(a.left,q.left+m)>1.5)return true;}return false;};
+ if(hit()){t.classList.add('tight');if(hit())t.classList.add('tight2');}}catch(_){}}
 function placePlate(){const lob=root&&root.querySelector('.m2.m2-lobby'),st=lob&&lob.querySelector('.m2-stage'),hb=st&&st.querySelector('.hero .hbx'),pb=lob&&lob.querySelector('.pband');if(!pb||!hb)return;const id=hb.dataset.hero;
  heroAlpha(id).then(A=>{if(!pb.isConnected)return;const z=root._z||1,M=lob.getBoundingClientRect(),B=hb.getBoundingClientRect(),m=heroMeta(id),kk=100/.95,iw=B.width*kk/100,ih=B.height*kk/100,il=B.left+B.width*(50-m.cx*kk)/100,it=B.top+B.height*(98.5-m.foot*kk)/100;
   const a=A||[.25,.75,.02,.96],X=v=>(v-M.left)/z,Y=v=>(v-M.top)/z,hL=X(il+a[0]*iw),hR=X(il+a[1]*iw),hT=Y(it+a[2]*ih),hF=Y(it+a[3]*ih),g=10;
@@ -9709,7 +9759,7 @@ function onChal(res){if(!res)return;try{const s=st(),rw=res.reward||null,am=rw&&
 S.chres={back:()=>go('challenge'),show(){if(!CHR){go('challenge');return;}const C=chalSt();if(!C){go('modes');return;}const R=CHR.res,s=st(),win=!!R.win,first=!CHR.shown;CHR.shown=1;
  const L=C.lives||3,lives=Math.max(0,R.livesLeft!=null?R.livesLeft:L),rw=R.reward,step=R.wins,lad=C.ladder||[],nxt=lad.find(x=>x.step===step+1);
  const title=R.complete?'השלמתם את האתגר!':win?'ניצחון!':R.done?'נגמרו החיים':'הפסד';
- const sub=R.complete?'כל תשעת השלבים שלכם':win?`שלב ${step} מתוך ${lad.length||9}`:R.done?'האתגר הסתיים להיום':`נשארו ${lives} ${lives===1?'לב':'לבבות'}`;
+ const sub=R.complete?'כל תשעת השלבים שלכם':win?`שלב ${step} מתוך ${lad.length||9}`:R.done?'האתגר הסתיים להיום':lives===1?'נשאר לב אחד':`נשארו ${lives} לבבות`;
  const hearts=Array.from({length:L},(_,i)=>{const brk=!win&&i===lives&&first;return `<i class="chhb${i<lives?' on':''}${brk?' brk':''}" aria-hidden="true"><span class="hb0">${pico('heart',40)}</span>${brk?`<span class="hb1">${pico('heart',40)}</span><span class="hb2">${pico('heart',40)}</span>`:''}</i>`;}).join('');
  const rwBox=win&&rw?`<div class="pan chrr${rw.type==='drop'?' isch':''}"><span class="chrl">פרס שלב ${step}</span><span class="chri2" data-rwfly>${rwSmall(rw,rw.type==='drop'?70:52)}</span><b class="o">${rw.type==='drop'?esc(rw.name||'תיבה'):`<bdi>+${fmt(rw.amount)}</bdi> ${esc(rwName(rw))}`}</b><span class="chrn">${rw.type==='drop'?'נוספה לתיבות שלכם':rw.type==='pp'?`ל${esc(fname(CHR.fighter))}`:'נכנס לקופה'}</span></div>`
   :`<div class="pan chrr none"><span class="chrl">${R.done?'הגעתם עד שלב':'אין פרס הפעם'}</span>${R.done?`<b class="o big"><bdi>${fmt(step)}</bdi></b><span class="chrn">שיא: <bdi>${fmt(C.best||step)}</bdi></span>`:nxt?`<span class="chri2">${rwSmall(nxt.reward,nxt.reward.type==='drop'?60:44)}</span><span class="chrn">הפרס הבא: ${esc(rwLabel(nxt.reward))}</span>`:''}</div>`;
