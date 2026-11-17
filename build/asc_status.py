@@ -9,7 +9,13 @@ def call(p):
                    normalize(os.environ['ASC_KEY_P8']), algorithm='ES256', headers={'kid': os.environ['ASC_KEY_ID'], 'typ': 'JWT'})
     r = requests.get('https://api.appstoreconnect.apple.com' + p, headers={'Authorization': 'Bearer ' + t}, timeout=60)
     j = r.json()
-    if 'data' not in j: print('STATUS api error', r.status_code, json.dumps(j.get('errors', j))[:600]); sys.exit(1)
+    if 'data' not in j:
+        print('STATUS api error', p, r.status_code, json.dumps(j.get('errors', j))[:300])
+        if os.environ.get('DIAG') != '1':
+            os.environ['DIAG'] = '1'
+            for q in ('/v1/apps/6832263179', '/v1/apps?limit=5', '/v1/users?limit=1'):
+                r2 = requests.get('https://api.appstoreconnect.apple.com' + q, headers=r.request.headers, timeout=60); print('STATUS diag', q, r2.status_code, r2.text[:200])
+        sys.exit(1)
     return j
 app = call('/v1/apps?filter[bundleId]=com.sapirproductions.minifighter')['data'][0]['id']
 for v in call(f'/v1/apps/{app}/appStoreVersions?limit=5')['data']:
