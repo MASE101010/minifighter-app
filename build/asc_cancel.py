@@ -17,6 +17,18 @@ want = os.environ.get('VERSION', '2.0.0')
 vs = req('GET', '/v1/apps/6832263179/appStoreVersions?limit=5').json()['data']
 v = next(x for x in vs if x['attributes']['versionString'] == want)
 vid = v['id']; print('CANCEL state', v['attributes']['appStoreState'])
+if v['attributes']['appStoreState'] == 'WAITING_FOR_REVIEW':
+    # take it back out of the queue (to resubmit it together with in-app purchases)
+    for s_ in req('GET', '/v1/reviewSubmissions?filter[app]=6832263179&filter[state]=WAITING_FOR_REVIEW').json()['data']:
+        req('PATCH', '/v1/reviewSubmissions/' + s_['id'], {'data': {'type': 'reviewSubmissions', 'id': s_['id'], 'attributes': {'canceled': True}}})
+    for i in range(12):
+        time.sleep(10)
+        vs = req('GET', '/v1/apps/6832263179/appStoreVersions?limit=5').json()['data']
+        st = [(x['attributes']['versionString'], x['attributes']['appStoreState']) for x in vs]; print('CANCEL after', st)
+        if st[0][1] != 'WAITING_FOR_REVIEW': break
+    for s_ in req('GET', '/v1/reviewSubmissions?filter[app]=6832263179&limit=4').json()['data']:
+        print('CANCEL submission', s_['id'], s_['attributes'].get('state'))
+    sys.exit(0)
 if v['attributes']['appStoreState'] != 'PENDING_DEVELOPER_RELEASE':
     sys.exit(0)
 r = req('GET', f'/v1/appStoreVersions/{vid}/appStoreVersionSubmission')
