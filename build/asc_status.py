@@ -26,3 +26,9 @@ for i in call(f'/v1/apps/{app}/inAppPurchasesV2')['data']:
     print('STATUS iap', i['attributes']['productId'], i['attributes']['state'])
 for b in call(f'/v1/builds?filter[app]={app}&sort=-uploadedDate&limit=5&include=preReleaseVersion')['data']:
     a = b['attributes']; print('STATUS build', a.get('version'), a.get('processingState'), a.get('uploadedDate'), 'expired' if a.get('expired') else '')
+try:
+    for c in ('il', 'us'):
+        r = requests.get(f'https://itunes.apple.com/lookup?id={app}&country={c}&t={int(time.time())}', timeout=30).json()['results']
+        print('STATUS store', c, [(x.get('version'), x.get('currentVersionReleaseDate')) for x in r])
+except Exception as e:
+    print('STATUS store lookup failed', e)
