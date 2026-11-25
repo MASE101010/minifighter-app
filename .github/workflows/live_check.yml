@@ -1,0 +1,14 @@
+name: Check the live server and test site (read only)
+on:
+  workflow_dispatch:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          set -x
+          curl -s -m 20 -w "\n%{http_code}\n" "https://mini-fighter-rooms.invoice-499.workers.dev/events/top?ev=hanukkah26"
+          curl -s -m 20 -w "\n%{http_code}\n" -X POST "https://mini-fighter-rooms.invoice-499.workers.dev/events/redeem" -d '{"ev":"hanukkah26","id":"livecheck0000000000","code":"AAAA-BBBB-CCCC"}'
+          curl -s -m 20 -o /dev/null -w "%{http_code}\n" "https://mini-fighter-rooms.invoice-499.workers.dev/"
+          curl -s -m 30 "https://minifighter.invoice-499.workers.dev/v2/" | grep -c "hanukkah26"
+          curl -s -m 30 "https://minifighter.invoice-499.workers.dev/" | grep -c "hanukkah26" || true
