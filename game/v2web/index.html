@@ -2427,6 +2427,73 @@ html body #mf2fr-inv{background:linear-gradient(180deg,#2a379f,#1f2a85);border:3
 .v2 .sc2.skc .stg2 .rtag{font-size:var(--f13)}
 .v2 .cele .cs .sksub{font:800 var(--f14)/1.2 Rubik,Arial,sans-serif}
 
+/* ===== Mini Fighter 2.0: limited-time events (events_ui.js). Nothing here applies unless an event is active. ===== */
+.v2 .evb{position:absolute;top:calc(var(--tap,56px) + 70px);left:274px;z-index:5;width:72px;height:76px;padding:0;border:0;background:none;cursor:pointer;display:grid;place-items:center}
+.v2 .evb .evbw{display:flex;flex-direction:column;align-items:center;gap:1px;padding:5px 5px 4px;border-radius:16px;border:3px solid var(--ink);background:linear-gradient(180deg,#3d52d6,#24308f);box-shadow:inset 0 2px 0 rgba(255,255,255,.28),0 4px 0 rgba(6,9,40,.55)}
+.v2 .evb.has .evbw{animation:m2glow 1.3s ease-in-out infinite;background:linear-gradient(180deg,#5a6cf0,#2f3bb0)}
+.v2 .evb .evbn{font:900 13px/1 SapirPop,Rubik,Arial,sans-serif;color:var(--gold);white-space:nowrap}
+.v2 .evb .evbd{position:absolute;top:-4px;right:-4px;min-width:22px;height:22px;box-sizing:border-box;padding:0 5px;border-radius:999px;background:#ff3b4f;border:2.5px solid var(--ink);color:#fff;font:900 13px/17px Rubik,Arial,sans-serif;font-style:normal;text-align:center}
+.v2 .evb:active .evbw{scale:.94;filter:brightness(1.15)}
+.v2 .evmn{display:block;filter:drop-shadow(0 2px 0 rgba(6,9,40,.5))}
+.v2 .sheet.evsh{--evt:max(46px,calc(41px / var(--z,1)));width:560px;height:458px;max-height:458px;gap:7px;padding:10px 16px 12px}
+.v2 .evsh .evhd{position:relative;display:block}
+.v2 .evsh .sh2{font-size:24px}
+.v2 .evbal{display:inline-flex;align-items:center;gap:3px;font:900 16px/1 Rubik,Arial,sans-serif;color:#fff;background:rgba(10,14,51,.7);border-radius:999px;padding:3px 9px 3px 6px;white-space:nowrap}
+.v2 .evbal.top{position:absolute;left:0;top:2px}
+.v2 .evtabs{display:flex;gap:6px}
+.v2 .evtab{position:relative;flex:1;min-height:var(--evt);border:3px solid var(--ink);border-radius:12px;background:linear-gradient(180deg,#34409e,#232c7a);color:#dfe4ff;font:800 15px/1 Rubik,Arial,sans-serif;cursor:pointer;padding:0 4px;white-space:nowrap}
+.v2 .evtab.on{background:linear-gradient(180deg,#ffe066,#ffb020);color:#2a1400}
+.v2 .evtab .dot{position:absolute;top:-6px;left:-4px}
+.v2 .evtab:active{filter:brightness(1.15)}
+.v2 .evbody{flex:1 1 0;min-height:0;display:flex;flex-direction:column;gap:7px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
+.v2 .evbody::-webkit-scrollbar{display:none}
+.v2 .evsh .evmsg{min-height:18px;font:800 14px/1.2 Rubik,Arial,sans-serif;color:#ffe9a8}
+.v2 .evsh .evx{flex:none;font-size:19px;min-height:var(--evt)}.v2 .evsh .evbody>.b{flex:none;min-height:var(--evt)}
+.v2 .evsh .b small{font:800 13px/1 Rubik,Arial,sans-serif;margin-inline-start:8px;opacity:.9}
+.v2 .evsh .evnote{font-size:15px}.v2 .evsh .evnote.sm,.v2 .evsh .evtime{font-size:13px;color:var(--dim)}
+/* the eight candles */
+.v2 .evcs{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:5px;direction:rtl}
+.v2 .evc{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;padding:4px 2px 5px;border-radius:12px;border:3px solid var(--ink);background:linear-gradient(180deg,#2c367f,#1e2560);opacity:.72}
+.v2 .evc.lit{background:linear-gradient(180deg,#3a48b8,#24308f);opacity:1}
+.v2 .evc.now{background:linear-gradient(180deg,#ffe066,#ffb020);animation:m2glow 1.3s ease-in-out infinite}
+.v2 .evc .evcn{font:900 13px/1 Rubik,Arial,sans-serif;color:#c9d1ff}.v2 .evc.now .evcn,.v2 .evc.now .evcv{color:#2a1400}
+.v2 .evc .evcv{display:flex;align-items:center;gap:1px;font:900 13px/1 Rubik,Arial,sans-serif;color:#fff;white-space:nowrap}
+.v2 .evc.got{filter:saturate(.55) brightness(.82)}
+.v2 .evc .evck,.v2 .evc .evcm{position:absolute;top:-7px;left:-6px;width:20px;height:20px;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;font:900 13px/1 Rubik,Arial,sans-serif;font-style:normal;filter:none}
+.v2 .evc .evck{background:var(--grn)}.v2 .evc .evcm{background:#ff5a5a;color:#fff}
+/* the grand prize and the challenge rows */
+.v2 .evg,.v2 .evt{display:flex;align-items:center;gap:10px;padding:6px 10px;border-radius:14px;border:3px solid var(--ink);background:linear-gradient(180deg,#31409f,#232c78)}
+.v2 .evg .evgs{display:block;width:52px;height:52px;border-radius:12px;overflow:hidden;border:2.5px solid var(--ink);background:#1a2060}
+.v2 .evg .evgc{display:block;width:100%;height:100%}
+.v2 .evgt,.v2 .evtt{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;text-align:start}
+.v2 .evgt b,.v2 .evtt b{font:900 17px/1.1 SapirPop,Rubik,Arial,sans-serif;color:var(--gold)}
+.v2 .evgt span,.v2 .evtt span{font:700 13px/1.25 Rubik,Arial,sans-serif;color:#e6eaff}
+.v2 .evsh .evgt .bar,.v2 .evsh .evtt .bar{height:18px}
+.v2 .sheet.evsh .evgb{width:auto;flex:none;min-width:96px;min-height:var(--evt);font-size:18px;padding-inline:12px}
+.v2 .evt .evti{flex:none}.v2 .evrw,.v2 .evok{flex:none;display:flex;align-items:center;gap:3px;font:900 17px/1 Rubik,Arial,sans-serif;color:#fff}
+.v2 .evok{width:34px;height:34px;border-radius:50%;background:var(--grn);border:2.5px solid var(--ink);justify-content:center}
+/* the dreidel shop */
+.v2 .evsh2{display:flex;align-items:center;justify-content:space-between}.v2 .evsh2 b{font:900 17px/1 SapirPop,Rubik,Arial,sans-serif;color:var(--gold)}
+.v2 .evss{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.v2 .evs{position:relative;width:100%;box-sizing:border-box;margin:0;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px 7px;min-height:104px;cursor:pointer;color:#fff}
+.v2 .evs.off{filter:saturate(.6) brightness(.85)}.v2 .evs[disabled]{cursor:default}
+.v2 .evs .evsa{display:grid;place-items:center;width:52px;height:52px;border-radius:12px;overflow:hidden}
+.v2 .evs .evsc{display:block;width:100%;height:100%}
+.v2 .evs .evsn{font:800 13px/1.1 Rubik,Arial,sans-serif;white-space:nowrap;max-width:100%}
+.v2 .evs .evsp{display:flex;align-items:center;gap:2px;font:900 15px/1 Rubik,Arial,sans-serif;color:var(--gold)}
+.v2 .evs small{position:absolute;top:4px;left:6px;font:800 12px/1 Rubik,Arial,sans-serif;color:var(--dim)}
+/* the leaderboard */
+.v2 .evrl{display:flex;flex-direction:column;gap:3px}
+.v2 .evr{display:flex;align-items:center;gap:8px;padding:4px 10px;border-radius:10px;background:rgba(255,255,255,.07);font:800 15px/1.1 Rubik,Arial,sans-serif;color:#fff}
+.v2 .evr.me{background:rgba(255,210,63,.24);outline:2px solid var(--gold)}
+.v2 .evr .evrr{flex:none;width:26px;text-align:center;color:var(--dim)}.v2 .evr.t1 .evrr{color:#ffd23f}.v2 .evr.t2 .evrr{color:#e3e8ff}.v2 .evr.t3 .evrr{color:#e0a46a}
+.v2 .evr .evrn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:start}
+.v2 .evr .evrs{flex:none;display:flex;align-items:center;gap:3px}
+.v2 .evsh .evme{font-size:14px;color:#ffe9a8}
+/* the gift code */
+.v2 .evcl{display:block}
+.v2 .evci{width:100%;box-sizing:border-box;min-height:var(--evt);border-radius:12px;border:3px solid var(--ink);background:#fff;color:#14163a;font:900 22px/1 Rubik,Arial,sans-serif;text-align:center;letter-spacing:2px;text-transform:uppercase;padding:0 10px}
+
 </style>
 </head>
 <body><div id="mf2boot" style="position:fixed;inset:0;z-index:2147483000;background:#0b1040 url(a/keyart.f2236f71.webp) center/cover no-repeat;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;padding-bottom:max(6vh,env(safe-area-inset-bottom));font:800 clamp(14px,2.4vh,22px)/1.2 Rubik,Arial,sans-serif;color:#fff;transition:opacity .35s"><div style="width:min(62vw,560px);height:clamp(12px,2.2vh,20px);border-radius:99px;background:rgba(6,12,44,.78);box-shadow:0 0 0 2px rgba(255,255,255,.35);overflow:hidden" role="progressbar" aria-label="טעינה"><i id="mf2bar" style="display:block;height:100%;width:4%;border-radius:99px;background:linear-gradient(#ffe98a,#ffb81f);transition:width .25s"></i></div><div id="mf2pct" dir="rtl" style="margin-top:.7em;text-shadow:0 2px 0 #0b1440,0 0 8px #0b1440">טוענים את הזירה</div></div><script>(function(){var b=document.getElementById("mf2bar"),n=4,t=setInterval(function(){if(window.__mf2boot)return clearInterval(t);n=Math.min(30,n+1);b.style.width=n+"%"},180);})();</script>
@@ -5083,7 +5150,7 @@ function lsGet(k){try{return root.localStorage.getItem(k);}catch(e){return null;
 function lsSet(k,v){try{root.localStorage.setItem(k,v);return true;}catch(e){return false;}}
 function defaultSave(now){return {v:SAVE_V,created:now,name:'',level:1,xp:0,coins:0,gems:0,fighters:{},selected:'michael',mode:'duel',
  pass:{season:seasonInfo(now).id,xp:0,claimed:[],lv:2,prem:false,pclaimed:[]},quests:{day:'',list:[]},road:{claimed:[]},goals:{prog:{},claimed:[]},shop:{day:'',bought:{},deals:[],df:''},iap:{tx:{},own:[]},
- stats:{matches:0,wins:0,losses:0,draws:0,kos:0,best:0,streak:0},welcome:null,pending:null,legacy:false,seq:0,at:0,tut:0,roadRun:{day:'',n:0,fin:''},casualRun:{day:'',n:0},login:{n:0,last:'',at:0,seen:0,total:0},blocked:[],streak:{n:0,last:'',done:0,best:0,reveal:null},mastery:{},plays:{},icon:'',title:'',chal:{day:'',free:false,run:null,best:0,runs:0},inbox:{read:[],got:[],local:[]},drops:{pending:0,open:null,seq:0,pity:0,day:'',wins:0,qb:'',last:'',bq:[]}};}
+ stats:{matches:0,wins:0,losses:0,draws:0,kos:0,best:0,streak:0},welcome:null,pending:null,legacy:false,seq:0,at:0,tut:0,roadRun:{day:'',n:0,fin:''},casualRun:{day:'',n:0},login:{n:0,last:'',at:0,seen:0,total:0},blocked:[],streak:{n:0,last:'',done:0,best:0,reveal:null},mastery:{},plays:{},icon:'',title:'',chal:{day:'',free:false,run:null,best:0,runs:0},inbox:{read:[],got:[],local:[]},drops:{pending:0,open:null,seq:0,pity:0,day:'',wins:0,qb:'',last:'',bq:[]},ev:{}};}
 // returns a clean save from untrusted data; throws if it is not a usable save object
 function sanitize(o,now){if(!o||typeof o!=='object'||o.v==null||typeof o.fighters!=='object')throw new Error('bad save');
  const d=defaultSave(now),s=Object.assign(d,{});
@@ -5129,7 +5196,15 @@ function sanitize(o,now){if(!o||typeof o!=='object'||o.v==null||typeof o.fighter
  {const c=o.casualRun&&typeof o.casualRun==='object'?o.casualRun:{};s.casualRun={day:typeof c.day==='string'?c.day.slice(0,12):'',n:clampN(num(c.n,0)|0,0,999)};}
  {const r=o.roadRun&&typeof o.roadRun==='object'?o.roadRun:{};s.roadRun={day:typeof r.day==='string'?r.day.slice(0,12):'',n:clampN(num(r.n,0)|0,0,999),fin:typeof r.fin==='string'?r.fin.slice(0,12):''};}
  {const d=o.drops&&typeof o.drops==='object'?o.drops:{};s.drops={pending:clampN(num(d.pending,0)|0,0,999),open:cleanOpenDrop(d.open),seq:int0(d.seq),pity:clampN(num(d.pity,0)|0,0,PITY_N),day:typeof d.day==='string'?d.day.slice(0,12):'',wins:clampN(num(d.wins,0)|0,0,999),qb:typeof d.qb==='string'?d.qb.slice(0,12):'',last:typeof d.last==='string'?d.last.slice(0,24):'',bq:Array.isArray(d.bq)?d.bq.map(x=>num(x,-1)|0).filter(x=>x>=0&&x<RARITIES.length).slice(0,CHEST_QUEUE_MAX):[]};}
+ s.ev=cleanEv(o.ev);
  return s;}
+// limited-time events (events.js): one small JSON blob per event id. Only shape and size are checked here, the event
+// module validates its own fields. At most EV_KEEP events, each at most EV_MAX characters, newest ids kept.
+function EV_KEEP(){return 6;}function EV_MAX(){return 4000;}   // functions, not consts: the pure core runs sanitize before this line is reached
+function cleanEv(e){const out={};if(!e||typeof e!=='object'||Array.isArray(e))return out;
+ const ids=Object.keys(e).filter(k=>/^[a-z][a-z0-9_]{1,23}$/.test(k)).sort().slice(-EV_KEEP());
+ for(const k of ids){const v=e[k];if(!v||typeof v!=='object'||Array.isArray(v))continue;try{const j=JSON.stringify(v);if(j.length<=EV_MAX())out[k]=JSON.parse(j);}catch(_){}}
+ return out;}
 // storage keys: mf2_* normally; mf2t_* in the test mode (?newplayer=1), so a phone with real progress can show the
 // brand-new player experience without touching (or even reading) its real save or its v1 qk2_* keys.
 function saveKeys(test){const ns=test==='x'?'mf2x_':test?'mf2t_':'mf2_';return {ns,save:ns+'save',bak:ns+'save_bak',gift:ns+'gift',acct:ns+'acct'};}
@@ -5480,6 +5555,12 @@ const api={
   // iap.js: set the store state, apply one verified transaction (idempotent), list owned non-consumables
   setIAP(o){IAP=Object.assign({},IAP,o);},iapGrant(pid,tx,extra){refreshDaily();const r=iapGrantIn(S,pid,tx,give,isUnlocked,Date.now(),extra);if(r.ok&&!r.already){changed();for(const g of r.rewards)emit('reward',{source:'iap',productId:pid,reward:g});}return r;},
   iapOwned:()=>S.iap.own.slice(),
+  // limited-time events (events.js): the event's own blob in the save, and rewards through the normal give() path
+  evGet(id){const v=S.ev&&S.ev[id];return v?JSON.parse(JSON.stringify(v)):null;},
+  evSet(id,v){if(!/^[a-z][a-z0-9_]{1,23}$/.test(id)||!v||typeof v!=='object')return false;let j;try{j=JSON.stringify(v);}catch(_){return false;}if(j.length>EV_MAX())return false;
+   if(!S.ev||typeof S.ev!=='object')S.ev={};S.ev[id]=JSON.parse(j);const ks=Object.keys(S.ev).sort();while(ks.length>EV_KEEP())delete S.ev[ks.shift()];changed();return true;},
+  evGive(list,source){refreshDaily();const got=[];for(const r of (Array.isArray(list)?list:[list])){if(!r||typeof r!=='object')continue;const g=give(r,'event');if(g)got.push(g);}
+   if(got.length){changed();for(const g of got)emit('reward',{source:source||'event',reward:g});}return got;},
   // Road to the Top (match.js): one cleared stage -> rewards; the end of a run -> 'play' / 'win' for quests and goals
   roadStage(o){refreshDaily();const d=dayKey(Date.now()),R=S.roadRun;if(R.day!==d){R.day=d;R.n=0;}
    const fid=ROSTER.includes(o.fighter)||SPECIAL.includes(o.fighter)?o.fighter:S.selected,st=o.stats||{};
@@ -6462,6 +6543,173 @@ try{document.addEventListener('visibilitychange',()=>{if(document.hidden&&pendin
 })();
 
 
+;/* ===================== Mini Fighter 2.0: limited-time events (owner: EVENTS) =====================
+ A holiday event is a window of time. Outside it this module does nothing: no screen, no hook, no reward, the game is
+ exactly the regular game. Inside it the module adds, without touching the regular systems:
+   A  candle chests   day N of the event gives N chests for free, and up to N more, one per rewarded ad
+   B  attendance      visiting on every day gives the grand prize (a fighter; whoever owns it gets a skin instead).
+                      A missed day can be made up with one rewarded ad
+   C  daily challenge one small task a day, paid in the event currency (dreidels); wins pay a little too
+   D  dreidel shop    holiday skins and chests for dreidels
+   E  friend bonus    the first match a day played together with a friend in a party gives a chest
+   F  leaderboard     trophies won during the event, a shared table on the rooms server (events-core.js), prizes by mail
+   G  gift codes      single-use codes checked by the server: the first player to type a code gets it
+ State: one small blob per event inside the save (MF2._.evGet / evSet, travels with the cloud save). Rewards go through
+ MF2._.evGive, the normal reward path. In node (tests) this file exports the pure core: require('.../events.js').
+ Adding the next event: one more entry in EVENTS (dates, texts, prizes). Nothing else changes.
+============================================================================================ */
+(function(root){
+'use strict';
+const DAY=864e5,HOUR=36e5;
+/* ---------------- the events ---------------- */
+// start / end: the first candle is lit on Friday 2026-12-04 in the evening; a "day" runs from 17:00 to 17:00 Israel time
+const EVENTS=[{
+ id:'hanukkah26',name:'חנוכה',title:'חג האורות',days:8,start:Date.parse('2026-12-04T17:00:00+02:00'),end:Date.parse('2026-12-12T17:00:00+02:00'),
+ mailMs:14*DAY,                                  // how long after the end the leaderboard prize can still arrive
+ dayName:n=>'נר '+['','ראשון','שני','שלישי','רביעי','חמישי','שישי','שביעי','שמיני'][n],
+ grand:{fighter:'sufgi',alt:{type:'skin',skin:'michael_h'}},
+ coin:'סביבונים',
+ // one per day, in order. kind: play (any finished match) | win | kos (knock-outs in ranked matches)
+ challenges:[['play',3],['win',2],['kos',6],['play',4],['win',3],['kos',8],['play',5],['win',3]],
+ chalReward:10,winCoin:2,winCoinDay:10,
+ shop:[{id:'chest',price:12,max:6,reward:{type:'drop',amount:1}},{id:'hop_h',price:40,max:1,reward:{type:'skin',skin:'hop_h'}},
+       {id:'tuli_h',price:60,max:1,reward:{type:'skin',skin:'tuli_h'}},{id:'michael_h',price:90,max:1,reward:{type:'skin',skin:'michael_h'}}],
+ lbPrizes:[[1,300],[3,200],[10,100]],             // up to rank, gems
+ arena:'hanukkah'
+}];
+/* ---------------- pure core ---------------- */
+const int=(v,lo,hi)=>{v=typeof v==='number'&&isFinite(v)?Math.floor(v):0;return v<lo?lo:v>hi?hi:v;};
+const arr=(a,n,hi)=>Array.from({length:n+1},(_,i)=>int(Array.isArray(a)?a[i]:0,0,hi));
+function clean(def,o){o=o&&typeof o==='object'?o:{};const n=def.days,sh={};
+ if(o.sh&&typeof o.sh==='object')for(const it of def.shop)if(o.sh[it.id])sh[it.id]=int(o.sh[it.id],0,it.max);
+ const c=o.c&&typeof o.c==='object'?{d:int(o.c.d,0,n),p:int(o.c.p,0,999),s:int(o.c.s,0,2),w:int(o.c.w,0,def.winCoinDay)}:{d:0,p:0,s:0,w:0};
+ return {f:arr(o.f,n,1),a:arr(o.a,n,n),v:arr(o.v,n,2),g:int(o.g,0,1),dr:int(o.dr,0,9999),c,fb:arr(o.fb,n,1),sc:int(o.sc,0,99999),sh,cd:int(o.cd,0,1),lb:int(o.lb,0,1),t:int(o.t,0,4e12)};}
+const active=(def,now)=>now>=def.start&&now<def.end;
+const dayOf=(def,now)=>active(def,now)?Math.min(def.days,Math.floor((now-def.start)/DAY)+1):0;
+// a clock set back by more than an hour after the event saw a later time: nothing can be claimed until time catches up
+const clockOk=(st,now)=>now>=st.t-HOUR;
+function findEvent(now,list){return (list||EVENTS).find(e=>active(e,now))||null;}
+// everything that depends on "today": a visit mark and a fresh challenge. Returns true if st changed.
+function touch(def,st,now){const d=dayOf(def,now);if(!d||!clockOk(st,now))return false;let ch=false;
+ if(now>st.t){st.t=now;}
+ if(!st.v[d]){st.v[d]=1;ch=true;}
+ if(st.c.d!==d){st.c={d,p:0,s:0,w:0};ch=true;}
+ return ch;}
+const chalOf=(def,d)=>{const c=def.challenges[(d-1)%def.challenges.length];return {kind:c[0],goal:c[1]};};
+const chalText=(c)=>c.kind==='play'?(c.goal===1?'לשחק קרב אחד':`לשחק ${c.goal} קרבות`):c.kind==='win'?(c.goal===1?'לנצח בקרב אחד':`לנצח ב־${c.goal} קרבות`):`להפיל ${c.goal} יריבים בקרבות מדורגים`;
+const attended=(def,st)=>{let n=0;for(let i=1;i<=def.days;i++)if(st.v[i])n++;return n;};
+function claimFree(def,st,now){const d=dayOf(def,now);if(!d)return {ok:false,reason:'closed'};if(!clockOk(st,now))return {ok:false,reason:'clock'};
+ touch(def,st,now);if(st.f[d])return {ok:false,reason:'done'};st.f[d]=1;return {ok:true,day:d,give:[{type:'drop',amount:d}]};}
+// one more chest for one watched ad; `watched` must be true (the caller showed the ad)
+function adChest(def,st,now,watched){const d=dayOf(def,now);if(!d)return {ok:false,reason:'closed'};if(!clockOk(st,now))return {ok:false,reason:'clock'};
+ if(!st.f[d])return {ok:false,reason:'free'};if(st.a[d]>=d)return {ok:false,reason:'done'};if(watched!==true)return {ok:false,reason:'ad'};
+ st.a[d]++;return {ok:true,day:d,left:d-st.a[d],give:[{type:'drop',amount:1}]};}
+function makeUp(def,st,now,day,watched){const d=dayOf(def,now);if(!d)return {ok:false,reason:'closed'};if(!clockOk(st,now))return {ok:false,reason:'clock'};
+ day=int(day,0,def.days);if(day<1||day>=d)return {ok:false,reason:'day'};if(st.v[day])return {ok:false,reason:'done'};if(watched!==true)return {ok:false,reason:'ad'};
+ st.v[day]=2;return {ok:true,day};}
+// the grand prize: the fighter, or the alternative for whoever already has it. owned(id) -> bool
+function claimGrand(def,st,now,owned){if(!active(def,now))return {ok:false,reason:'closed'};if(!clockOk(st,now))return {ok:false,reason:'clock'};
+ if(st.g)return {ok:false,reason:'done'};if(attended(def,st)<def.days)return {ok:false,reason:'days'};
+ st.g=1;return {ok:true,give:[owned(def.grand.fighter)?def.grand.alt:{type:'fighter',fighter:def.grand.fighter}]};}
+// a finished match. m: {win, ranked, kos, trophies (delta), friend}
+function onMatch(def,st,now,m){const d=dayOf(def,now);if(!d||!clockOk(st,now))return {changed:false,give:[]};touch(def,st,now);const give=[],c=chalOf(def,d);
+ if(st.c.s===0){const add=c.kind==='play'?1:c.kind==='win'?(m.win?1:0):(m.ranked?int(m.kos,0,50):0);st.c.p=Math.min(c.goal,st.c.p+add);if(st.c.p>=c.goal)st.c.s=1;}
+ if(m.win&&st.c.w<def.winCoinDay){const w=Math.min(def.winCoin,def.winCoinDay-st.c.w);st.c.w+=w;st.dr+=w;}
+ if(m.ranked&&m.trophies>0)st.sc=Math.min(99999,st.sc+int(m.trophies,0,200));
+ if(m.friend&&!st.fb[d]){st.fb[d]=1;give.push({type:'drop',amount:1,name:'תיבת חברים'});}
+ return {changed:true,give};}
+function claimChallenge(def,st,now){const d=dayOf(def,now);if(!d)return {ok:false,reason:'closed'};if(!clockOk(st,now))return {ok:false,reason:'clock'};
+ if(st.c.d!==d||st.c.s!==1)return {ok:false,reason:st.c.s===2?'done':'prog'};st.c.s=2;st.dr+=def.chalReward;return {ok:true,dreidels:def.chalReward};}
+function buy(def,st,now,id,owned){if(!active(def,now))return {ok:false,reason:'closed'};if(!clockOk(st,now))return {ok:false,reason:'clock'};
+ const it=def.shop.find(x=>x.id===id);if(!it)return {ok:false,reason:'item'};if((st.sh[id]|0)>=it.max)return {ok:false,reason:'soldout'};
+ if(it.reward.type==='skin'&&owned(it.reward.skin))return {ok:false,reason:'owned'};if(st.dr<it.price)return {ok:false,reason:'price'};
+ st.dr-=it.price;st.sh[id]=(st.sh[id]|0)+1;return {ok:true,give:[it.reward]};}
+const lbPrize=(def,rank)=>{if(!(rank>0))return 0;for(const [r,g] of def.lbPrizes)if(rank<=r)return g;return 0;};
+// what the screens show. ctx: {owns(fighterId), ownsSkin(skinId), ads (rewarded ads can be shown)}
+function view(def,st,now,ctx){ctx=ctx||{};const d=dayOf(def,now),ok=clockOk(st,now),own=ctx.owns||(()=>false),ownS=ctx.ownsSkin||(()=>false);
+ const c=d?chalOf(def,d):null,cur=d&&st.c.d===d?st.c:{p:0,s:0,w:0},att=attended(def,st),hasF=own(def.grand.fighter);
+ return {id:def.id,name:def.name,title:def.title,active:!!d,day:d,days:def.days,dayName:d?def.dayName(d):'',startsAt:def.start,endsAt:def.end,nextAt:d&&d<def.days?def.start+d*DAY:def.end,clock:ok,ads:!!ctx.ads,
+  candles:Array.from({length:def.days},(_,i)=>{const n=i+1;return {day:n,name:def.dayName(n),lit:!!d&&n<=d,today:n===d,chests:n,free:!!st.f[n],ads:st.a[n],visited:!!st.v[n],madeUp:st.v[n]===2,canMakeUp:!!d&&n<d&&!st.v[n]};}),
+  today:d?{chests:d,canClaim:ok&&!st.f[d],claimed:!!st.f[d],adsDone:st.a[d],adsMax:d,adsLeft:st.f[d]?d-st.a[d]:0}:null,
+  grand:{fighter:def.grand.fighter,alt:def.grand.alt,givesAlt:hasF&&!st.g,have:att,need:def.days,ready:ok&&!!d&&att>=def.days&&!st.g,claimed:!!st.g,missed:d?Array.from({length:d-1},(_,i)=>i+1).filter(n=>!st.v[n]):[]},
+  dreidels:st.dr,coin:def.coin,
+  challenge:c?{kind:c.kind,text:chalText(c),goal:c.goal,prog:Math.min(c.goal,cur.p),done:cur.s>=1,claimed:cur.s===2,reward:def.chalReward,winCoin:def.winCoin,winLeft:Math.max(0,def.winCoinDay-cur.w)}:null,
+  shop:def.shop.map(it=>{const n=st.sh[it.id]|0,owned=it.reward.type==='skin'&&ownS(it.reward.skin);return {id:it.id,price:it.price,reward:it.reward,bought:n,max:it.max,owned,soldOut:n>=it.max,afford:st.dr>=it.price,can:ok&&!!d&&!owned&&n<it.max&&st.dr>=it.price};}),
+  friend:d?{done:!!st.fb[d]}:null,score:st.sc,code:!!st.cd,
+  // a red dot on the lobby: something is waiting to be collected
+  badge:d&&ok?((st.f[d]?0:1)+(cur.s===1?1:0)+(att>=def.days&&!st.g?1:0)):0};}
+const Core={EVENTS,DAY,clean,active,dayOf,clockOk,findEvent,touch,chalOf,chalText,attended,claimFree,adChest,makeUp,claimGrand,onMatch,claimChallenge,buy,lbPrize,view};
+if(typeof module!=='undefined'&&module.exports){module.exports=Core;}
+/* ---------------- runtime (the game) ---------------- */
+const MF2=root.MF2;if(!MF2||!MF2._||typeof MF2._.evGet!=='function')return;
+const X=MF2._;
+// the clock. A skew (tests, the tester mode, localhost) lets the event be seen before its dates; real players have none.
+let SKEW=0;const canSkew=(()=>{try{const h=root.location&&root.location.hostname||'';return !!MF2.tester||!!MF2.testMode||h==='localhost'||h==='127.0.0.1'||root.location.protocol==='file:';}catch(e){return false;}})();
+if(canSkew){try{const q=new URLSearchParams(root.location.search),dd=q.get('evday'),E0=EVENTS[EVENTS.length-1];if(dd!=null&&E0&&+dd>=1&&+dd<=E0.days+2)SKEW=E0.start+(+dd-1)*DAY+HOUR-Date.now();}catch(e){}}
+const now=()=>Date.now()+SKEW;
+let DEF=null,ST=null,TOP=null,topAt=0,inParty=false,scTimer=null;
+const owns=id=>{try{const f=MF2.state().fighters[id];return !!(f&&f.unlocked);}catch(e){return false;}};
+const ownsSkin=id=>{try{const i=MF2.skinInfo&&MF2.skinInfo(id);return !!(i&&i.owned);}catch(e){return false;}};
+const adsOk=()=>{try{return typeof Ads!=='undefined'&&!!Ads.rewardAvailable;}catch(e){return false;}};
+const tell=()=>{try{X.emit('event',api.view());}catch(e){}};
+function sync(){const n=now(),e=findEvent(n);if(!e){if(DEF){DEF=null;ST=null;tell();}return false;}
+ if(!DEF||DEF.id!==e.id){DEF=e;ST=clean(e,X.evGet(e.id));}
+ if(touch(DEF,ST,n))save();return true;}
+function save(){if(DEF&&ST)X.evSet(DEF.id,ST);}
+const servers=()=>{try{return (MF2.cloud&&MF2.cloud.servers)||(typeof NET_SERVERS!=='undefined'?NET_SERVERS:[]);}catch(e){return [];}};
+async function call(method,path,body){for(const base of servers()){const ctl=typeof AbortController!=='undefined'?new AbortController():null,to=setTimeout(()=>{try{ctl&&ctl.abort();}catch(e){}},7000);
+  try{const r=await fetch(String(base).replace(/^ws/,'http').replace(/\/$/,'')+path,{method,body:body?JSON.stringify(body):undefined,signal:ctl?ctl.signal:undefined,cache:'no-store'});clearTimeout(to);
+   let j=null;try{j=await r.json();}catch(e){}if(j&&typeof j.ok==='boolean')return j;}catch(e){clearTimeout(to);}}
+ return {ok:false,reason:'offline'};}
+const acctId=()=>{try{return MF2.account&&MF2.account().id;}catch(e){return null;}};
+const cloudOn=()=>{try{return !!(MF2.cloud&&MF2.cloud.enabled);}catch(e){return false;}};
+function pushScore(){if(!DEF||!ST||!ST.sc||!cloudOn())return;clearTimeout(scTimer);const def=DEF,sc=ST.sc;
+ scTimer=setTimeout(async()=>{const s=MF2.state(),id=acctId();if(!id)return;const r=await call('POST','/events/score',{ev:def.id,id,name:s.name||'שחקן',score:sc,icon:s.selected});if(r.ok){TOP=r;topAt=Date.now();tell();}},1500);}
+function give(list,src){const got=X.evGive(list,src||'event');return got;}
+const fail=r=>Object.assign({ok:false},r);
+// a rewarded ad: resolves true only when the reward was earned
+function ad(){try{if(typeof Ads==='undefined'||!Ads.reward)return Promise.resolve('none');return Promise.resolve(Ads.reward()).catch(()=>false);}catch(e){return Promise.resolve(false);}}
+const api={
+ core:Core,now,
+ active:()=>sync(),
+ view(){if(!sync())return null;const v=view(DEF,ST,now(),{owns,ownsSkin,ads:adsOk()});v.top=TOP;return v;},
+ def:()=>DEF,
+ claim(){if(!sync())return fail({reason:'closed'});const r=claimFree(DEF,ST,now());if(!r.ok)return r;save();r.got=give(r.give,'event');tell();return r;},
+ async adChest(){if(!sync())return fail({reason:'closed'});const pre=adChest(DEF,clean(DEF,ST),now(),true);if(!pre.ok)return pre;
+  const w=await ad();if(w!==true)return fail({reason:w==='none'?'noad':'ad'});if(!sync())return fail({reason:'closed'});
+  const r=adChest(DEF,ST,now(),true);if(!r.ok)return r;save();r.got=give(r.give,'event');tell();return r;},
+ async makeUp(day){if(!sync())return fail({reason:'closed'});const pre=makeUp(DEF,clean(DEF,ST),now(),day,true);if(!pre.ok)return pre;
+  const w=await ad();if(w!==true)return fail({reason:w==='none'?'noad':'ad'});if(!sync())return fail({reason:'closed'});
+  const r=makeUp(DEF,ST,now(),day,true);if(!r.ok)return r;save();tell();return r;},
+ claimGrand(){if(!sync())return fail({reason:'closed'});const r=claimGrand(DEF,ST,now(),owns);if(!r.ok)return r;save();r.got=give(r.give,'event');tell();return r;},
+ claimChallenge(){if(!sync())return fail({reason:'closed'});const r=claimChallenge(DEF,ST,now());if(!r.ok)return r;save();tell();return r;},
+ buy(id){if(!sync())return fail({reason:'closed'});const r=buy(DEF,ST,now(),id,ownsSkin);if(!r.ok)return r;save();r.got=give(r.give,'event');tell();return r;},
+ async redeem(code){if(!sync())return fail({reason:'closed'});if(!cloudOn())return fail({reason:'offline'});const id=acctId();if(!id)return fail({reason:'offline'});
+  const def=DEF,r=await call('POST','/events/redeem',{ev:def.id,id,code:String(code||'').slice(0,40)});if(!r.ok)return r;
+  if(!sync()||DEF.id!==def.id)return fail({reason:'closed'});if(ST.cd)return {ok:true,again:true,got:[]};   // the prize was already given on this save
+  ST.cd=1;save();const got=give([r.reward],'code');tell();return {ok:true,got,reward:r.reward};},
+ async top(force){if(!sync())return null;if(!cloudOn())return null;if(TOP&&!force&&Date.now()-topAt<30000)return TOP;const id=acctId()||'';
+  const r=await call('GET','/events/top?ev='+DEF.id+'&id='+encodeURIComponent(id));if(r.ok){TOP=r;topAt=Date.now();tell();}return r.ok?r:null;},
+ // tests / tester only
+ _skew(ms){if(!canSkew)return false;SKEW=+ms||0;DEF=null;ST=null;sync();tell();return true;},_day(d){const E0=EVENTS[EVENTS.length-1];return api._skew(d?E0.start+(d-1)*DAY+HOUR-Date.now():0);},_canSkew:canSkew
+};
+MF2.event=api;
+// matches: ranked results, casual fights, and whether the match was played with a friend in a party
+MF2.on('match',m=>{try{if(m&&m.state==='start'){const p=MF2.party&&MF2.party.state&&MF2.party.state();inParty=!!(p&&p.active&&(p.members||[]).filter(x=>!x.you).length>0);}}catch(e){inParty=false;}});
+function matchDone(m){if(!sync())return;const r=onMatch(DEF,ST,now(),m);if(!r.changed)return;save();if(r.give.length)give(r.give,'friend');if(m.ranked&&m.trophies>0)pushScore();tell();}
+MF2.on('result',res=>{try{if(!res||res.forfeit)return;const win=res.mode==='ffa'?res.place===1:res.outcome==='win';
+  matchDone({win,ranked:true,kos:(res.stats&&res.stats.kos)|0,trophies:res.trophyDelta|0,friend:inParty});inParty=false;}catch(e){}});
+MF2.on('casual',r=>{try{if(!r||r.state!=='end'||r.reason)return;matchDone({win:!!r.win,ranked:false,kos:0,trophies:0,friend:inParty});inParty=false;}catch(e){}});
+// after the event: the leaderboard prize arrives once, by mail, to whoever finished in a prize place
+async function mail(){try{const n=now();for(const e of EVENTS){if(n<e.end||n>=e.end+e.mailMs)continue;const raw=X.evGet(e.id);if(!raw)continue;const st=clean(e,raw);if(st.lb||!st.sc||!cloudOn())continue;
+   const id=acctId();if(!id)continue;const r=await call('GET','/events/top?ev='+e.id+'&id='+encodeURIComponent(id));if(!r.ok||!r.ended)continue;
+   const g=lbPrize(e,r.rank);st.lb=1;X.evSet(e.id,st);
+   if(g>0)MF2.inboxAdd({id:'ev_'+e.id+'_lb',title:`טבלת ${e.name}: מקום ${r.rank}`,body:`סיימתם במקום ${r.rank} בטבלת המובילים של ${e.name}. כל הכבוד!`,reward:[{type:'gems',amount:g}]});}}catch(e){}}
+sync();setTimeout(mail,4000);
+try{root.document&&root.document.addEventListener('visibilitychange',()=>{if(!root.document.hidden){const was=!!DEF;if(sync()||was)tell();}});}catch(e){}
+})(typeof window!=='undefined'?window:globalThis);
+
+
 ;/* ===================== Mini Fighter 2.0: real-money purchases (owner: SYSTEMS agent) =====================
  MF2.iap on top of the same Capacitor plugin the game already uses for premium_all (@capgo/native-purchases,
  registered as 'NativePurchases'). v2 build only. Product ids, types and prices: docs/STORE_PRODUCTS.md.
@@ -6610,6 +6858,7 @@ function panel(){if(d.getElementById('mf2tp'))return;const p=d.createElement('di
   <h3>תיבה לפי נדירות</h3><div class="g">${rs.map(r=>`<button data-c="${r.index}">${esc(r.name)}</button>`).join('')}</div>
   <h3>לוחמים</h3><div class="g">${fs.map(f=>`<button data-f="${f.id}" class="${f.unlocked?'on':''}">${esc(f.name)}</button>`).join('')}</div>
   <h3>רצף כניסות: <span data-stk>${MF2.streak().n}/30</span></h3><div class="g">${[0,7,15,29].map(n=>`<button data-stv="${n}">רצף ${n}</button>`).join('')}<button data-a="stday">עוד יום ברצף</button></div>
+  ${MF2.event&&MF2.event._canSkew?`<h3>אירוע חנוכה (תצוגה מוקדמת)</h3><div class="g">${[1,2,3,4,5,6,7,8].map(n=>`<button data-evd="${n}">נר ${n}</button>`).join('')}<button data-evd="0" class="cl">לפי התאריך</button></div>`:''}
   <h3>כללי</h3><div class="g"><button data-a="prem" class="${MF2.state().pass.premium?'on':''}">כרטיס פרימיום: ${MF2.state().pass.premium?'פעיל':'כבוי'}</button><button data-a="all">כל הלוחמים</button>${T.grantSkins?'<button data-a="skins">כל הסקינים</button>':''}<button class="rs" data-a="reset">איפוס שמירת הבדיקה</button><button class="rs" data-a="off">יציאה ממצב בודק</button><button class="cl" data-a="close">סגירה</button></div>
   <p class="m" role="status"></p></div>`;
  const msg=t=>{p.querySelector('.m').textContent=t;};
@@ -6617,6 +6866,7 @@ function panel(){if(d.getElementById('mf2tp'))return;const p=d.createElement('di
   if(x.dataset.f){if(T.grantFighter(x.dataset.f)){x.classList.add('on');msg('נפתח: '+x.textContent);}return;}
   if(x.dataset.c){T.chest(+x.dataset.c);p.remove();try{if(root.MF2UI&&typeof MF2UI.drop==='function'){MF2UI.drop();return;}}catch(_){}
    const o=MF2.openDrop();if(o)MF2.finishDrop(o.id);return;}
+  if(x.dataset.evd!=null){const n=+x.dataset.evd;MF2.event._day(n);msg(n?'האירוע מוצג כאילו היום נר '+n:'האירוע לפי התאריך האמיתי');p.remove();try{if(root.MF2UI&&MF2UI.go)MF2UI.go('lobby');}catch(_){}return;}
   const a=x.dataset.a;
   if(x.dataset.stv!=null){const v=T.setStreak(+x.dataset.stv);p.querySelector('[data-stk]').textContent=v.n+'/30';msg('הרצף עכשיו '+v.n);return;}
   if(a==='stday'){const v=T.streakDay();p.querySelector('[data-stk]').textContent=v.n+'/30';msg(v.reveal?'יום 30! הפרס נפתח':'הרצף עכשיו '+v.n);if(v.reveal){p.remove();try{MF2._extras&&MF2._extras.streakReveal();}catch(_){}}return;}
@@ -8634,6 +8884,7 @@ S.lobby={back:null,show(){const s=st(),sel=s.selected,f=s.fighters[sel]||{},ms=M
  const roadCan=has(MF(),'road')?MF().road().filter(r=>r.reachable&&!r.claimed).length:0,gN=goalsList().filter(g=>g.done&&!g.claimed).length,fUp=gN;
  const nx0=passNext(s),bonusM=ms.find(x=>x.bonus&&x.unlocked);
  const news=[];if(nx0)news.push(['pass',anim('dreidel',26,ico('star',20)),`עונת ${SEASON_NAME}: ${nx0.ready?fname(nx0.x.free.fighter)+' מחכה בכרטיס העונה!':'לוחמים חדשים בסוף כרטיס העונה'}`]);if(bonusM)news.push(['modes',ico('coin',22),`היום מטבעות כפולים ב${bonusM.title}`]);if(gN)news.push(['goals',ico('crown',22),'מטרה הושלמה, לוחם חדש מחכה!']);
+ try{const E=MF().event&&MF().event.view();if(E)news.unshift(['event',ico('star',20),E.today.canClaim?`${E.dayName}: ${E.today.chests===1?'תיבה אחת מחכה':E.today.chests+' תיבות מחכות'} לכם!`:E.grand.ready?`${E.title}: הפרס הגדול מחכה לכם!`:`${E.title}: ${E.dayName}`]);}catch(_){}   // a holiday event (events.js), only while it runs
  const gcan=goalsList().some(g=>g.done&&!g.claimed),qcan=qs.some(q=>q.done&&!q.claimed)||gcan;
  const amb=RM.matches?'':`<div class="amb" aria-hidden="true"><i class="swp"></i>${Array.from({length:12},(_,i)=>`<i class="pt" style="left:${(i*37+11)%100}%;animation-delay:-${(i*1.7).toFixed(1)}s;animation-duration:${9+i%5*2}s;--z:${.6+(i%3)*.3}"></i>`).join('')}</div>`;
  const html=`${bg('lobby',!hasArt('lobby'))}${amb}${news.length?`<button class="hit nws" data-a="${news[0][0]}" data-news='${esc(JSON.stringify(news.map(n=>[n[0],n[2]])))}'><span class="nwp">${news[0][1]}<span class="fit">${esc(news[0][2])}</span></span></button>`:''}
@@ -8658,7 +8909,7 @@ S.lobby={back:null,show(){const s=st(),sel=s.selected,f=s.fighters[sel]||{},ms=M
  </aside>
  <footer class="m2-bottom"><button class="b n modeb" data-a="modes"><span class="mi" style="background:${(MODECOL[m.id]||MODECOL.duel)[1]}">${modeArt(m.id,96,96)}</span><span class="mt"><small>${esc(modeShort(m))}</small><b class="o fit">${esc(m.title)}</b></span>${ico('chev',24)}${m.bonus?`<span class="x2" aria-label="מטבעות כפולים היום">${ico('coin',16)}x2</span>`:''}</button>
   <button class="b y fight" data-a="fight" data-first><span class="fx"></span><span>קרב!</span></button></footer>`;
- mount(html,'m2-lobby');placePlate();fitTop();
+ mount(html,'m2-lobby');placePlate();fitTop();try{if(window.MF2EVUI)MF2EVUI.lobby(root);}catch(_){}
  if(s.welcome)sheetWelcome(s.welcome);
  else if(!COACH&&!LVUP&&!CELEQ.length&&loginDue())setTimeout(()=>{if(SCR&&SCR.name==='lobby'&&!openSheet&&loginDue()){UIS.loginDay=new Date().toDateString();saveUIS();sheetLogin();}},650);
  else if(COACH){const c=COACH;COACH=0;setTimeout(()=>{if(SCR&&SCR.name==='lobby'&&!openSheet)coachStart(c);},400);}
@@ -9719,7 +9970,7 @@ function sheetProf(){let P=null;try{P=B1('profile')?MF().profile():null;}catch(_
    <div class="pfrow"><span class="pfl">שליטה</span><div class="pfb">${(P.badges||[]).length?P.badges.map(b=>`<span class="mbg t-${esc(b.tier||'')}" title="${esc(b.name)}">${cvP(b.fighter,56,56,'avf')}<i>${esc(b.tierName||'')}</i></span>`).join(''):'<span class="pfnone">עוד אין תגי שליטה. שחקו עם לוחם כדי להתקדם</span>'}</div></div></div><div class="pfa">${cvH(skn(P.favorite?P.favorite.fighter:ic),'win')}${P.favorite?`<span class="pff"><small>הלוחם האהוב</small><b>${esc(P.favorite.name)}</b></span>`:''}</div>
   </div>
   <div class="srow2"><button class="b n" data-a="profilefull"><span class="o">עריכת שם וחשבון</span></button><button class="b y" data-a="closesheet" data-first><span>סגירה</span></button></div>`,'pfsh','פרופיל');}
-Object.assign(ACT,{login:()=>{snd('tap');sheetLogin();},inbox:()=>{snd('tap');sheetInbox();},
+Object.assign(ACT,{event:()=>{snd('tap');try{window.MF2EVUI&&MF2EVUI.open();}catch(_){}},login:()=>{snd('tap');sheetLogin();},inbox:()=>{snd('tap');sheetInbox();},
  loginclaim:b=>{let r=null;try{r=MF().claimLogin();}catch(_){}if(!r){snd('err');return;}b.disabled=true;claimFly(b,Array.isArray(r)?r:[r.reward||r],()=>{closeSheet();if(SCR&&SCR.name==='lobby')go('lobby');});},
  inboxclaim:b=>{let r=null;try{r=MF().inboxClaim(b.dataset.id);}catch(_){}if(!r){snd('err');return;}b.disabled=true;claimFly(b,Array.isArray(r)?r:[r],()=>{sheetInbox();});},
  seticon:b=>{try{MF().setIcon(b.dataset.id);}catch(_){}snd('tap');sheetProf();},settitle:b=>{try{MF().setTitle(b.dataset.t);}catch(_){}snd('tap');sheetProf();}});
@@ -9887,6 +10138,8 @@ Object.assign(ACT,{
    const sc=w*.19/(f[2]*W);x.imageSmoothingQuality='high';x.drawImage(im,w/2-f[0]*W*sc,h*.4-f[1]*H*sc,W*sc,H*sc);return true;};
   if(!draw()){const x=cv.getContext('2d'),bg=(CHARS[d.skinOf]||{}).bg||['#3a5cb4','#1d2c6e'];x.setTransform(1,0,0,1,0,0);x.fillStyle=bg[1]||bg[0];x.fillRect(0,0,cv.width,cv.height);faceLoad(id).then(()=>draw());}};}
 Object.assign(window.MF2UI,{skin:(k,o)=>sheetSkin(k,o),skinReveal:(k,then)=>skinReveal(k,then||(()=>{}))});
+// the kit for add-on screens (events_ui.js): the sheet and the painters of this file, nothing else
+window.MF2UI.kit={sheet,closeSheet,ico,chestArt,cvP,esc,fmt,fname,toast:toast2,snd,paintAll,fitTexts,updPills,hasArt,root:()=>root};
 boot();
 })();
 
@@ -10006,6 +10259,164 @@ for(const k of ['openDrop','finishDrop','buy']){if(typeof MF2[k]==='function'){c
 MF2.adsPolicy={state:()=>Object.assign({payer:payer(),want:want(),shown:shown(),fit,quietSince,resultAt},ld()),want,due:()=>due(MF2.lastResult),apply,CFG,
  reset:o=>{sv(Object.assign({first:Date.now(),matches:0,since:0,last:0},o||{}));quietSince=0;resultAt=0;on=null;apply();},measure};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',watch);else watch();
+})();
+
+
+;/* ===================== Mini Fighter 2.0: limited-time events, screens (owner: EVENTS) =====================
+ Built on MF2.event (events.js) and the UI kit of ui.js (MF2UI.kit). While no event is active nothing is drawn and
+ nothing is listened to: the lobby is the regular lobby.
+   - the lobby button (a menorah with the lit candles of today, a red dot when something waits)
+   - the event sheet: candles and chests, the grand prize, the daily challenge and the dreidel shop, the leaderboard,
+     the gift code
+============================================================================================ */
+(function(){
+'use strict';
+const MF2=window.MF2;if(!MF2||!MF2.event||!window.MF2UI||!MF2UI.kit)return;
+const EV=MF2.event,K=MF2UI.kit,esc=K.esc,fmt=K.fmt;
+let TAB='candles',timer=null,busy=false,msg='';
+/* ---------------- art (inline SVG, no image files) ---------------- */
+const flame=on=>on?'<path d="M0-11c3 4 4 6 4 8.5A4 4 0 0 1-4-2.5C-4-5-2-7 0-11z" fill="#ffb020" stroke="#0a0e33" stroke-width="1.4"/><path d="M0-6c1.4 1.8 1.8 2.8 1.8 3.8A1.8 1.8 0 0 1-1.8-2.2C-1.8-3.4-.9-4.4 0-6z" fill="#fff3a6"/>':'';
+// a menorah with n of 8 candles lit (right to left, the way they are placed) and the shamash in the middle
+function menorah(n,s){let c='';for(let i=0;i<8;i++){const x=[-36,-27,-18,-9,9,18,27,36][7-i],on=i<n;
+  c+=`<g transform="translate(${x} 0)"><rect x="-2.6" y="0" width="5.2" height="13" rx="1.6" fill="${on?'#eaf2ff':'#8f9bd4'}" stroke="#0a0e33" stroke-width="1.4"/>${flame(on)}</g>`;}
+ return `<svg class="evmn" width="${s}" height="${Math.round(s*.82)}" viewBox="-46 -26 92 76" aria-hidden="true"><g>${c}
+  <g transform="translate(0 -9)"><rect x="-3" y="0" width="6" height="16" rx="1.8" fill="#fff" stroke="#0a0e33" stroke-width="1.4"/>${flame(n>0)}</g>
+  <path d="M-36 13v5a9 9 0 0 0 9 9h54a9 9 0 0 0 9-9v-5M-27 13v6M-18 13v6M-9 13v6M9 13v6M18 13v6M27 13v6M0 7v32" fill="none" stroke="#0a0e33" stroke-width="7" stroke-linecap="round"/>
+  <path d="M-36 13v5a9 9 0 0 0 9 9h54a9 9 0 0 0 9-9v-5M-27 13v6M-18 13v6M-9 13v6M9 13v6M18 13v6M27 13v6M0 7v32" fill="none" stroke="#ffd23f" stroke-width="3.6" stroke-linecap="round"/>
+  <rect x="-17" y="38" width="34" height="8" rx="4" fill="#ffd23f" stroke="#0a0e33" stroke-width="1.8"/></g></svg>`;}
+const candle=(on,s)=>`<svg width="${s}" height="${Math.round(s*1.5)}" viewBox="-8 -14 16 30" aria-hidden="true"><rect x="-3.4" y="0" width="6.8" height="14" rx="2" fill="${on?'#eaf2ff':'#7f8ac6'}" stroke="#0a0e33" stroke-width="1.5"/>${flame(on)}</svg>`;
+const dreidel=s=>`<svg class="evdr" width="${s}" height="${s}" viewBox="-12 -13 24 26" aria-hidden="true"><rect x="-1.6" y="-12" width="3.2" height="7" rx="1.2" fill="#ffd23f" stroke="#0a0e33" stroke-width="1.3"/><path d="M-8-5h16v8L0 12-8 3z" fill="#3aa0ff" stroke="#0a0e33" stroke-width="1.6" stroke-linejoin="round"/><path d="M-3-1h6M0-1v5" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg>`;
+const two=n=>(n<10?'0':'')+n;
+const left=ms=>{ms=Math.max(0,ms);const h=Math.floor(ms/36e5),m=Math.floor(ms%36e5/6e4),s=Math.floor(ms%6e4/1e3);return `${two(h)}:${two(m)}:${two(s)}`;};
+const pendingDrops=()=>{try{const d=MF2.drops();return d&&d.pending|0;}catch(e){return 0;}};
+const plural=(n,one,many)=>n===1?one:`${n} ${many}`;
+/* ---------------- lobby button ---------------- */
+function lobby(root){try{const lob=root&&root.querySelector('.m2-lobby');if(!lob)return;const old=lob.querySelector('.evb');if(old)old.remove();
+  const v=EV.view();if(!v)return;const b=document.createElement('button');b.className='hit evb'+(v.badge?' has':'');b.type='button';b.dataset.ev='open';
+  b.setAttribute('aria-label',`אירוע ${v.name}: ${v.dayName}${v.badge?', יש פרס לאסוף':''}`);
+  b.innerHTML=`<span class="evbw">${menorah(v.day,58)}<b class="evbn o">${esc(v.dayName)}</b></span>${v.badge?`<i class="evbd">${v.badge}</i>`:''}`;
+  b.addEventListener('click',e=>{e.stopPropagation();K.snd('tap');open('candles');});
+  lob.appendChild(b);}catch(e){}}
+/* ---------------- the sheet ---------------- */
+const TABS=[['candles','נרות'],['tasks','אתגר וחנות'],['top','טבלה'],['code','קוד מתנה']];
+function rewardName(r){return r.type==='drop'?plural(r.amount,'תיבה','תיבות'):r.type==='skin'?(MF2.skinInfo(r.skin)||{}).name||'סקין':r.type==='fighter'?K.fname(r.fighter):`${fmt(r.amount)}`;}
+function tabCandles(v){const t=v.today,g=v.grand,dp=pendingDrops();
+ const cells=v.candles.map(c=>`<div class="evc${c.lit?' lit':''}${c.today?' now':''}${c.free?' got':''}"><span class="evcn">${c.day}</span>${candle(c.lit,20)}<b class="evcv">${K.chestArt(0,22)}<bdi>×${c.chests}</bdi></b>${c.free?`<i class="evck">${K.ico('check',12)}</i>`:c.lit&&!c.today&&!c.visited?'<i class="evcm" aria-label="יום שהוחמץ">!</i>':''}</div>`).join('');
+ let main;
+ if(!v.clock)main='<p class="evnote">השעון של המכשיר נראה לא מדויק. נסו שוב מאוחר יותר.</p>';
+ else if(t.canClaim)main=`<button class="b y" data-ev="claim" data-first><span>קבלו ${plural(t.chests,'תיבה אחת','תיבות')} של ${esc(v.dayName)}</span></button>`;
+ else if(t.adsLeft>0)main=v.ads?`<button class="b g" data-ev="ad"><span class="o">עוד תיבה בצפייה בפרסומת</span><small><bdi>${t.adsDone}/${t.adsMax}</bdi></small></button>`:`<p class="evnote">עוד ${plural(t.adsLeft,'תיבה אחת','תיבות')} בצפייה בפרסומות, באפליקציה.</p>`;
+ else main=`<p class="evnote">${v.day<v.days?'אספתם את כל התיבות של היום. הנר הבא בעוד':'אספתם את כל התיבות של החג. האירוע מסתיים בעוד'} <bdi data-evleft>${left(v.nextAt-EV.now())}</bdi></p>`;
+ const miss=g.missed.length;
+ const grand=`<div class="evg"><span class="evgp">${g.givesAlt?'<span class="evgs">'+K.cvP(g.alt.skin,96,96,'evgc')+'</span>':'<span class="evgs">'+K.cvP(g.fighter,96,96,'evgc')+'</span>'}</span>
+  <span class="evgt"><b class="o">${g.claimed?'הפרס הגדול אצלכם!':g.givesAlt?'הפרס הגדול: סקין מיכאל חנוכה':`הפרס הגדול: ${esc(K.fname(g.fighter))}`}</b><span>${g.claimed?'נכנסתם בכל ימי החג. חג שמח!':'נכנסים בכל אחד מ־8 ימי החג ומקבלים במתנה.'}</span>
+  <span class="bar g" aria-hidden="true"><i style="width:${100*g.have/g.need}%"></i><b>${g.have}/${g.need}</b></span></span>
+  ${g.ready?`<button class="b y evgb" data-ev="grand"><span>קבלו</span></button>`:miss&&!g.claimed?(v.ads?`<button class="b g evgb" data-ev="makeup" data-day="${g.missed[0]}"><span class="o">השלמת יום</span><small>פרסומת</small></button>`:''):''}</div>`;
+ return `<div class="evcs" role="list" aria-label="ימי החג">${cells}</div>${main}${t.claimed&&dp?`<button class="b n" data-ev="drops"><span class="o">פתיחת תיבות</span><small><bdi>${dp}</bdi></small></button>`:''}${grand}
+  ${t.canClaim||t.adsLeft>0?`<p class="evtime">הנר הבא בעוד <bdi data-evleft>${left(v.nextAt-EV.now())}</bdi></p>`:''}`;}
+function tabTasks(v){const c=v.challenge,sk=id=>(MF2.skinInfo(id)||{}).name||id;
+ const ch=`<div class="evt"><span class="evti">${dreidel(34)}</span><span class="evtt"><b class="o">האתגר של היום</b><span>${esc(c.text)}</span><span class="bar g" aria-hidden="true"><i style="width:${100*c.prog/c.goal}%"></i><b>${c.prog}/${c.goal}</b></span></span>
+  ${c.claimed?`<span class="evok">${K.ico('check',20)}</span>`:c.done?`<button class="b y evgb" data-ev="chal"><span>קבלו</span></button>`:`<span class="evrw">${dreidel(22)}<bdi>${c.reward}</bdi></span>`}</div>
+  <p class="evnote sm">כל ניצחון נותן ${c.winCoin} סביבונים${c.winLeft?'':' (הגעתם למקסימום של היום)'}. משחק ראשון ביום עם חבר בחבורה נותן תיבה${v.friend.done?' (קיבלתם היום)':''}.</p>`;
+ const shop=v.shop.map(it=>{const r=it.reward,art=r.type==='skin'?K.cvP(r.skin,96,96,'evsc'):K.chestArt(0,46),nm=r.type==='skin'?sk(r.skin):'תיבת פרס';
+  return `<button class="pan evs${it.can?'':' off'}" data-ev="buy" data-id="${it.id}" ${it.owned||it.soldOut?'disabled':''} aria-label="${esc(nm)}, ${it.price} סביבונים"><span class="evsa">${art}</span><b class="evsn fit">${esc(nm)}</b>
+   <span class="evsp">${it.owned?'יש לכם':it.soldOut?'נגמר':`${dreidel(18)}<bdi>${it.price}</bdi>`}</span>${it.max>1&&!it.soldOut?`<small><bdi>${it.bought}/${it.max}</bdi></small>`:''}</button>`;}).join('');
+ return `${ch}<div class="evsh2"><b class="o">חנות הסביבונים</b></div><div class="evss">${shop}</div>`;}
+function tabTop(v){const T=v.top;
+ if(!T)return `<p class="evnote">${MF2.cloud&&MF2.cloud.enabled?'טוענים את הטבלה...':'הטבלה זמינה כשמחוברים לרשת.'}</p><p class="evnote sm">הניקוד שלכם: <bdi>${fmt(v.score)}</bdi> גביעים שנצברו בחג.</p>`;
+ const rows=(T.top||[]).map(r=>`<div class="evr${r.me?' me':''}${r.rank<=3?' t'+r.rank:''}"><b class="evrr"><bdi>${r.rank}</bdi></b><span class="evrn">${esc(r.name)}</span><b class="evrs">${K.ico('trophy',16)}<bdi>${fmt(r.score)}</bdi></b></div>`).join('');
+ return `<p class="evnote sm">גביעים שנצברו בקרבות מדורגים במהלך החג. מקום ראשון: 300 יהלומים, מקומות 2 עד 3: 200, מקומות 4 עד 10: 100.</p>
+  <div class="evrl" role="list">${rows||'<p class="evnote">עוד אין שחקנים בטבלה. היו הראשונים!</p>'}</div>
+  <p class="evme">${T.rank?`המקום שלכם: <bdi>${T.rank}</bdi>`:v.score?`הניקוד שלכם: <bdi>${fmt(v.score)}</bdi>${T.cut?`, לכניסה לטבלה צריך <bdi>${fmt(T.cut+1)}</bdi>`:''}`:'נצחו בקרב מדורג כדי להיכנס לטבלה'} · <bdi>${fmt(T.n||0)}</bdi> שחקנים</p>`;}
+function tabCode(v){return v.code?`<p class="evnote">כבר השתמשתם בקוד מתנה בחג הזה. חג שמח!</p>`:
+ `<p class="evnote">יש לכם קוד מתנה? כל קוד עובד פעם אחת בלבד, למי שמקליד אותו ראשון.</p>
+  <label class="evcl"><span class="sr">קוד מתנה</span><input class="evci" type="text" inputmode="latin" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="16" placeholder="XXXX-XXXX-XXXX" dir="ltr" data-evcode></label>
+  <button class="b y" data-ev="redeem"><span>אישור</span></button>`;}
+function render(){const v=EV.view();if(!v){K.closeSheet();stop();return;}
+ const body=TAB==='tasks'?tabTasks(v):TAB==='top'?tabTop(v):TAB==='code'?tabCode(v):tabCandles(v);
+ const d=K.sheet(`<span class="evhd"><span class="sh2 o">${esc(v.title)}: ${esc(v.dayName)}</span><span class="evbal top">${dreidel(22)}<bdi>${fmt(v.dreidels)}</bdi></span></span>
+  <div class="evtabs" role="tablist">${TABS.map(([id,t])=>`<button class="evtab${id===TAB?' on':''}" role="tab" aria-selected="${id===TAB}" data-ev="tab" data-id="${id}">${t}${id==='candles'&&(v.today.canClaim||v.grand.ready)||id==='tasks'&&v.challenge.done&&!v.challenge.claimed?'<i class="dot"></i>':''}</button>`).join('')}</div>
+  <div class="evbody" data-tab="${TAB}">${body}</div><p class="evmsg" role="status">${esc(msg)}</p>
+  <button class="b n evx" data-a="closesheet"><span class="o">סגירה</span></button>`,'wide evsh',`אירוע ${v.name}`);
+ if(!d)return;d.addEventListener('click',onClick);tick();}
+function stop(){clearInterval(timer);timer=null;}
+function tick(){stop();timer=setInterval(()=>{const r=K.root(),sh=r&&r.querySelector('.evsh');if(!sh){stop();return;}const v=EV.view();if(!v){K.closeSheet();stop();return;}
+  const ms=v.nextAt-EV.now();sh.querySelectorAll('[data-evleft]').forEach(e=>{e.textContent=left(ms);});if(ms<=0){msg='';render();}},1000);}
+function open(tab){if(!EV.view())return;TAB=tab||'candles';msg='';render();if(TAB==='top')loadTop();}
+function loadTop(){EV.top(true).then(()=>{if(TAB==='top'&&K.root()&&K.root().querySelector('.evsh'))render();});}
+const WHY={noad:'אין כרגע פרסומת זמינה. נסו שוב בעוד רגע.',ad:'הפרסומת לא הושלמה, אז לא התקבל פרס.',clock:'השעון של המכשיר נראה לא מדויק.',closed:'האירוע הסתיים.',price:'אין מספיק סביבונים.',
+ used:'מישהו כבר השתמש בקוד הזה.',taken:'כבר השתמשתם בקוד מתנה בחג הזה.',bad:'הקוד לא נכון. בדקו שהקלדתם אותו בדיוק.',offline:'אין חיבור לרשת. נסו שוב.',rate:'יותר מדי ניסיונות. נסו שוב בעוד כמה דקות.'};
+function say(t){msg=t||'';const r=K.root(),e=r&&r.querySelector('.evsh .evmsg');if(e)e.textContent=msg;}
+function showGot(got,then){const g=(got||[])[0];if(!g){then&&then();return;}
+ if(g.type==='fighter'&&MF2UI.reveal){K.closeSheet();MF2UI.reveal(g.fighter,then||(()=>{}),true);return;}
+ if(g.type==='skin'&&MF2UI.skinReveal){K.closeSheet();MF2UI.skinReveal(g.skin,then||(()=>{}));return;}
+ then&&then();}
+async function onClick(e){const b=e.target.closest('[data-ev]');if(!b||busy)return;const a=b.dataset.ev;e.stopPropagation();
+ if(a==='tab'){K.snd('tap');TAB=b.dataset.id;msg='';render();if(TAB==='top')loadTop();return;}
+ if(a==='claim'){const r=EV.claim();if(!r.ok){say(WHY[r.reason]||'');return;}K.snd('claim');try{window.MF2EVN&&MF2EVN.schedule();}catch(_){}
+  K.closeSheet();if(MF2UI.drop)MF2UI.drop();else K.toast(`${plural(r.day,'תיבה אחת','תיבות')} נוספו לתיבות שלכם`);return;}
+ if(a==='drops'){K.closeSheet();if(MF2UI.drop)MF2UI.drop();return;}
+ if(a==='ad'||a==='makeup'){busy=true;b.disabled=true;say('');const r=a==='ad'?await EV.adChest():await EV.makeUp(+b.dataset.day);busy=false;
+  if(!r.ok){say(WHY[r.reason]||'');const x=K.root()&&K.root().querySelector(`.evsh [data-ev="${a}"]`);if(x)x.disabled=false;return;}
+  K.snd('claim');msg=a==='ad'?'תיבה נוספה לתיבות שלכם!':'היום הושלם!';render();return;}
+ if(a==='grand'){const r=EV.claimGrand();if(!r.ok){say(WHY[r.reason]||'');return;}K.snd('claim');showGot(r.got,()=>open('candles'));return;}
+ if(a==='chal'){const r=EV.claimChallenge();if(!r.ok)return;K.snd('claim');msg=`קיבלתם ${r.dreidels} סביבונים!`;render();return;}
+ if(a==='buy'){const r=EV.buy(b.dataset.id);if(!r.ok){say(WHY[r.reason]||'');return;}K.snd('claim');const g=(r.got||[])[0];
+  if(g&&g.type==='skin'){showGot(r.got,()=>open('tasks'));return;}msg=g&&g.type==='drop'?'תיבה נוספה לתיבות שלכם!':'נקנה!';render();return;}
+ if(a==='redeem'){const i=K.root().querySelector('.evsh [data-evcode]'),code=i?i.value:'';if(!code.trim()){say('הקלידו את הקוד.');return;}busy=true;b.disabled=true;say('בודקים...');
+  const r=await EV.redeem(code);busy=false;if(!r.ok){say(WHY[r.reason]||'הקוד לא התקבל.');const x=K.root()&&K.root().querySelector('.evsh [data-ev="redeem"]');if(x)x.disabled=false;return;}
+  K.snd('claim');const g=(r.got||[])[0];if(g&&(g.type==='skin'||g.type==='fighter')){showGot(r.got,()=>open('code'));return;}msg=g?`קיבלתם: ${rewardName(g)}`:'הקוד התקבל!';render();return;}}
+/* ---------------- the holiday arena: decorations behind the fighters, in every v2 match of the event ----------------
+ A string of lights under the HUD and a golden menorah at the back of the stage with today's candles lit, drawn once
+ into an off-screen strip when a match starts and copied each frame (one clipped drawImage, only the visible part).
+ Nothing is drawn outside the event, in the demo, in v1 screens, or when the performance governor lowered the quality. */
+let DECO=null;
+function buildDeco(day){try{if(typeof STAGE_W==='undefined'||typeof ZMIN==='undefined'||typeof HUD==='undefined')return null;
+  const w=STAGE_W,h=ZMIN-HUD,c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');
+  // lights: a sagging string with bulbs, across the whole stage
+  const cols=['#ffd23f','#4aa8ff','#fff3a6','#7ad0ff'];x.lineWidth=2;x.strokeStyle='rgba(10,14,51,.75)';x.beginPath();
+  const span=150,top=8,sag=22;for(let i=0;i*span<w;i++){const x0=i*span,x1=x0+span;x.moveTo(x0,top);x.quadraticCurveTo((x0+x1)/2,top+sag*2,x1,top);}x.stroke();
+  for(let i=0;i*span<w;i++)for(let k=1;k<6;k++){const t=k/6,bx=i*span+span*t,by=top+sag*2*2*t*(1-t)+5,col=cols[(i*5+k)%cols.length];
+   x.fillStyle=col;x.globalAlpha=.28;x.beginPath();x.arc(bx,by,11,0,7);x.fill();x.globalAlpha=1;x.beginPath();x.arc(bx,by,4.6,0,7);x.fill();x.strokeStyle='rgba(10,14,51,.8)';x.lineWidth=1.4;x.stroke();}
+  // the menorah: base on the back edge of the floor, centre stage
+  const cx=w/2,by=h-6,S=1.25;x.save();x.translate(cx,by);x.scale(S,S);
+  const arms=[-64,-48,-32,-16,16,32,48,64];
+  const path=()=>{x.beginPath();x.moveTo(0,-86);x.lineTo(0,-8);for(const a of [16,32,48,64]){x.moveTo(-a,-70);x.lineTo(-a,-58);x.arc(0,-58,a,Math.PI,0,true);x.lineTo(a,-70);}};
+  x.lineCap='round';x.strokeStyle='#0a0e33';x.lineWidth=11;path();x.stroke();x.strokeStyle='#ffc21a';x.lineWidth=6.5;path();x.stroke();x.strokeStyle='#ffe98a';x.lineWidth=2;path();x.stroke();
+  x.fillStyle='#ffc21a';x.strokeStyle='#0a0e33';x.lineWidth=2.5;x.beginPath();x.moveTo(-30,0);x.lineTo(-20,-10);x.lineTo(20,-10);x.lineTo(30,0);x.closePath();x.fill();x.stroke();
+  const cand=(ax,ay,on)=>{x.fillStyle=on?'#f2f6ff':'#9aa5d8';x.strokeStyle='#0a0e33';x.lineWidth=2;x.beginPath();x.rect(ax-3.5,ay-16,7,16);x.fill();x.stroke();
+   if(on){x.fillStyle='rgba(255,190,60,.30)';x.beginPath();x.arc(ax,ay-24,13,0,7);x.fill();x.fillStyle='#ffb020';x.strokeStyle='#0a0e33';x.lineWidth=1.6;x.beginPath();x.moveTo(ax,ay-33);x.quadraticCurveTo(ax+6,ay-23,ax,ay-17);x.quadraticCurveTo(ax-6,ay-23,ax,ay-33);x.fill();x.stroke();
+    x.fillStyle='#fff3a6';x.beginPath();x.arc(ax,ay-21,2.2,0,7);x.fill();}};
+  arms.forEach((a,i)=>cand(-a,-70,i<day));   // lit from the right, the way the candles are placed
+  cand(0,-86,day>0);x.restore();return c;}catch(e){return null;}}
+function decoOn(){try{const v=EV.view();DECO=v?{day:v.day,cv:buildDeco(v.day)}:null;}catch(e){DECO=null;}}
+MF2.on('match',m=>{if(m&&m.state==='start')decoOn();else if(m&&m.state==='end')DECO=null;});
+try{if(typeof drawBG==='function'&&typeof ctx!=='undefined'){const _bg=drawBG;
+  drawBG=function(name,cam){const r=_bg(name,cam);
+   try{if(DECO&&DECO.cv&&typeof G!=='undefined'&&G&&G.cfg&&G.cfg.mf2&&G.mode!=='demo'&&!(MF2.perf&&(MF2.perf.lite||MF2.perf.level>0))){
+     const cv=DECO.cv,m=ctx.getTransform(),k=m.a||1;let sx=Math.max(0,Math.min(cv.width-W,cam));const dx=(Math.round((sx-cam)*k+m.e)-m.e)/k;   // whole device pixels, like the arena layers
+     ctx.drawImage(cv,sx,0,Math.min(W,cv.width-sx),cv.height,dx,HUD,Math.min(W,cv.width-sx),cv.height);}}catch(e){}
+   return r;};}}catch(e){}
+/* ---------------- daily reminders (the app only) ----------------
+ Local notifications through Capacitor's LocalNotifications plugin: one for every candle that is still to come, a few
+ minutes after it is lit. Asked for once, the first time the player collects candle chests (never at launch). On the web
+ and in builds without the plugin this does nothing. Ids 7101..7108 are ours; they are replaced on every call. */
+const NID=7100;
+function plugin(){try{const C=window.Capacitor;if(!C||!C.isNativePlatform||!C.isNativePlatform())return null;if(C.isPluginAvailable&&!C.isPluginAvailable('LocalNotifications'))return null;
+  return (C.Plugins&&C.Plugins.LocalNotifications)||(C.registerPlugin?C.registerPlugin('LocalNotifications'):null);}catch(e){return null;}}
+function notifPlan(v,nowMs){const out=[];if(!v)return out;for(let d=v.day+1;d<=v.days;d++){const at=v.startsAt+(d-1)*864e5+5*6e4;if(at<=nowMs+6e4)continue;
+  out.push({id:NID+d,title:'מיני פייטר',body:`${v.candles[d-1].name} נדלק! ${d===1?'תיבה אחת מחכה':d+' תיבות מחכות'} לכם במשחק`,at});}return out;}
+async function schedule(){try{const P=plugin();if(!P)return 'none';const v=EV.view();if(!v)return 'closed';
+  let p=await P.checkPermissions();if(p.display!=='granted'){if(p.display==='denied')return 'denied';p=await P.requestPermissions();if(p.display!=='granted')return 'denied';}
+  try{await P.cancel({notifications:Array.from({length:v.days},(_,i)=>({id:NID+i+1}))});}catch(e){}
+  const plan=notifPlan(v,EV.now());   // in event time; the device clock is event time minus the test skew (0 for players)
+  const skew=EV.now()-Date.now(),list=plan.map(n=>({id:n.id,title:n.title,body:n.body,schedule:{at:new Date(n.at-skew)}}));
+  if(list.length)await P.schedule({notifications:list});return 'ok:'+list.length;}catch(e){return 'error';}}
+window.MF2EVN={schedule,plan:()=>notifPlan(EV.view(),EV.now())};
+window.MF2EVUI={lobby,open,render,deco:()=>DECO};
+// the lobby button follows the event: a new day, a claim, the start and the end of the event
+MF2.on('event',()=>{try{const r=K.root();if(r&&r.querySelector('.m2-lobby'))lobby(r);}catch(e){}});
+try{const r=K.root();if(r)lobby(r);}catch(e){}
 })();
 
 </script><script>(function(){window.__mf2boot=1;var box=document.getElementById("mf2boot"),bar=document.getElementById("mf2bar"),tx=document.getElementById("mf2pct");function done(){if(!box)return;var x=box;box=null;x.style.opacity=0;setTimeout(function(){x.remove()},400)}try{var A=typeof V2_ART!=="undefined"?V2_ART:{},list=[],k;for(k in A)if(!/^(arena_|fx_|anim_|chest_|keyart|defeat|victory|vs_bg|road|hanukkah|rar_)/.test(k))list.push(A[k]);try{var s=MF2.state();if(SPRITES[s.selected])list.push(SPRITES[s.selected].src);if(PORTRAITS[s.selected])list.push(PORTRAITS[s.selected])}catch(e){}var n=0,N=list.length||1;function one(){n++;var p=30+Math.round(70*n/N);bar.style.width=p+"%";tx.textContent="טוענים את הזירה "+p+"%";if(n>=N)done()}list.forEach(function(u){var im=new Image();im.onload=im.onerror=one;im.src=u});if(!list.length)done();setTimeout(done,15000)}catch(e){done()}})();</script></body></html>
