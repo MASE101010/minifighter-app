@@ -10330,7 +10330,7 @@ function tabTop(v){const T=v.top;
   <p class="evme">${T.rank?`המקום שלכם: <bdi>${T.rank}</bdi>`:v.score?`הניקוד שלכם: <bdi>${fmt(v.score)}</bdi>${T.cut?`, לכניסה לטבלה צריך <bdi>${fmt(T.cut+1)}</bdi>`:''}`:'נצחו בקרב מדורג כדי להיכנס לטבלה'} · <bdi>${fmt(T.n||0)}</bdi> שחקנים</p>`;}
 function tabCode(v){return v.code?`<p class="evnote">כבר השתמשתם בקוד מתנה בחג הזה. חג שמח!</p>`:
  `<p class="evnote">יש לכם קוד מתנה? כל קוד עובד פעם אחת בלבד, למי שמקליד אותו ראשון.</p>
-  <label class="evcl"><span class="sr">קוד מתנה</span><input class="evci" type="text" inputmode="latin" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="16" placeholder="XXXX-XXXX-XXXX" dir="ltr" data-evcode></label>
+  <label class="evcl"><span class="sr">קוד מתנה</span><input class="evci" type="text" inputmode="numeric" pattern="[0-9 -]*" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="12" placeholder="0000-0000" dir="ltr" data-evcode></label>
   <button class="b y" data-ev="redeem"><span>אישור</span></button>`;}
 function render(){const v=EV.view();if(!v){K.closeSheet();stop();return;}
  const body=TAB==='tasks'?tabTasks(v):TAB==='top'?tabTop(v):TAB==='code'?tabCode(v):tabCandles(v);
