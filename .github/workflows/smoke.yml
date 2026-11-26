@@ -10,6 +10,10 @@ on:
         description: 'iPhone simulator (Mac minutes)'
         type: boolean
         default: true
+      event:
+        description: 'Also play the limited-time event on the device (tester clock, claim, reminders, arena)'
+        type: boolean
+        default: false
 jobs:
   web:
     runs-on: ubuntu-latest
@@ -37,7 +41,7 @@ jobs:
       - run: npm ci
       - name: Debug APK (test ads, smoke logger)
         run: |
-          python3 build/make_web.py --test-ads --smoke && npx cap sync android
+          python3 build/make_web.py --test-ads --smoke ${{ inputs.event && '--smoke-event' || '' }} && npx cap sync android
           cd android && chmod +x gradlew && ./gradlew assembleDebug --no-daemon
       - name: KVM
         run: |
@@ -51,7 +55,7 @@ jobs:
           arch: x86_64
           profile: pixel_6
           disable-animations: true
-          script: bash build/smoke_device.sh android android/app/build/outputs/apk/debug/app-debug.apk
+          script: SMOKE_EVENT=${{ inputs.event && '1' || '0' }} bash build/smoke_device.sh android android/app/build/outputs/apk/debug/app-debug.apk
       - uses: actions/upload-artifact@v4
         if: always()
         with: { name: smoke-android, path: smoke }
@@ -70,12 +74,12 @@ jobs:
       - run: npm ci && pip3 install --break-system-packages pillow >/dev/null
       - name: Simulator build (test ads, smoke logger)
         run: |
-          python3 build/make_web.py --test-ads --smoke && npx cap sync ios && python3 build/ios_setup.py
+          python3 build/make_web.py --test-ads --smoke ${{ inputs.event && '--smoke-event' || '' }} && npx cap sync ios && python3 build/ios_setup.py
           xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug -sdk iphonesimulator \
             -destination 'generic/platform=iOS Simulator' -derivedDataPath $RUNNER_TEMP/dd build CODE_SIGNING_ALLOWED=NO | tail -20
           test ${PIPESTATUS[0]} -eq 0
       - name: Boot on the simulator
-        run: bash build/smoke_device.sh ios "$(ls -d $RUNNER_TEMP/dd/Build/Products/Debug-iphonesimulator/App.app)"
+        run: SMOKE_EVENT=${{ inputs.event && '1' || '0' }} bash build/smoke_device.sh ios "$(ls -d $RUNNER_TEMP/dd/Build/Products/Debug-iphonesimulator/App.app)"
       - uses: actions/upload-artifact@v4
         if: always()
         with: { name: smoke-ios, path: smoke }

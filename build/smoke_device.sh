@@ -7,6 +7,7 @@ set -u
 PLAT=$1; PKG=$2; OUT=${SMOKE_OUT:-smoke}; mkdir -p "$OUT"; ID=com.sapirproductions.minifighter
 if [ "$PLAT" = android ]; then
   adb wait-for-device; adb install -r "$PKG" || exit 1
+  adb shell pm grant $ID android.permission.POST_NOTIFICATIONS 2>/dev/null || true
   adb logcat -c
   adb shell am start -n $ID/.MainActivity
   for i in $(seq 1 24); do sleep 5; adb logcat -d > "$OUT/log.txt"; grep -q 'MFSMOKE {.*"screen":"\(lobby\|onboard\)"' "$OUT/log.txt" && break; done
@@ -28,6 +29,28 @@ else
   for i in $(seq 1 30); do sleep 5; grep -q 'MFSMOKE {.*"screen":"\(lobby\|onboard\)"' "$OUT/log.txt" && break; done
   sleep 8; xcrun simctl io "$UDID" screenshot "$OUT/ios_lobby.png"
 fi
+# the limited-time event on the device (builds made with --smoke-event): wait for the app's own event pass
+if [ "${SMOKE_EVENT:-}" = 1 ]; then
+  rd() { if [ "$PLAT" = android ]; then adb logcat -d > "$OUT/log.txt"; fi; }
+  shot() { if [ "$PLAT" = android ]; then adb exec-out screencap -p > "$OUT/${PLAT}_$1.png"; else xcrun simctl io "$UDID" screenshot "$OUT/${PLAT}_$1.png"; fi; }
+  for i in $(seq 1 50); do sleep 5; rd; grep -q 'MFSMOKE {.*"ev":{"step":[129]' "$OUT/log.txt" && break; done
+  sleep 3; shot event_sheet
+  if [ "$PLAT" = android ]; then sleep 14; adb shell dumpsys notification --noredact > "$OUT/notifications.txt" 2>/dev/null
+    grep -c "smoke test notification" "$OUT/notifications.txt" | sed 's/^/EVENT test notification posted by Android (lines): /'
+    adb shell cmd statusbar expand-notifications; sleep 2; shot notification; adb shell cmd statusbar collapse; fi
+  for i in $(seq 1 40); do sleep 5; rd; grep -q 'MFSMOKE {.*"ev":{"step":[29]' "$OUT/log.txt" && break; done
+  sleep 2; shot event_arena; rd
+  python3 - "$(grep -o 'MFSMOKE {.*' "$OUT/log.txt" | tail -1)" <<'PY' || EVFAIL=1
+import json, sys
+try: e = json.loads(sys.argv[1][len('MFSMOKE '):]).get('ev') or {}
+except Exception: e = {}
+print('EVENT', json.dumps(e, ensure_ascii=False))
+need = dict(day=3, chests=3, button=True, news=True, claim=True, claimedNow=True, plugin=True, sheet=True, match=True)
+bad = {k: e.get(k) for k, v in need.items() if e.get(k) != v}
+if e.get('step') != 2 or bad or not (e.get('deco') or e.get('lite')): print('EVENT FAIL', bad, e.get('error')); sys.exit(1)
+print('EVENT PASS')
+PY
+fi
 grep -o 'MFSMOKE .*' "$OUT/log.txt" | tail -3
 LAST=$(grep -o 'MFSMOKE {.*' "$OUT/log.txt" | tail -1)
 if [ -z "$LAST" ]; then echo "--- no status line; diagnostics ---"
@@ -48,3 +71,4 @@ print('platform', d.get('platform'), '| screen', d.get('screen'), '| purchases n
 print('SMOKE', 'PASS' if ok else 'FAIL')
 sys.exit(0 if ok else 1)
 PY
+RC=$?; [ "${EVFAIL:-0}" = 1 ] && exit 1; exit $RC

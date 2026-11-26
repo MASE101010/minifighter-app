@@ -143,7 +143,26 @@ const lay=lob?{fight:rc(lob.querySelector('[data-a="fight"]')),mode:rc(lob.query
 const SX=window.MF2SFX;if(SX&&SX.unlock&&!window.__smokeUnlock&&U&&U.state&&(U.state()||{}).name==='lobby'){window.__smokeUnlock=1;try{SX.unlock();}catch(e){}}   // smoke: the game's unlock without a real tap
 const si=SX&&SX.info?SX.info():null,audio=si?{state:si.state,unlocked:si.unlocked,session:si.session,ios:si.ios,native:window.__mfAudioLast}:null;
 console.log('MFSMOKE '+JSON.stringify({lay,audio,screen:U&&U.state&&(U.state()||{}).name,native:!!(I&&I.native),iapReady:!!(I&&I.ready),listed:pr.filter(p=>p.listed).length,products:pr.length,
-web:M&&M.shop?M.shop().filter(i=>i.kind==='real'&&(i.reason==='web'||i.reason==='test')).length:-1,platform:window.Capacitor&&Capacitor.getPlatform(),errors:E.slice(-6)}));}catch(e){console.log('MFSMOKE fail '+e);}},5000);})();</script>"""
+ev:window.__smokeEv||null,web:M&&M.shop?M.shop().filter(i=>i.kind==='real'&&(i.reason==='web'||i.reason==='test')).length:-1,platform:window.Capacitor&&Capacitor.getPlatform(),errors:E.slice(-6)}));}catch(e){console.log('MFSMOKE fail '+e);}},5000);})();</script>"""
+SMOKE_EV_JS="""<script>(function(){/* smoke only: the limited-time event on the device. 100 s after the lobby: candle 3 through the tester
+ clock, claim, reminders through the real LocalNotifications plugin (+ one test notification 12 s ahead), the event sheet; 45 s later a match
+ for the decorated arena. Results go out in the MFSMOKE status line as "ev". */
+let t0=0;const R=window.__smokeEv={step:0};const W=ms=>new Promise(r=>setTimeout(r,ms));
+async function run(){const M=window.MF2,U=window.MF2UI,E=M.event;try{
+ R.canSkew=!!E._canSkew;R.before=!!E.view();E._day(3);await W(1200);const v=E.view();R.day=v&&v.day;R.chests=v&&v.today&&v.today.chests;
+ U.go('lobby');await W(800);R.button=!!document.querySelector('.evb');const n=document.querySelector('.nws');R.news=n?n.dataset.news.indexOf('event')>=0:false;
+ const c=E.claim();R.claim=!!c.ok;R.got=c.got?c.got.length:0;R.claimedNow=E.view().today.canClaim===false;
+ const C=window.Capacitor,P=C&&C.Plugins&&C.Plugins.LocalNotifications;R.plugin=!!(C&&C.isPluginAvailable&&C.isPluginAvailable('LocalNotifications'));
+ if(P){try{R.perm=(await P.checkPermissions()).display;}catch(e){R.perm='err '+e;}
+  window.MF2EVN.schedule().then(async x=>{R.schedule=x;try{R.pending=(await P.getPending()).notifications.length;}catch(e){R.pending='err '+e;}
+   try{await P.schedule({notifications:[{id:7199,title:'Mini Fighter',body:'smoke test notification',schedule:{at:new Date(Date.now()+12000)}}]});R.testNotif='scheduled';}catch(e){R.testNotif='err '+e;}},e=>{R.schedule='rej '+e;});}
+ await W(4000);window.MF2EVUI.open('candles');await W(1200);R.sheet=!!document.querySelector('.evsh');R.step=1;
+ await W(45000);try{document.querySelectorAll('.v2 .scrim').forEach(e=>e.remove());}catch(e){}U.go('lobby');await W(800);M.setMode('duel');R.find=M.findMatch();
+ for(let i=0;i<80;i++){await W(1000);if(typeof G!=='undefined'&&G&&G.mf&&!G.over&&G.fighters&&G.fighters.length>1)break;}
+ R.match=!!(typeof G!=='undefined'&&G&&G.mf);await W(4000);const d=window.MF2EVUI.deco&&window.MF2EVUI.deco();R.deco=!!d;R.lite=!!(M.perf&&(M.perf.lite||M.perf.level>0));R.step=2;
+ }catch(e){R.error=String(e&&e.message||e).slice(0,160);R.step=9;}}
+const iv=setInterval(()=>{try{const U=window.MF2UI;if(!U||!U.state||(U.state()||{}).name!=='lobby')return;if(!t0)t0=Date.now();if(Date.now()-t0>100000){clearInterval(iv);run();}}catch(e){}},2000);})();</script>"""
+if SMOKE and '--smoke-event' in sys.argv: s=s.replace('<head>','<head>'+SMOKE_EV_JS,1)
 if SMOKE: s=s.replace('<head>','<head>'+SMOKE_JS,1)
 assert '<head>' in s
 s=s.replace('<head>','<head><script>'+core+'</script><script>window.MF_IOS=!!(window.Capacitor&&Capacitor.getPlatform&&Capacitor.getPlatform()===\'ios\');</script>',1)
