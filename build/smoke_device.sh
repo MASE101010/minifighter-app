@@ -37,6 +37,7 @@ if [ "${SMOKE_EVENT:-}" = 1 ]; then
   sleep 3; shot event_sheet
   if [ "$PLAT" = android ]; then sleep 14; adb shell dumpsys notification --noredact > "$OUT/notifications.txt" 2>/dev/null
     grep -c "smoke test notification" "$OUT/notifications.txt" | sed 's/^/EVENT test notification posted by Android (lines): /'
+    grep -iE "LocalNotif|Capacitor/Plugin|AlarmManager.*minifighter|exact alarm|SCHEDULE_EXACT" "$OUT/log.txt" | grep -v MFSMOKE | tail -25 | cut -c1-330
     adb shell cmd statusbar expand-notifications; sleep 2; shot notification; adb shell cmd statusbar collapse; fi
   for i in $(seq 1 40); do sleep 5; rd; grep -q 'MFSMOKE {.*"ev":{"step":[29]' "$OUT/log.txt" && break; done
   sleep 2; shot event_arena; rd
@@ -64,7 +65,7 @@ try:
     d = json.loads(raw)
 except Exception:
     print('SMOKE FAIL: no status line from the app'); sys.exit(1)
-ok = d.get('screen') in ('lobby', 'onboard') and d.get('native') and not any(e.startswith('load ') for e in d.get('errors', []))
+ok = (d.get('screen') in ('lobby', 'onboard') or (d.get('ev') or {}).get('step') == 2) and d.get('native') and not any(e.startswith('load ') for e in d.get('errors', []))
 print('audio:', d.get('audio'), '(context state after the game\'s own unlock, no real tap; native = MFAudio.setPlayback answer)')
 print('platform', d.get('platform'), '| screen', d.get('screen'), '| purchases native', d.get('native'), '| billing ready', d.get('iapReady'),
       '| products listed by the store', d.get('listed'), 'of', d.get('products'), '| web-mode items', d.get('web'), '| errors', d.get('errors'))

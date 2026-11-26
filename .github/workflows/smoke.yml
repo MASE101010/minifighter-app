@@ -31,6 +31,7 @@ jobs:
   android:
     if: inputs.android
     runs-on: ubuntu-latest
+    permissions: { contents: write }
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
@@ -56,12 +57,20 @@ jobs:
           profile: pixel_6
           disable-animations: true
           script: SMOKE_EVENT=${{ inputs.event && '1' || '0' }} bash build/smoke_device.sh android android/app/build/outputs/apk/debug/app-debug.apk
+      - name: Screenshots to the smoke-shots branch (event runs)
+        if: always() && inputs.event
+        run: |
+          d=$(mktemp -d); mkdir -p $d/android; cp smoke/*.png $d/android/ 2>/dev/null || true; cd $d
+          git init -q; git checkout -q -b smoke-shots-android; git config user.name github-actions; git config user.email github-actions@users.noreply.github.com
+          git add -A; git commit -q -m "smoke screenshots android (${{ github.run_number }})" || exit 0
+          git push -q -f https://x-access-token:${{ github.token }}@github.com/${{ github.repository }} smoke-shots-android
       - uses: actions/upload-artifact@v4
         if: always()
         with: { name: smoke-android, path: smoke }
   ios:
     if: inputs.ios
     runs-on: macos-26
+    permissions: { contents: write }
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
@@ -80,6 +89,13 @@ jobs:
           test ${PIPESTATUS[0]} -eq 0
       - name: Boot on the simulator
         run: SMOKE_EVENT=${{ inputs.event && '1' || '0' }} bash build/smoke_device.sh ios "$(ls -d $RUNNER_TEMP/dd/Build/Products/Debug-iphonesimulator/App.app)"
+      - name: Screenshots to the smoke-shots branch (event runs)
+        if: always() && inputs.event
+        run: |
+          d=$(mktemp -d); mkdir -p $d/ios; cp smoke/*.png $d/ios/ 2>/dev/null || true; cd $d
+          git init -q; git checkout -q -b smoke-shots-ios; git config user.name github-actions; git config user.email github-actions@users.noreply.github.com
+          git add -A; git commit -q -m "smoke screenshots ios (${{ github.run_number }})" || exit 0
+          git push -q -f https://x-access-token:${{ github.token }}@github.com/${{ github.repository }} smoke-shots-ios
       - uses: actions/upload-artifact@v4
         if: always()
         with: { name: smoke-ios, path: smoke }

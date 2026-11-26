@@ -154,6 +154,7 @@ async function run(){const M=window.MF2,U=window.MF2UI,E=M.event;try{
  const c=E.claim();R.claim=!!c.ok;R.got=c.got?c.got.length:0;R.claimedNow=E.view().today.canClaim===false;
  const C=window.Capacitor,P=C&&C.Plugins&&C.Plugins.LocalNotifications;R.plugin=!!(C&&C.isPluginAvailable&&C.isPluginAvailable('LocalNotifications'));
  if(P){try{R.perm=(await P.checkPermissions()).display;}catch(e){R.perm='err '+e;}
+  (async()=>{try{R.ns=1;const t=x=>Promise.race([x,new Promise((_,j)=>setTimeout(()=>j('timeout'),8000))]);await t(P.cancel({notifications:[{id:7101}]})).then(()=>R.cancel='ok',e=>R.cancel='err '+e);R.ns=2;await t(P.getPending()).then(x=>R.pending0=x.notifications.length,e=>R.pending0='err '+e);R.ns=3;}catch(e){R.nsErr=String(e);}})();
   window.MF2EVN.schedule().then(async x=>{R.schedule=x;try{R.pending=(await P.getPending()).notifications.length;}catch(e){R.pending='err '+e;}
    try{await P.schedule({notifications:[{id:7199,title:'Mini Fighter',body:'smoke test notification',schedule:{at:new Date(Date.now()+12000)}}]});R.testNotif='scheduled';}catch(e){R.testNotif='err '+e;}},e=>{R.schedule='rej '+e;});}
  await W(4000);window.MF2EVUI.open('candles');await W(1200);R.sheet=!!document.querySelector('.evsh');R.step=1;
