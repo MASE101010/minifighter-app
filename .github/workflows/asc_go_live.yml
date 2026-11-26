@@ -1,9 +1,6 @@
 name: App Store release approved version
 on:
   workflow_dispatch:
-  # the owner (26 Nov 2026): release 2.0.1 as soon as Apple approves it. Remove this schedule once 2.0.1 is live.
-  schedule:
-    - cron: '7,37 * * * *'
 jobs:
   release:
     runs-on: ubuntu-latest
