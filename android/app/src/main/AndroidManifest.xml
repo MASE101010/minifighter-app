@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
 
     <application
         android:allowBackup="true"
@@ -49,4 +49,6 @@
     <uses-feature android:name="android.hardware.gamepad" android:required="false" />
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- candle reminders are not exact alarms: the local notifications plugin must not bring this permission (or its settings screen) -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" tools:node="remove" />
 </manifest>

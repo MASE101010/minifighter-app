@@ -6,7 +6,8 @@
     "build": "python3 build/make_web.py && npx cap sync android",
     "open": "npx cap open android",
     "build:test": "python3 build/make_web.py --test-ads && npx cap sync android",
-    "build:ios": "python3 build/make_web.py && npx cap sync ios && python3 build/ios_setup.py"
+    "build:ios": "python3 build/make_web.py && npx cap sync ios && python3 build/ios_setup.py",
+    "postinstall": "python3 build/patch_plugins.py"
   },
   "keywords": [],
   "author": "",

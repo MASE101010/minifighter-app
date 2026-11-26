@@ -10410,7 +10410,7 @@ async function schedule(){try{const P=plugin();if(!P)return 'none';const v=EV.vi
   let p=await P.checkPermissions();if(p.display!=='granted'){if(p.display==='denied')return 'denied';p=await P.requestPermissions();if(p.display!=='granted')return 'denied';}
   try{await P.cancel({notifications:Array.from({length:v.days},(_,i)=>({id:NID+i+1}))});}catch(e){}
   const plan=notifPlan(v,EV.now());   // in event time; the device clock is event time minus the test skew (0 for players)
-  const skew=EV.now()-Date.now(),list=plan.map(n=>({id:n.id,title:n.title,body:n.body,schedule:{at:new Date(n.at-skew)}}));
+  const skew=EV.now()-Date.now(),list=plan.map(n=>({id:n.id,title:n.title,body:n.body,isExactNotification:false,schedule:{at:new Date(n.at-skew),allowWhileIdle:true}}));   // not exact: an exact alarm makes Android open its "Alarms & reminders" settings screen over the game
   if(list.length)await P.schedule({notifications:list});return 'ok:'+list.length;}catch(e){return 'error';}}
 window.MF2EVN={schedule,plan:()=>notifPlan(EV.view(),EV.now())};
 window.MF2EVUI={lobby,open,render,deco:()=>DECO};

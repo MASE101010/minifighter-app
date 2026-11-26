@@ -156,7 +156,7 @@ async function run(){const M=window.MF2,U=window.MF2UI,E=M.event;try{
  if(P){try{R.perm=(await P.checkPermissions()).display;}catch(e){R.perm='err '+e;}
   (async()=>{try{R.ns=1;const t=x=>Promise.race([x,new Promise((_,j)=>setTimeout(()=>j('timeout'),8000))]);await t(P.cancel({notifications:[{id:7101}]})).then(()=>R.cancel='ok',e=>R.cancel='err '+e);R.ns=2;await t(P.getPending()).then(x=>R.pending0=x.notifications.length,e=>R.pending0='err '+e);R.ns=3;}catch(e){R.nsErr=String(e);}})();
   window.MF2EVN.schedule().then(async x=>{R.schedule=x;try{R.pending=(await P.getPending()).notifications.length;}catch(e){R.pending='err '+e;}
-   try{await P.schedule({notifications:[{id:7199,title:'Mini Fighter',body:'smoke test notification',schedule:{at:new Date(Date.now()+12000)}}]});R.testNotif='scheduled';}catch(e){R.testNotif='err '+e;}},e=>{R.schedule='rej '+e;});}
+   try{await P.schedule({notifications:[{id:7199,title:'Mini Fighter',body:'smoke test notification',isExactNotification:false,schedule:{at:new Date(Date.now()+8000),allowWhileIdle:true}}]});R.testNotif='scheduled';}catch(e){R.testNotif='err '+e;}},e=>{R.schedule='rej '+e;});}
  await W(4000);window.MF2EVUI.open('candles');await W(1200);R.sheet=!!document.querySelector('.evsh');R.step=1;
  await W(45000);try{document.querySelectorAll('.v2 .scrim').forEach(e=>e.remove());}catch(e){}U.go('lobby');await W(800);M.setMode('duel');R.find=M.findMatch();
  for(let i=0;i<80;i++){await W(1000);if(typeof G!=='undefined'&&G&&G.mf&&!G.over&&G.fighters&&G.fighters.length>1)break;}
