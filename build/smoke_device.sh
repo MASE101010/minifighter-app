@@ -37,7 +37,7 @@ if [ "${SMOKE_EVENT:-}" = 1 ]; then
   sleep 3; shot event_sheet
   if [ "$PLAT" = android ]; then sleep 14; adb shell dumpsys notification --noredact > "$OUT/notifications.txt" 2>/dev/null
     grep -c "smoke test notification" "$OUT/notifications.txt" | sed 's/^/EVENT test notification posted by Android (lines): /'
-    grep -iE "LocalNotif|Capacitor/Plugin|AlarmManager.*minifighter|exact alarm|SCHEDULE_EXACT" "$OUT/log.txt" | grep -v MFSMOKE | tail -25 | cut -c1-330
+    P=$(adb shell pidof $ID | tr -d '\r'); awk -v p="$P" '/methodName: schedule/{f=1} f&&$3==p&&($5=="E"||$5=="W"||/LN|Notif|Alarm|Exception|at com\.|at android\./)' "$OUT/log.txt" | grep -v MFSMOKE | head -45 | cut -c1-260
     adb shell cmd statusbar expand-notifications; sleep 2; shot notification; adb shell cmd statusbar collapse; fi
   for i in $(seq 1 40); do sleep 5; rd; grep -q 'MFSMOKE {.*"ev":{"step":[29]' "$OUT/log.txt" && break; done
   sleep 2; shot event_arena; rd
