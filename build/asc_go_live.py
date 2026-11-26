@@ -19,7 +19,8 @@ def states():
 st = states(); print('LIVE before', [s[1:] for s in st])
 v = next(s for s in st if s[1] == want)
 if v[2] != 'PENDING_DEVELOPER_RELEASE':
-    sys.exit('LIVE not pending developer release: ' + v[2])
+    print('LIVE not pending developer release: ' + v[2])
+    sys.exit(0 if os.environ.get('QUIET') else 1)
 r = req('POST', '/v1/appStoreVersionReleaseRequests', {'data': {'type': 'appStoreVersionReleaseRequests',
         'relationships': {'appStoreVersion': {'data': {'type': 'appStoreVersions', 'id': v[0]}}}}})
 if r.status_code >= 300:

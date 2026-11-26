@@ -1,6 +1,9 @@
 name: App Store release approved version
 on:
   workflow_dispatch:
+  # the owner (26 Nov 2026): release 2.0.1 as soon as Apple approves it. Remove this schedule once 2.0.1 is live.
+  schedule:
+    - cron: '7,37 * * * *'
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -11,4 +14,6 @@ jobs:
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
           ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 || secrets.APPSTORE_KEY_P8 }}
+          VERSION: '2.0.1'
+          QUIET: ${{ github.event_name == 'schedule' && '1' || '' }}
         run: python3 build/asc_go_live.py
